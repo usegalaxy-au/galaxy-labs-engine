@@ -1,0 +1,23 @@
+# Default spec for an exported subsite landing page
+
+# You can test with: /lab/export?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/main.yml
+
+site_name: Antarctica
+lab_name: Galaxy Lab Pages
+nationality: Antarctican
+galaxy_base_url: https://galaxy-antarctica.org
+subdomain: antarctica
+root_domain: galaxy-antarctica.org
+
+# These files need to be accessible on the internet, relative to the content_root URL!
+# -----------------------------------------------------------------------------
+# Custom content relative to this file URL
+intro_md: templates/intro.html
+header_logo: static/flask.svg
+footer_md: templates/footer.html
+custom_css: static/custom.css
+
+# Data to be rendered into sections/tabs/accordion elements:
+sections:
+  - section_1.yml
+  - section_2.yml

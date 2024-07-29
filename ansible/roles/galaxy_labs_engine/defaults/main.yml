@@ -1,0 +1,28 @@
+---
+project_root: /home/ubuntu/labs-engine
+server_root: /home/ubuntu/server
+labs_engine_docker_image: neoformit/galaxy-labs-engine:latest
+
+labs_engine:
+  templates:
+    - src: "{{ role_path }}/templates/gunicorn.py.j2"
+      dest: "{{ server_root }}/gunicorn.py"
+    - src: "{{ role_path }}/templates/labs_engine.service.j2"
+      dest: /etc/systemd/system/labs_engine.service
+    - src: "{{ role_path }}/templates/.env.j2"
+      dest: "{{ project_root }}/.env"
+    - src: "{{ role_path }}/templates/update.sh.j2"
+      dest: "/home/ubuntu/update.sh"
+
+  files:
+    - src: "{{ role_path }}/files/labs_engine.socket"
+      dest: /etc/systemd/system/labs_engine.socket
+
+certbot_ssl: true
+
+gunicorn:
+  web_workers: 4
+
+skip_database_migration: false
+
+admin_user: null

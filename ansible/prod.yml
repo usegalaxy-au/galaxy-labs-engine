@@ -1,0 +1,12 @@
+---
+- hosts: webservers
+  remote_user: ubuntu
+  become: true
+  vars_files:
+    - group_vars/secrets.yml
+    - group_vars/webservers.yml
+  roles:
+    - geerlingguy.nginx
+    - role: geerlingguy.postgresql
+      become: true
+    - galaxy_labs_engine

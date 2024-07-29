@@ -1,0 +1,155 @@
+id: section_2
+title: Example section  with subsections
+tabs:
+  - id: tools
+    title: Tools
+    heading_md: |
+      The tools in this section have been divided into subsections to make it
+      easier for users to find the tools they need. This must replace the
+      entire value of the <code>content</code> key i.e. you can't mix
+      subsections with standalone items.
+    content:
+
+      # Content can be split into subsections, each with a title.
+      # This must replace the entire value of the `content` key i.e. you can't
+      # mix subsections with standalone items:
+      subsections:
+        - id: subsection_1
+          title: This is my first subsection
+          content:
+
+            # Accordion item schema:
+            #   title_md: <str>  # inline MD accepted e.g. *italics*, **bold**, `code`
+            #   description_md: <str>
+            #   inputs: <optional>
+            #     - datatypes:  # tool input 1 - two accepted datatypes
+            #       - <str>
+            #       - <str>
+            #       label: <str optional>
+            #     - datatypes:  # tool input 2 - one accepted datatype
+            #       - <str>
+            #       label: <str optional>
+            #   button_link: <str optional>
+            #   button_md: <str optional>
+            #   button_tip: <str optional>
+            #   view_link: <str optional>
+            #   view_md: <str optional>
+            #   view_tip: <str optional>
+
+          - title_md: <code>Hifiasm</code>- assembly with PacBio HiFi data
+            button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fbgruening%2Fhifiasm%2Fhifiasm"
+            description_md: <p>A haplotype-resolved assembler for PacBio HiFi reads.</p>
+            inputs:
+              - label: PacBio reads
+                datatypes:
+                  - fasta
+                  - fastq
+
+        - id: subsection_2
+          title: Another subsection
+          content:
+            - title_md: <code>Flye</code>- assembly with PacBio or Nanopore data
+              button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fbgruening%2Fflye%2Fflye"
+              description_md: >
+                <p>
+                  <em>de novo</em>
+                  assembly of single-molecule sequencing reads, designed for a wide range of datasets,
+                  from small bacterial projects to large mammalian-scale assemblies.
+                </p>
+              inputs:
+              - label: Single-molecule sequencing reads
+                datatypes:
+                  - fasta
+                  - fastq
+
+  - id: workflows
+    title: Workflows
+    heading_md: >
+      A workflow is a series of Galaxy tools that have been linked together
+      to perform a specific analysis. You can use and customize the example workflows
+      below.
+      <a href="https://galaxyproject.org/learn/advanced-workflow/" target="_blank">
+        Learn more
+      </a>.
+    content:
+      subsections:
+        - id: pacbio
+          title: Assembly with PacBio HiFi data
+          content:
+            - description_md: >
+                <p>
+                  This
+                  <a href="https://australianbiocommons.github.io/how-to-guides/genome_assembly/hifi_assembly" target="_blank">
+                    How-to-Guide
+                  </a>
+                  will describe the steps required to assemble your genome on the Galaxy Australia platform,
+                  using multiple workflows.
+                </p>
+              title_md: About these workflows
+            - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=220"
+              button_tip: Import to Galaxy Australia
+              description_md: >
+                <p>
+                  Convert a BAM file to FASTQ format to perform QC analysis (required if your data is in BAM format).
+                </p>
+              inputs:
+                - label: PacBio<em>subreads.bam</em>
+                  datatypes:
+                    - bam
+              title_md: BAM to FASTQ + QC v1.0
+              view_link: https://workflowhub.eu/workflows/220
+              view_tip: View in WorkflowHub
+        - id: nanopore
+          title: Assembly with Nanopore data and polishing with Illumina data
+          content:
+            - description_md: >
+                <p>
+                  This
+                  <a href="https://training.galaxyproject.org/training-material/topics/assembly/tutorials/largegenome/tutorial.html" target="_blank">
+                    tutorial
+                  </a>
+                  describes the steps required to assemble a genome on Galaxy with Nanopore and Illumina data
+                </p>
+              title_md: About these workflows
+            - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=225"
+              button_tip: Import to Galaxy Australia
+              description_md: >
+                <p>
+                  Assemble Nanopore long reads. This workflow can be run alone or as part of a combined workflow for large genome assembly.
+                </p>
+              inputs:
+                - label: Long reads (may be raw, filtered and/or corrected)
+                  datatypes:
+                  - fastqsanger
+              title_md: Flye assembly with Nanopore data
+              view_link: https://workflowhub.eu/workflows/225
+              view_tip: View in WorkflowHub
+
+  - id: help
+    title: Help
+    content:
+      - button_md: Request support
+        button_link: /request
+        description_md: >
+          <p>
+            Yes. Galaxy Australia has assembly tools for small prokaryote genomes as well as larger eukaryote genomes.
+            We are continually adding new tools and optimising them for large genome assemblies
+            - this means adding enough computer processing power to run data-intensive tools, as well as configuring
+            aspects such as parallelisation
+          </p>
+          <p>
+            Please contact us if:
+          </p>
+          <ul>
+            <li>you need to increase your data storage limit</li>
+            <li>there is a tool you wish to request</li>
+            <li>a tool appears to be broken or running slowly</li>
+          </ul>
+        title_md: Can I use Galaxy Australia to assemble a large genome?
+      - description_md: >
+          <ul>
+            <li>See the tutorials in this Help section. They cover different approaches to genome assembly</li>
+            <li>Read the methods in scientific papers about genome assembly, particularly those about genomes with similar characteristics to those in your project</li>
+            <li>See the Workflows section for examples of different approaches to genome assembly - these cover different sequencing data types, and a variety of tools.</li>
+          </ul>
+        title_md: How can I learn about genome assembly?

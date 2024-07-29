@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+{% load static %}
+
+  <head>
+    {% include 'home/snippets/head.html' %}
+    <title> {% if title %}{{ title }}{% else %}Galaxy - data analysis for everyone{% endif %} </title>
+    {% include 'home/snippets/imports.html' %}
+    {% include 'home/snippets/posthog.html' %}
+
+    {% block head %}
+    {% endblock %}
+
+    <style>
+      .material-icons {
+        opacity: 0;
+        max-width: 2rem;
+        overflow: hidden;
+        transition-duration: 0.25s;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    {% block content %}
+    {% endblock %}
+
+    {% block script %}
+    {% endblock %}
+
+    <script type="text/javascript">
+
+      // Load material icons and display when page has loaded
+      document.fonts.onloadingdone = () => {
+        $('.material-icons').css({
+          'opacity': 1,
+          'max-width': 'unset',
+          'overflow': 'visible'
+        });
+      }
+
+      // Determine whether page is being viewed in iframe
+      function inIframe () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+      }
+
+      const subdomainLanding = () => window.location.pathname.includes('/landing/');
+
+      $(document).ready( () => {
+        // Enable bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+
+        {% block onload %}
+        {% endblock %}
+      });
+
+    </script>
+  </body>
+</html>

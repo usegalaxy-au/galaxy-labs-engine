@@ -1,0 +1,6 @@
+[Unit]
+Description=Galaxy labs engine socket
+[Socket]
+ListenStream=/run/labs_engine.sock
+[Install]
+WantedBy=sockets.target

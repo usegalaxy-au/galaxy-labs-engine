@@ -1,0 +1,29 @@
+<section class="my-5">
+  <h4 class="mb-3">Contributors</h4>
+  <div>
+    {% for user in contributors %}
+    <a
+      {% if user.avatar_url %}
+      class="contributor"
+      href="https://github.com/{{ user.login }}"
+      target="_blank"
+      {% else %}
+      class="contributor dead-link"
+      {% endif %}
+    >
+      <div
+        class="wrapper"
+        title="{{ user.login }}{% if user.name %} ({{ user.name }}){% endif %}"
+        data-bs-toggle="tooltip"
+        data-bs-placement="bottom"
+      >
+        {% if user.avatar_url %}
+        <img class="github-avatar" src="{{ user.avatar_url }}" alt="Github avatar for {{ user.login }}">
+        {% else %}
+        <i class="fab fa-github"></i>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>

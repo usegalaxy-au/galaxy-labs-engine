@@ -1,0 +1,16 @@
+{% load markdown %}
+
+<p><em>Input data:</em></p>
+<table class="table-inputs mx-3">
+  {% for input in inputs %}
+  <tr>
+    <td>
+      {% for datatype in input.datatypes %}
+      {% if forloop.counter0 %}<br>{% endif %}
+      <code>{{ datatype }}</code>
+      {% endfor %}
+    </td>
+    <td>{{ input.label|inline_markdown }}</td>
+  </tr>
+  {% endfor %}
+</table>

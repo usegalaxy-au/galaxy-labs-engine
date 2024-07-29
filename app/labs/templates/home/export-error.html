@@ -1,0 +1,109 @@
+{% extends 'home/header.html' %}
+
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+<main>
+
+  <h1>Galaxy Lab build error</h1>
+  
+  {% if exc.title %}
+  <p>{{ exc.title }}</p>
+  {% endif %}
+
+  {% if exc.url %}
+  <p>
+    Source URL: <a href="{{ exc.url }}" target="_blank">{{ exc.url }}</a>
+  </p>
+  {% endif %}
+  
+  <div>
+    {% if not exc.errors %}
+    <p class="lead">Error message:</p>
+    <pre style="border-radius: .5rem; background-color: #e8edf7; padding: 1rem;">{{ exc.message }}</pre>
+    {% else %}
+    <p class="lead">YAML schema violations:</p>
+
+    {% for error in exc.errors %}
+    {% if forloop.counter0 %}<hr class="my-3">{% endif %}
+    <div class="p-3" style="background: rgba(10,10,40,0.1);">
+      <p>
+        Location: <strong>{{ error.location }}</strong>
+      </p>
+      <pre style="border-radius: .5rem; background-color: #ebc8c8; padding: 1rem;">{{ error.message }}</pre>
+
+      {% if error.help %}
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingSchema{{ forloop.counter }}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSchema{{ forloop.counter }}" aria-expanded="false" aria-controls="collapseSchema{{ forloop.counter }}">
+              Expected YAML schema for <code class="mx-2">{{ error.help.model_name }}</code>
+            </button>
+          </h2>
+          <div id="collapseSchema{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="headingSchema{{ forloop.counter }}" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <table class="table table-striped">
+                <thead>
+                  <th>Field ID</th>
+                  <th>Permitted types</th>
+                  <th>Required</th>
+                </thead>
+                {% for id, field in error.help.schema.items %}
+                <tr>
+                  <td>{{ id }}</td>
+                  <td>
+                    {% if field.type %}
+                      {{ field.type }}
+                    {% else %}
+                      {% for type in field.anyOf %}
+                      {% if forloop.counter0 %}<br>{% endif %}
+                      {{ type.type }}
+                      {% endfor %}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if id in error.help.required_fields %}
+                    <span class="badge bg-secondary">Yes</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                Received input
+            </button>
+          </h2>
+          <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <pre>{{ error.input }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% endif %}
+  </div>
+
+</main>
+{% endblock %}
+
+
+{% block script %}
+{% endblock %}
+
+
+{% block onload %}
+{% endblock %}

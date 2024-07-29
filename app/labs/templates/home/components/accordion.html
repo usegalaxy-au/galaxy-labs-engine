@@ -1,0 +1,78 @@
+{% load markdown %}
+
+<div class="accordion" id="{{ section.id }}-{{ tab_id }}{{ accordion_id }}-accordion">
+  {% for item in content %}
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="{{ section.id }}-{{ tab_id }}-{{ forloop.counter }}{{ accordion_id }}-accordion">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#{{ section.id }}-{{ tab_id }}-{{ forloop.counter }}{{ accordion_id }}-collapse"
+        aria-expanded="false"
+        aria-controls="{{ section.id }}-{{ tab_id }}-{{ forloop.counter }}{{ accordion_id }}-collapse"
+      >
+        {{ item.title_md|inline_markdown }}
+      </button>
+    </h2>
+    <div
+      id="{{ section.id }}-{{ tab_id }}-{{ forloop.counter }}{{ accordion_id }}-collapse"
+      class="accordion-collapse collapse"
+      aria-labelledby="{{ section.id }}-{{ tab_id }}-{{ forloop.counter }}{{ accordion_id }}-accordion"
+      data-bs-parent="#{{ section.id }}-{{ tab_id }}{{ accordion_id }}-accordion"
+    >
+      <div class="accordion-body">
+        <div class="row align-items-center">
+          <div class="col">
+            {{ item.description_md|markdown }}
+            {% if item.inputs %}
+            {% include 'home/subdomains/components/inputs.html' with inputs=item.inputs %}
+            {% endif %}
+          </div>
+
+          <div class="col col-auto">
+            {% if item.button_link %}
+            <div class="my-1">
+              <a
+                href="{{ item.button_link }}"
+                class="btn btn-galaxy{% if 'https://training.galaxyproject' in item.button_link %} gtn-modal{% endif%}"
+                title="{{ item.button_tip|default:'Run tool' }}"
+                data-bs-toggle="tooltip"
+                data-bs-placement="left"
+              >
+                {% if item.button_icon %}
+                <span class="material-icons">{{ item.button_icon|iconkey }}</span>
+                {% else %}
+                {{ item.button_md|inline_markdown|default:'<span class="material-icons">play_arrow</span>' }}
+                {% endif %}
+              </a>
+            </div>
+            {% endif %}
+
+            {% if item.view_link %}
+            <div class="my-1">
+              <a
+                href="{{ item.view_link }}"
+                class="btn btn-galaxy"
+                {% if item.view_link|first != '/' %}target="_blank"{% endif %}
+                {% if item.view_tip %}
+                title="{{ item.view_tip }}"
+                data-bs-toggle="tooltip"
+                data-bs-placement="left"
+                {% endif %}
+              >
+                {% if item.view_icon %}
+                <span class="material-icons">{{ item.view_icon|iconkey }}</span>
+                {% else %}
+                {{ item.view_md|inline_markdown|default:'<span class="material-icons">visibility</span>' }}
+                {% endif %}
+              </a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>

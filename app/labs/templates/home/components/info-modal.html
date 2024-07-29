@@ -1,0 +1,29 @@
+{% load static %}
+
+<div class="modal fade" id="infoModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Galaxy Australia {{ site_name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          This site <em>{{ subdomain }}.usegalaxy.org.au</em> is connected to the same server as <em>usegalaxy.org.au</em>, but with an interface dedicated to helping our {{ researchers }} researchers. Your history, jobs and data quota are shared with the Base server.
+        </p>
+
+        <div class="my-3">
+          Switch between sites quickly using the dropdown in Galaxy Australia's main navigation bar:
+          <img class="w-100 my-3 mx-auto" src="{% static 'home/img/subdomains/site-switcher.png' %}" alt="Switch site button">
+        </div>
+
+        <p><a class="ga-btn" href="https://usegalaxy.org.au" target="_blank">Take me back to Galaxy Australia</a></p>
+        <p><a class="ga-btn" href="/about">What is Galaxy Australia?</a></p>
+        <p><a class="ga-btn" href="/request/support">Galaxy Australia support</a></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

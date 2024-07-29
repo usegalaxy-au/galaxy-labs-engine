@@ -1,0 +1,13 @@
+# python==3.12
+django==5.*
+django-recaptcha==4.*
+pyyaml==6.*
+pydantic==2.*
+# psycopg2-binary>=2.9.9,<3.0
+gunicorn==20.*
+markdown2==2.*
+python-dotenv==0.*
+beautifulsoup4
+django_light
+requests==2.*
+requests_mock==1.*

@@ -1,0 +1,16 @@
+[Unit]
+Description=Gunicorn for Galaxy Labs Engine
+Requires=labs_engine.socket
+After=network.target
+
+[Service]
+User = www-data
+Group = www-data
+WorkingDirectory={{ project_root }}
+ExecStart=docker compose up --profile production
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

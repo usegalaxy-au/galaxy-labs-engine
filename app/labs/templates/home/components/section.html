@@ -1,0 +1,54 @@
+{% load markdown %}
+
+<section class="my-5" id="{{ section.id }}Section">
+  <h4 class="mb-3">{{ section.title }}</h4>
+
+  <div class="border rounded">
+    <ul class="nav nav-pills" id="{{ section.id }}Tabs" role="tablist">
+      {% for tab in section.tabs %}
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link{% if not forloop.counter0 %} active{% endif %}"
+          id="{{ section.id }}-{{ tab.id }}-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#{{ section.id }}-{{ tab.id }}-panel"
+          type="button"
+          role="tab"
+          aria-controls="home"
+          aria-selected="true"
+        >
+          {{ tab.title }}
+        </button>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <div class="tab-content" id="{{ section.id }}TabContent">
+      {% for tab in section.tabs %}
+      <div
+        class="tab-pane fade show{% if not forloop.counter0 %} active{% endif %}"
+        id="{{ section.id }}-{{ tab.id }}-panel"
+        role="tabpanel"
+        aria-labelledby="{{ section.id }}-{{ tab.id }}-tab"
+      >
+        <div class="container py-3">
+          {% if tab.heading_md %}
+          <p class="mb-3 mx-3">
+            {{ tab.heading_md|inline_markdown }}
+          </p>
+          {% endif %}
+
+          {% if tab.content.subsections %}
+            {% for subsection in tab.content.subsections %}
+            <p class="fw-bold my-3 mt-4 mx-3">{{ subsection.title }}</p>
+            {% include 'home/subdomains/components/accordion.html' with content=subsection.content tab_id=tab.id accordion_id=subsection.id %}
+            {% endfor %}
+          {% else %}
+            {% include 'home/subdomains/components/accordion.html' with content=tab.content tab_id=tab.id %}
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,15 @@
+{
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": false,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "python.formatting.provider": "none",
+    // "terminal.integrated.profiles.linux": {
+    //     "bash": {
+    //         "path": "bash",
+    //         "args": ["--init-file", "${workspaceFolder}/.vscode/.bashrc"]
+    //     }
+    // },
+    // "terminal.integrated.defaultProfile.linux": "bash"
+}

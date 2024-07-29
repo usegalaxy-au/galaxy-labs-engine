@@ -1,0 +1,77 @@
+---
+
+- name: update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: clone git repository for galaxy-labs-engine
+  ansible.builtin.git:
+    repo: https://github.com/neoformit/galaxy-labs-engine.git
+    dest: "{{ project_root }}"
+    clone: yes
+    force: yes
+
+- name: create app media directory
+  file:
+    path: "{{ django_root }}/app/media"
+    state: directory
+
+- name: create app logs directory
+  file:
+    path: "{{ django_root }}/app/logs"
+    state: directory
+
+- name: template webserver configuration
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop: "{{ labs_engine.templates }}"
+
+- name: copy webserver configuration
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop: "{{ labs_engine.files }}"
+
+- name: Ensure app superuser login
+  shell: |
+    docker run {{ labs_engine_docker_image }} \
+    "export DJANGO_SUPERUSER_PASSWORD={{ admin_user.password }} && \
+    python manage.py createsuperuser --noinput \
+      --email {{ admin_user.email }} \
+      --first_name {{ admin_user.first_name }} \
+      --last_name {{ admin_user.last_name }}"
+  ignore_errors: yes
+  when: admin_user and not skip_database_migration
+
+- name: update project ownership
+  ansible.builtin.file:
+    path: /home/ubuntu
+    state: directory
+    recurse: yes
+    owner: ubuntu
+    group: ubuntu
+
+- name: update media file ownership
+  file: dest={{ django_root }}/app/media owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
+
+- name: update log file ownership
+  file: dest={{ django_root }}/app/logs owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
+
+- name: make update.sh executable
+  file: dest=/home/ubuntu/update.sh mode=a+x
+
+- name: enable labs_engine socket
+  ansible.builtin.systemd:
+    name: labs_engine.socket
+    enabled: yes
+    state: started
+
+- name: enable labs_engine service
+  ansible.builtin.systemd:
+    name: labs_engine
+    enabled: yes
+    state: started
+
+- name: run update.sh
+  shell: /home/ubuntu/update.sh

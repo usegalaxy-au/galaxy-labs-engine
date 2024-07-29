@@ -1,0 +1,5 @@
+[webservers]
+labs.usegalaxy.org.au  ansible_connection=ssh  ansible_user=ubuntu
+
+[dev_webservers]
+dev-labs.gvl.org.au  ansible_connection=ssh  ansible_user=ubuntu

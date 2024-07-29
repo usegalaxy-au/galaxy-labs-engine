@@ -1,0 +1,213 @@
+<section class="my-5" id="introSection">
+  <p class="lead">
+    Welcome to the Galaxy Australia Media Site! This endpoint is used to generate
+    "exported" Galaxy Lab landing pages from remote content hosted on GitHub.
+    You can use this endpoint to rapidly create your own Galaxy Lab pages by
+    pointing to your own remote content.
+  </p>
+
+  <ul>
+    <li>See the content used to generate this documentation page
+      <a href="https://github.com/neoformit/galaxy-labs-engine/tree/dev/app/labs/content/docs" target="_blank">
+        here.
+      </a>
+    </li>
+    <li>
+      See a full working example of an exported Galaxy Lab page
+      <a href="/lab/export?content_root=http://{{ HOSTNAME }}/static/home/labs/genome/main.yml">here</a>.
+    </li>
+    <li>
+      See a minimal working example of a lab page
+      <a href="/lab/export?content_root=http://{{ HOSTNAME }}/static/home/labs/simple/main.yml">here</a>.
+    </li>
+  </ul>
+
+  <p>
+    This custom introductory text was pulled down from GitHub and rendered in real time.
+    Updates to
+    <a href="https://github.com/neoformit/galaxy-labs-engine/blob/dev/app/labs/content/docs/templates/intro.html" target="_blank">
+      this text
+    </a>
+    on the remote will be reflected on this page. Note that GitHub raw content is
+    cached for 300 seconds, so some updates may take a few minutes to appear on
+    this page.
+  </p>
+
+  <br>
+
+  <div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+            How does it work?
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <p>
+            <ul>
+              <li>
+                The root of your site's content should be a YAML file - see
+                <a href="https://github.com/neoformit/galaxy-labs-engine/tree/dev/app/labs/content/docs/main.yml" target="_blank">
+                  main.yml
+                </a>
+                for the content root of this page.
+              </li>
+              <li>
+                Request your page by pointing to your remote content with the <code>content_root</code> GET parameter
+                (take a look at URL for this page).
+                For example, we can explicitly request this page with:
+                <br>
+                <small>
+                  <a href="/lab/export?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/main.yml" target="_blank">
+                    http://{{ HOSTNAME }}/lab/export?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/main.yml
+                  </a>
+                </small>
+              </li>
+              <li>
+                The web server will fetch your content from GitHub (or anywhere on the internet) and render it into this page.
+              </li>
+              <li>
+                Note that <code>main.yml</code> points to other files (YAML, HTML, CSS and images), which are located in the same remote directory (e.g. on GitHub). You can template the entire page with these files!
+              </li>
+              <li>
+                The most useful part of this machinery is the <code>sections</code> content, which populates the tool/workflow sections below.
+                See
+                <a href="https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/data.yml" target="_blank">data.yml</a>
+                and
+                <a href="https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/assembly.yml" target="_blank">assembly.yml</a>
+                for examples of how to structure this content in YAML format.
+              </li>
+            </ul>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          How can I make one?
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <p>
+            <ol>
+              <li>
+                Copy our
+                <a href="https://github.com/neoformit/galaxy-labs-engine/tree/dev/app/labs/content/docs" target="_blank">
+                  example content
+                </a>
+                directory to your own github repository.
+              </li>
+              <li>
+                Build your Galaxy Lab's info, tools and workflows by editing the YAML and HTML files.
+                Custom CSS and JavaScript are possible too.
+              </li>
+              <li>
+                Request the site with the <code>content_root</code> GET parameter pointing to your remote content:
+                <br>
+                <small>
+                  <code>
+                    http://{{ HOSTNAME }}/lab/export?content_root=https://raw.githubusercontent.com/myusername/myrepo/path/to/content/main.yml
+                  </code>
+                </small>
+              </li>
+              <li>
+                If using GitHub to serve your content, make sure that your URL (as shown above) starts with
+                <code>https://raw.githubusercontent.com</code>! You can click on the "Raw" button on any file in
+                GitHub to get the correct URL.
+              </li>
+            </ol>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingThree">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          What are the technical limitations?
+        </button>
+      </h2>
+      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <p>
+            The webpage includes Bootstrap 5.1, Material icons, and
+            FontAwesome 5.15 and JQuery 3.6 so you can use any styling/functionality
+            defined there. This means you can have webforms, interactive elements,
+            and more. Check out the
+            <a
+              href="https://github.com/neoformit/galaxy-labs-engine/blob/dev/app/labs/content/genome/conclusion.yml"
+              target="_blank"
+            >
+              Genome Lab conclusion.html
+            </a>
+            for an example of more complex usage including modals and webforms. Modals
+            (popups) are a great way to hide additional information until the user
+            requests it.
+            <a
+              href="#"
+              data-bs-toggle="modal"
+              data-bs-target="#infoModal"
+            >Try one now!</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="infoModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Galaxy {{ site_name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          This is not a real Galaxy Lab page! It's a documentation page, to show
+          you how to create your own Galaxy Lab pages using the "Exported Labs"
+          feature of Galaxy Australia's
+          <a href="https://github.com/usegalaxy-au/galaxy-media-site" target="_blank">
+            Media Site</a>.
+        </p>
+
+        <div class="my-3">
+          Modals like this one are a great way to hide additional content, so
+          that your page doesn't get too cluttered.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  function addHoverInfo(id, relpath) {
+    const exportInfoButton = $(`
+      <a
+        class="export-info-button"
+        href="https://github.com/neoformit/galaxy-labs-engine/blob/dev/app/labs/content/docs/${relpath}"
+        target="_blank"
+      >
+        <i class="fab fa-github"></i>
+        View on GitHub
+      </a>
+    `);
+    $(`#${id}`).addClass('export-info-hover');
+    $(`#${id}`).append(exportInfoButton);
+  }
+  $(document).ready(function() {
+    addHoverInfo('headerSection', 'main.yml');
+    addHoverInfo('introSection', 'templates/intro.html');
+    addHoverInfo('section_1Section', 'section_1.yml');
+    addHoverInfo('section_2Section', 'section_2.yml');
+    addHoverInfo('footer', 'templates/footer.html');
+  });
+</script>
