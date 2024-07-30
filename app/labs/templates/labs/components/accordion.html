@@ -26,7 +26,7 @@
           <div class="col">
             {{ item.description_md|markdown }}
             {% if item.inputs %}
-            {% include 'home/subdomains/components/inputs.html' with inputs=item.inputs %}
+            {% include 'labs//components/inputs.html' with inputs=item.inputs %}
             {% endif %}
           </div>
 

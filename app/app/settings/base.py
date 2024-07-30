@@ -43,7 +43,7 @@ STATIC_ROOT = BASE_DIR / 'app/static'
 MEDIA_ROOT = BASE_DIR / 'app/media'
 LOG_ROOT = ensure_dir(BASE_DIR / 'app/logs')
 DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
-    f'http://{HOSTNAME}/static/home/labs/docs/main.yml'
+    f'http://{HOSTNAME}/static/labs/content/docs/main.yml'
 )
 
 # Hostnames

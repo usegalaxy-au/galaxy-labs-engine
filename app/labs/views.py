@@ -27,7 +27,7 @@ def export_lab(request):
     if response := LabCache.get(request):
         return response
 
-    template = 'home/subdomains/exported.html'
+    template = 'labs//exported.html'
 
     try:
         if request.GET.get('content_root'):
@@ -38,7 +38,7 @@ def export_lab(request):
         context['HOSTNAME'] = settings.HOSTNAME
         context.validate()
     except SubsiteBuildError as exc:
-        return render(request, 'home/subdomains/export-error.html', {
+        return render(request, 'labs//export-error.html', {
             'exc': exc,
         }, status=400)
 

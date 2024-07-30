@@ -14,8 +14,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="{% static 'home/css/index.css' %}">
-<link rel="stylesheet" href="{% static 'home/css/subdomains/main.css' %}">
+<link rel="stylesheet" href="{% static 'labs/css/index.css' %}">
+<link rel="stylesheet" href="{% static 'labs/css/subdomains/main.css' %}">
 
 <style>
   {{ snippets.custom_css|default:"" }}
@@ -29,7 +29,7 @@
 
 <main>
 
-  {% include 'home/subdomains/components/gtn-modal.html' %}
+  {% include 'labs//components/gtn-modal.html' %}
 
   <section id="headerSection" class="header-subdomain australia d-flex align-items-center h-100">
     {% if snippets.header_logo %}
@@ -43,7 +43,7 @@
   {% endif %}
 
   {% for section in sections %}
-    {% include 'home/subdomains/components/section.html' with section=section %}
+    {% include 'labs//components/section.html' with section=section %}
   {% endfor %}
 
   {% if snippets.conclusion_md %}
@@ -51,14 +51,14 @@
   {% endif %}
 
   {% if contributors %}
-  {% include 'home/subdomains/components/contributors.html' %}
+  {% include 'labs//components/contributors.html' %}
   {% endif %}
 
 </main>
 
 
 {% if feedback_email %}
-{% include 'home/subdomains/components/feedback-modal.html' %}
+{% include 'labs//components/feedback-modal.html' %}
 {% endif %}
 
 

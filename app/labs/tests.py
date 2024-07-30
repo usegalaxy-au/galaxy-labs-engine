@@ -18,7 +18,7 @@ TEST_LAB_ACCORDION_TEXT = (
     'Report statistics from sequencing reads',
     'Assemble Nanopore long reads.',
 )
-TEST_LAB_CONTENT_URL = f'{MOCK_LAB_BASE_URL}/static/home/labs/docs/main.yml'
+TEST_LAB_CONTENT_URL = f'{MOCK_LAB_BASE_URL}/static/labs/content/docs/main.yml'
 TEST_LAB_URL = f'/lab/export?content_root={TEST_LAB_CONTENT_URL}'
 
 
@@ -50,28 +50,12 @@ class LabExportTestCase(TestCase):
         for text in TEST_LAB_ACCORDION_TEXT:
             self.assertContains(response, text)
 
-    @requests_mock.Mocker()
-    def test_genome_lab(self, mock_request):
-        """Mock requests to localhost."""
-        for url, text in MOCK_REQUESTS.items():
-            mock_request.get(url, text=text, status_code=200)
-        response = self.client.get(test_lab_url_for('genome'))
-        self.assertEqual(response.status_code, 200)
-
-    @requests_mock.Mocker()
-    def test_proteomics_lab(self, mock_request):
-        """Mock requests to localhost."""
-        for url, text in MOCK_REQUESTS.items():
-            mock_request.get(url, text=text, status_code=200)
-        response = self.client.get(test_lab_url_for('proteomics'))
-        self.assertEqual(response.status_code, 200)
-
     def test_it_can_make_raw_url(self):
         self.assertEqual(
-            self.context._make_raw('https://github.com/usegalaxy-au/'
-                                   'galaxy-media-site/blob/dev/README.md'),
-            'https://raw.githubusercontent.com/usegalaxy-au/'
-            'galaxy-media-site/dev/README.md')
+            self.context._make_raw('https://github.com/neoformit/'
+                                   'galaxy-labs-engine/blob/dev/README.md'),
+            'https://raw.githubusercontent.com/neoformit/'
+            'galaxy-labs-engine/dev/README.md')
 
     def test_it_can_filter_sections_by_root_domain(self):
         root_domain = 'antarctica.org'

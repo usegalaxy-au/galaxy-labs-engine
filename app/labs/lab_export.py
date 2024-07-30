@@ -61,7 +61,7 @@ class ExportSubsiteContext(dict):
         self.parent_url = content_root.rsplit('/', 1)[0] + '/'
         self.update({
             'export': True,
-            'extend_template': 'home/header-export.html',
+            'extend_template': 'labs/header-export.html',
         })
         self._fetch_yaml_context()
         self._fetch_sections()

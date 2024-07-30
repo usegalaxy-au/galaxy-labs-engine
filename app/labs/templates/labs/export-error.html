@@ -1,4 +1,4 @@
-{% extends 'home/header.html' %}
+{% extends 'labs/header.html' %}
 
 {% block head %}
 {% endblock %}
@@ -8,7 +8,7 @@
 <main>
 
   <h1>Galaxy Lab build error</h1>
-  
+
   {% if exc.title %}
   <p>{{ exc.title }}</p>
   {% endif %}
@@ -18,7 +18,7 @@
     Source URL: <a href="{{ exc.url }}" target="_blank">{{ exc.url }}</a>
   </p>
   {% endif %}
-  
+
   <div>
     {% if not exc.errors %}
     <p class="lead">Error message:</p>
