@@ -364,7 +364,7 @@ def fetch_names(usernames):
             users.append(user_data)
     users.sort(key=lambda x:
                usernames.index(x.get('login'))
-               if x and x.get('avatar_url')
+               if x and x.get('avatar_url') and x.get('login') in usernames
                else 9999)
 
     return users

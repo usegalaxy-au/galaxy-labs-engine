@@ -32,15 +32,19 @@ class LabExportTestCase(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, mock_request):
-        for url, text in MOCK_REQUESTS.items():
-            mock_request.get(url, text=text, status_code=200)
+        for r in MOCK_REQUESTS:
+            mock_request.get(r['url_pattern'],
+                             text=r['response'],
+                             status_code=r.get('status_code', 200))
         self.context = ExportSubsiteContext(TEST_LAB_CONTENT_URL)
 
     @requests_mock.Mocker()
     def test_exported_lab_docs(self, mock_request):
         """Mock requests to localhost."""
-        for url, text in MOCK_REQUESTS.items():
-            mock_request.get(url, text=text, status_code=200)
+        for r in MOCK_REQUESTS:
+            mock_request.get(r['url_pattern'],
+                             text=r['response'],
+                             status_code=r.get('status_code', 200))
         response = self.client.get(TEST_LAB_URL)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, TEST_LAB_NAME)
@@ -58,13 +62,13 @@ class LabExportTestCase(TestCase):
             'galaxy-labs-engine/dev/README.md')
 
     def test_it_can_filter_sections_by_root_domain(self):
-        root_domain = 'antarctica.org'
-        self.context['root_domain'] = root_domain
+        hostname = 'antarctica.org'
+        self.context['root_domain'] = hostname
         self.context['sections'] = [
             {'id': 'section1'},
             {
                 'id': 'section2',
-                'exclude_from': [root_domain],
+                'exclude_from': [hostname],
             },
             {
                 'id': 'section3',
@@ -74,7 +78,7 @@ class LabExportTestCase(TestCase):
                     },
                     {
                         'id': 'item2',
-                        'exclude_from': [root_domain],
+                        'exclude_from': [hostname],
                     },
                     {
                         'id': 'item3',
@@ -82,7 +86,7 @@ class LabExportTestCase(TestCase):
                     },
                     {
                         'id': 'item4',
-                        'exclude_from': [root_domain, 'other.domain.com'],
+                        'exclude_from': [hostname, 'other.domain.com'],
                     },
                 ]
             },
