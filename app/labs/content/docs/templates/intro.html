@@ -1,6 +1,6 @@
 <section class="my-5" id="introSection">
   <p class="lead">
-    Welcome to the Galaxy Australia Media Site! This endpoint is used to generate
+    Welcome to the Galaxy Labs Engine! This endpoint is used to generate
     "exported" Galaxy Lab landing pages from remote content hosted on GitHub.
     You can use this endpoint to rapidly create your own Galaxy Lab pages by
     pointing to your own remote content.
@@ -14,7 +14,7 @@
     </li>
     <li>
       See a full working example of an exported Galaxy Lab page
-      <a href="/lab/export?content_root=http://{{ HOSTNAME }}/static/labs/content/genome/main.yml">here</a>.
+      <a href="/lab/export?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-media-site/dev/webapp/home/labs/genome/base.yml">here</a>.
     </li>
     <li>
       See a minimal working example of a lab page
@@ -49,7 +49,7 @@
               <li>
                 The root of your site's content should be a YAML file - see
                 <a href="https://github.com/neoformit/galaxy-labs-engine/tree/dev/app/labs/content/docs/base.yml" target="_blank">
-                  main.yml
+                  base.yml
                 </a>
                 for the content root of this page.
               </li>
@@ -59,8 +59,8 @@
                 For example, we can explicitly request this page with:
                 <br>
                 <small>
-                  <a href="/lab/export?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/base.yml" target="_blank">
-                    http://{{ HOSTNAME }}/lab/export?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/base.yml
+                  <a href="/lab/export?content_root={{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/base.yml" target="_blank">
+                    http://{{ HOSTNAME }}/lab/export?content_root={{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/base.yml
                   </a>
                 </small>
               </li>
@@ -68,14 +68,14 @@
                 The web server will fetch your content from GitHub (or anywhere on the internet) and render it into this page.
               </li>
               <li>
-                Note that <code>main.yml</code> points to other files (YAML, HTML, CSS and images), which are located in the same remote directory (e.g. on GitHub). You can template the entire page with these files!
+                Note that <code>base.yml</code> points to other files (YAML, HTML, CSS and images), which are located in the same remote directory (e.g. on GitHub). You can template the entire page with these files!
               </li>
               <li>
                 The most useful part of this machinery is the <code>sections</code> content, which populates the tool/workflow sections below.
                 See
-                <a href="https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/data.yml" target="_blank">data.yml</a>
+                <a href="{{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/data.yml" target="_blank">data.yml</a>
                 and
-                <a href="https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/assembly.yml" target="_blank">assembly.yml</a>
+                <a href="{{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/assembly.yml" target="_blank">assembly.yml</a>
                 for examples of how to structure this content in YAML format.
               </li>
             </ul>
@@ -110,7 +110,7 @@
                 <br>
                 <small>
                   <code>
-                    http://{{ HOSTNAME }}/lab/export?content_root=https://raw.githubusercontent.com/myusername/myrepo/path/to/content/main.yml
+                    http://{{ HOSTNAME }}/lab/export?content_root=https://raw.githubusercontent.com/myusername/myrepo/path/to/content/base.yml
                   </code>
                 </small>
               </li>
@@ -203,7 +203,7 @@
     $(`#${id}`).append(exportInfoButton);
   }
   $(document).ready(function() {
-    addHoverInfo('headerSection', 'main.yml');
+    addHoverInfo('headerSection', 'base.yml');
     addHoverInfo('introSection', 'templates/intro.html');
     addHoverInfo('section_1Section', 'section_1.yml');
     addHoverInfo('section_2Section', 'section_2.yml');

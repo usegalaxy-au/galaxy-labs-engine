@@ -43,8 +43,10 @@ STATIC_ROOT = BASE_DIR / 'app/static'
 MEDIA_ROOT = BASE_DIR / 'app/media'
 LOG_ROOT = ensure_dir(BASE_DIR / 'app/logs')
 DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
-    f'http://{HOSTNAME}/static/labs/content/docs/base.yml'
-)
+    f'http://{HOSTNAME}/static/labs/content/docs/base.yml')
+GITHUB_CONTENT_ROOT_BASE_URL = (
+    "https://raw.githubusercontent.com/neoformit"
+    "/galaxy-labs-engine/dev/app/labs/content")
 
 # Hostnames
 ALLOWED_HOSTS = [
