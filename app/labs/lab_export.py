@@ -4,7 +4,7 @@ Example with local YAML:
 http://127.0.0.1:8000/landing/export?content_root=http://127.0.0.1:8000/static/labs/content/genome/main.yml
 
 Example URL with remote YAML:
-http://127.0.0.1:8000/landing/export?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/... base.yml
+http://127.0.0.1:8000/landing/export?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/... base.yml  # noqa
 
 """
 
@@ -59,10 +59,6 @@ class ExportSubsiteContext(dict):
         self['snippets'] = {}
         self.content_root = content_root
         self.parent_url = content_root.rsplit('/', 1)[0] + '/'
-        self.update({
-            'export': True,
-            'extend_template': 'labs/header-export.html',
-        })
         self._fetch_yaml_context()
         self._fetch_sections()
         self._fetch_contributors()

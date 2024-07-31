@@ -1,4 +1,4 @@
-{% extends extend_template %}
+{% extends 'labs/header.html' %}
 {% load markdown %}
 
 {% comment %}
@@ -14,12 +14,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="{% static 'labs/css/index.css' %}">
-<link rel="stylesheet" href="{% static 'labs/css/subdomains/main.css' %}">
+<link rel="stylesheet" href="{% static 'labs/css/labs.css' %}">
 
 <style>
   {{ snippets.custom_css|default:"" }}
-
 </style>
 
 {% endblock %}
