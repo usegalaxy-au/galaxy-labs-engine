@@ -1,7 +1,7 @@
 import requests_mock
 from pathlib import Path
 
-from .lab_export import ExportSubsiteContext
+from .lab_export import ExportLabContext
 from .test.data import (
     MOCK_REQUESTS,
     MOCK_LAB_BASE_URL,
@@ -36,7 +36,7 @@ class LabExportTestCase(TestCase):
             mock_request.get(r['url_pattern'],
                              text=r['response'],
                              status_code=r.get('status_code', 200))
-        self.context = ExportSubsiteContext(TEST_LAB_CONTENT_URL)
+        self.context = ExportLabContext(TEST_LAB_CONTENT_URL)
 
     @requests_mock.Mocker()
     def test_exported_lab_docs(self, mock_request):

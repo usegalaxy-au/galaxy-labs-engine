@@ -19,7 +19,7 @@ from markdown2 import Markdown
 from pydantic import ValidationError
 
 from types import SimpleNamespace
-from utils.exceptions import SubsiteBuildError
+from utils.exceptions import LabBuildError
 from .lab_schema import LabSchema, LabSectionSchema
 from .lab_cache import WebCache
 
@@ -35,7 +35,7 @@ CONTENT_TYPES = SimpleNamespace(
 )
 
 
-class ExportSubsiteContext(dict):
+class ExportLabContext(dict):
     """Build and validate render context for exported lab landing page.
 
     These page are intended to be displayed externally to the host Galaxy
@@ -79,7 +79,7 @@ class ExportSubsiteContext(dict):
             try:
                 LabSectionSchema(**section)
             except ValidationError as e:
-                raise SubsiteBuildError(
+                raise LabBuildError(
                     e,
                     section_id=section["id"],
                     source='YAML',
@@ -97,11 +97,11 @@ class ExportSubsiteContext(dict):
         try:
             res = requests.get(url)
         except requests.exceptions.RequestException as exc:
-            raise SubsiteBuildError(exc, url=url)
+            raise LabBuildError(exc, url=url)
         if res.status_code >= 300:
             if ignore_404 and res.status_code == 404:
                 return
-            raise SubsiteBuildError(
+            raise LabBuildError(
                 f'HTTP {res.status_code} fetching file.',
                 url=url)
         if expected_type != CONTENT_TYPES.WEBPAGE:
@@ -126,7 +126,7 @@ class ExportSubsiteContext(dict):
 
         if looks_like_a_webpage(response):
             expected = expected_type or 'a raw file'
-            raise SubsiteBuildError(
+            raise LabBuildError(
                 (
                     "Unexpected HTML content in file.\n"
                     'The URL provided returned a webpage (HTML) when'
@@ -144,7 +144,7 @@ class ExportSubsiteContext(dict):
             '/lab/export' in url
             and url.split('/')[1, 2] == ['lab', 'export']
         ):
-            raise SubsiteBuildError(
+            raise LabBuildError(
                 "URL cannot contain '/lab/export'.",
                 url=url,
                 source=expected_type,
@@ -181,7 +181,7 @@ class ExportSubsiteContext(dict):
         try:
             LabSchema(**context)
         except ValidationError as exc:
-            raise SubsiteBuildError(exc, url=self.content_root, source='YAML')
+            raise LabBuildError(exc, url=self.content_root, source='YAML')
 
         self.update(context)
         self._fetch_snippets()
@@ -245,9 +245,9 @@ class ExportSubsiteContext(dict):
         try:
             data = yaml.safe_load(yaml_str)
         except yaml.YAMLError as exc:
-            raise SubsiteBuildError(exc, url=url, source='YAML')
+            raise LabBuildError(exc, url=url, source='YAML')
         if isinstance(data, str):
-            raise SubsiteBuildError(
+            raise LabBuildError(
                 'YAML file must contain a dictionary or list.'
                 f' Got a string instead:\n{data}',
                 url=url,
@@ -322,7 +322,7 @@ class ExportSubsiteContext(dict):
                 warnings.simplefilter('ignore', MarkupResemblesLocatorWarning)
                 BeautifulSoup(body, 'html.parser')
         except Exception as exc:
-            raise SubsiteBuildError(exc, source='HTML')
+            raise LabBuildError(exc, source='HTML')
 
 
 def get_github_user(username):
