@@ -36,7 +36,7 @@ CONTENT_TYPES = SimpleNamespace(
 
 
 class ExportSubsiteContext(dict):
-    """Build and validate render context for exported subsite landing page.
+    """Build and validate render context for exported lab landing page.
 
     These page are intended to be displayed externally to the host Galaxy
     (i.e. on a different Galaxy server).
