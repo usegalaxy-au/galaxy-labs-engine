@@ -31,4 +31,11 @@ To get a webpage like
 
 ## Building a lab page
 
-http://127.0.0.1:8000/lab/export?content_root=${GITPOD_WORKSPACE_URL}/static/dev-lab/simple/base.yml
+Open a terminal (CTRL+`) and run the following to print the external URL for your test lab:
+
+```sh
+MY_LAB_FOLDER="test-lab"
+echo http://127.0.0.1:8000/lab/export?content_root=${GITPOD_WORKSPACE_URL}/static/dev-lab/${MY_LAB_FOLDER}/base.yml
+```
+
+Now add/edit your content in the `test-lab` folder, refresh the page and see your content appear on the web page.
