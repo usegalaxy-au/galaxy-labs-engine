@@ -6,35 +6,35 @@
     "configurations": [
         {
           "name": "Django runserver",
-          "type": "python",
+          "type": "debugpy",
           "purpose": ["debug-test"],
           "request": "launch",
           "program": "${workspaceFolder}/app/manage.py",
           "cwd": "${workspaceFolder}/app",
           "args": ["runserver"],
           "env": {
-            "DJANGO_SETTINGS_MODULE": "app.settings.base",
+            "DJANGO_SETTINGS_MODULE": "app.settings.dev",
           },
           "django": true,
           "justMyCode": true
         },
         {
           "name": "Django shell",
-          "type": "python",
+          "type": "debugpy",
           "purpose": ["debug-test"],
           "request": "launch",
           "program": "${workspaceFolder}/app/manage.py",
           "cwd": "${workspaceFolder}/app",
           "args": ["shell"],
           "env": {
-            "DJANGO_SETTINGS_MODULE": "app.settings.base",
+            "DJANGO_SETTINGS_MODULE": "app.settings.dev",
           },
           "django": true,
           "justMyCode": true
         },
         {
           "name": "Django test",
-          "type": "python",
+          "type": "debugpy",
           "purpose": ["debug-test"],
           "request": "launch",
           "program": "${workspaceFolder}/app/manage.py",
