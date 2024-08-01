@@ -27,3 +27,8 @@ https://labs.usegalaxy.org.au/export/?content_root=https://raw.githubusercontent
 
 To get a webpage like
 [this](https://labs.usegalaxy.org.au/export/?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/simple/main.yml).
+
+
+## Building a lab page
+
+http://127.0.0.1:8000/lab/export?content_root=${GITPOD_WORKSPACE_URL}/static/dev-lab/simple/base.yml
