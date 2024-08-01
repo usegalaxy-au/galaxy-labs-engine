@@ -1,4 +1,3 @@
-## Contributors
+And that's the end of the example Galaxy Lab!
 
-- [John Doe](https://github.com/johndoe)
-- [Jane Doe](https://github.com/janedoe)
+Visit the [docs](/lab/export) to learn how to build your own.
