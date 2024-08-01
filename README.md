@@ -1,5 +1,19 @@
 # Galaxy Labs Engine
 
+
+## Building a lab page with GitPod
+
+Open a terminal (CTRL+`) and you'll see the external URL for your test lab:
+
+```sh
+echo http://127.0.0.1:8000/lab/export?content_root=${GITPOD_WORKSPACE_URL}/static/dev-lab/base.yml
+```
+
+Now add/edit your content in the `test-lab` folder, refresh the page and see your content appear on the web page!
+
+
+## About the Labs Engine
+
 This site presents a public rending engine for creating Galaxy Lab landing
 pages (known as the 'Welcome page' in Galaxy terms) from content hosted on
 GitHub.
@@ -23,19 +37,7 @@ Create a lab content directory like
 
 And then request your page anywhere like this:
 
-https://labs.usegalaxy.org.au/export/?content_root=https://raw.githubusercontent.com/my-username/my-labs-repo/my-lab/base.yml
+`https://${LABS_HOSTNAME}/export/?content_root=https://raw.githubusercontent.com/my-username/my-labs-repo/my-lab/base.yml`
 
 To get a webpage like
-[this](https://labs.usegalaxy.org.au/export/?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/simple/main.yml).
-
-
-## Building a lab page
-
-Open a terminal (CTRL+`) and run the following to print the external URL for your test lab:
-
-```sh
-MY_LAB_FOLDER="test-lab"
-echo http://127.0.0.1:8000/lab/export?content_root=${GITPOD_WORKSPACE_URL}/static/dev-lab/${MY_LAB_FOLDER}/base.yml
-```
-
-Now add/edit your content in the `test-lab` folder, refresh the page and see your content appear on the web page.
+[this](https://{LABS_HOSTNAME}/export/?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/simple/main.yml).
