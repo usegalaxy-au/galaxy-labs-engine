@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Update Galaxy Media Site
+# Update Galaxy Labs Engine
 
 set -e
 
@@ -20,8 +20,8 @@ docker compose run labs_engine \
     python manage.py migrate
 
 # Update file ownership to allow www-data to write logs/media
-sudo chown -R www-data:www-data app/logs
-sudo chown -R www-data:www-data app/media
+sudo chown -R www-data:www-data app/app/logs
+sudo chown -R www-data:www-data app/app/media
 
 sudo service labs_engine restart
 
