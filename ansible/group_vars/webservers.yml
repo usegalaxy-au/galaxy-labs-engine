@@ -6,6 +6,9 @@
 # The domain name that you've registered for the target webserver
 domain_name: "{{ inventory_hostname }}"
 
+docker_install_compose: false
+docker_compose_version: "2.29.2"
+
 # If you don't want SSL certs, just flip this:
 certbot_ssl: true
 certbot_renew_email: "{{ vault_admin_email }}"
@@ -18,6 +21,8 @@ gunicorn:
 # Labs Engine configuration
 # -----------------------------------------------------------------------------
 
+django_secret_key: "{{ vault_django_secret_key }}"
+
 # For manual manipulation of the database
 skip_database_migration: false
 
@@ -25,14 +30,21 @@ skip_database_migration: false
 project_root: /srv/labs-engine
 
 # This is where server conf files (nginx/gunicorn) will be created
-server_root: /srv/serve
+server_root: "{{ project_root }}/serve"
+
+create_directories:
+  - "{{ server_root }}"
+  - "{{ project_root }}"
+  - "{{ project_root }}/app"
+  - "{{ project_root }}/app/media"
+  - "{{ project_root }}/app/logs"
 
 # Admin user login for the web admin
 admin_user:
   first_name: admin
   last_name: admin
-  email: "{{ admin_email }}"
-  password: "{{ admin_password }}"
+  email: "{{ vault_admin_email }}"
+  password: "{{ vault_admin_password }}"
 
 smtp:
   hostname: mail.smtp2go.com
@@ -47,3 +59,5 @@ slack:
   api_key: "{{ vault_slack_api_key }}"
   channel_id: "{{ vault_slack_channel_id }}"
   mention_user_id: "{{ vault_slack_mention_user_id }}"
+
+github_api_token: "{{ vault_github_api_token }}"
