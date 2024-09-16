@@ -13,12 +13,12 @@ services:
     volumes:
       - type: bind
         source: .
-        target: /app
+        target: /srv/galaxy-labs-engine
     environment:
       - DJANGO_SETTINGS_MODULE=app.settings.dev
     command: python manage.py runserver 0.0.0.0:8000
     restart: always
-    working_dir: /app/app
+    working_dir: /srv/galaxy-labs-engine/app
 
   labs-engine-debug:
     profiles:
@@ -34,7 +34,7 @@ services:
     volumes:
       - type: bind
         source: .
-        target: /app
+        target: /srv/galaxy-labs-engine
     environment:
       - DJANGO_SETTINGS_MODULE=app.settings.dev
     command: >
@@ -43,7 +43,7 @@ services:
         --wait-for-client
         manage.py runserver 0.0.0.0:8000
     restart: always
-    working_dir: /app/app
+    working_dir: /srv/galaxy-labs-engine/app
 
   labs-engine:
     profiles:
@@ -56,8 +56,8 @@ services:
       - "8000:8000"
     volumes:
       - type: bind
-        source: .
-        target: /app
+        source: /srv
+        target: /srv
     environment:
       - DJANGO_SETTINGS_MODULE=app.settings.prod
     command: >
@@ -67,10 +67,10 @@ services:
         --error-logfile='-'
         --capture-output
         --log-level info
-        -c /app/server/gunicorn.py
+        -c /srv/server/gunicorn.py
         app.wsgi:application
     restart: always
-    working_dir: /app/app
+    working_dir: /srv/galaxy-labs-engine/app
 
   nginx:
     profiles:
