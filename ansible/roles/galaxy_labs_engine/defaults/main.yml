@@ -1,6 +1,8 @@
 ---
 project_root: /home/ubuntu/labs-engine
 server_root: /home/ubuntu/server
+django_root: "{{ project_root }}/app"
+
 labs_engine_docker_image: neoformit/galaxy-labs-engine:latest
 
 labs_engine:

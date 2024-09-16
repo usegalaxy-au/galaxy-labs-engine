@@ -11,15 +11,11 @@
     clone: yes
     force: yes
 
-- name: create app media directory
+- name: create directories
   file:
-    path: "{{ django_root }}/app/media"
+    path: "{{ item }}"
     state: directory
-
-- name: create app logs directory
-  file:
-    path: "{{ django_root }}/app/logs"
-    state: directory
+  loop: "{{ create_directories }}"
 
 - name: template webserver configuration
   template:
@@ -33,6 +29,11 @@
     dest: "{{ item.dest }}"
   loop: "{{ labs_engine.files }}"
 
+- name: Create django_cache table with 'manage.py createcachetable'
+  shell: |
+    docker run {{ labs_engine_docker_image }} \
+    python manage.py createcachetable
+
 - name: Ensure app superuser login
   shell: |
     docker run {{ labs_engine_docker_image }} \
@@ -42,7 +43,7 @@
       --first_name {{ admin_user.first_name }} \
       --last_name {{ admin_user.last_name }}"
   ignore_errors: yes
-  when: admin_user and not skip_database_migration
+  when: admin_user.email and not skip_database_migration
 
 - name: update project ownership
   ansible.builtin.file:
@@ -58,8 +59,12 @@
 - name: update log file ownership
   file: dest={{ django_root }}/app/logs owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
 
-- name: make update.sh executable
-  file: dest=/home/ubuntu/update.sh mode=a+x
+- name: make update.sh executable to root
+  ansible.builtin.file:
+    path: /home/ubuntu/update.sh
+    owner: root
+    group: root
+    mode: '0744'
 
 - name: enable labs_engine socket
   ansible.builtin.systemd:

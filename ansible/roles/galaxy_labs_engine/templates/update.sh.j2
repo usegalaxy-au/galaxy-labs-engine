@@ -4,24 +4,18 @@
 
 set -e
 
-# Make sure this isn't being run as root
-if [[ $EUID = 0 ]]; then
-    echo "Switching to ubuntu user"
-    sudo su ubuntu
-fi
-
-cd galaxy-labs-engine
+cd {{ project_root }}
 git pull
 
-docker compose run labs_engine \
+docker compose --profile production run --rm labs-engine \
     python manage.py collectstatic --noinput
 
-docker compose run labs_engine \
+docker compose --profile production run --rm labs-engine \
     python manage.py migrate
 
 # Update file ownership to allow www-data to write logs/media
-sudo chown -R www-data:www-data app/app/logs
-sudo chown -R www-data:www-data app/app/media
+sudo chown -R www-data:www-data {{ django_root }}/app/app/logs
+sudo chown -R www-data:www-data {{ django_root }}/app/app/media
 
 sudo service labs_engine restart
 
