@@ -30,18 +30,22 @@
   loop: "{{ labs_engine.files }}"
 
 - name: Create django_cache table with 'manage.py createcachetable'
-  shell: |
-    docker run {{ labs_engine_docker_image }} \
+  shell: >
+    docker compose --profile prod run --remove-orphans labs-engine
     python manage.py createcachetable
+  args:
+    chdir: "{{ project_root }}"
 
 - name: Ensure app superuser login
-  shell: |
-    docker run {{ labs_engine_docker_image }} \
-    "export DJANGO_SUPERUSER_PASSWORD={{ admin_user.password }} && \
-    python manage.py createsuperuser --noinput \
-      --email {{ admin_user.email }} \
-      --first_name {{ admin_user.first_name }} \
+  shell: >
+    docker compose --profile prod run --remove-orphans labs-engine
+    "export DJANGO_SUPERUSER_PASSWORD={{ admin_user.password }}
+    && python manage.py createsuperuser --noinput
+      --email {{ admin_user.email }}
+      --first_name {{ admin_user.first_name }}
       --last_name {{ admin_user.last_name }}"
+  args:
+    chdir: "{{ project_root }}"
   ignore_errors: yes
   when: admin_user.email and not skip_database_migration
 

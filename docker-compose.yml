@@ -2,7 +2,7 @@ services:
   labs-engine-dev:
     profiles:
       - dev
-    image: neoformit/labs-engine:latest
+    image: neoformit/galaxy-labs-engine:latest
     build: .
     container_name: labs-engine-dev-runserver
     networks:
@@ -13,17 +13,17 @@ services:
     volumes:
       - type: bind
         source: .
-        target: /srv/galaxy-labs-engine
+        target: /srv/labs-engine
     environment:
       - DJANGO_SETTINGS_MODULE=app.settings.dev
     command: python manage.py runserver 0.0.0.0:8000
     restart: always
-    working_dir: /srv/galaxy-labs-engine/app
+    working_dir: /srv/labs-engine/app
 
   labs-engine-debug:
     profiles:
       - debug
-    image: neoformit/labs-engine:latest
+    image: neoformit/galaxy-labs-engine:latest
     build: .
     container_name: labs-engine-debug
     networks:
@@ -34,7 +34,7 @@ services:
     volumes:
       - type: bind
         source: .
-        target: /srv/galaxy-labs-engine
+        target: /srv/labs-engine
     environment:
       - DJANGO_SETTINGS_MODULE=app.settings.dev
     command: >
@@ -43,12 +43,12 @@ services:
         --wait-for-client
         manage.py runserver 0.0.0.0:8000
     restart: always
-    working_dir: /srv/galaxy-labs-engine/app
+    working_dir: /srv/labs-engine/app
 
   labs-engine:
     profiles:
       - prod
-    image: neoformit/labs-engine:latest
+    image: neoformit/galaxy-labs-engine:latest
     container_name: labs-engine
     networks:
       - labs-engine-network
@@ -70,7 +70,7 @@ services:
         -c /srv/server/gunicorn.py
         app.wsgi:application
     restart: always
-    working_dir: /srv/galaxy-labs-engine/app
+    working_dir: /srv/labs-engine/app
 
   nginx:
     profiles:
