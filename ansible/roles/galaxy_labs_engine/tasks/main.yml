@@ -16,18 +16,21 @@
     path: "{{ item }}"
     state: directory
   loop: "{{ create_directories }}"
+  tags: config
 
 - name: template webserver configuration
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
   loop: "{{ labs_engine.templates }}"
+  tags: config
 
 - name: copy webserver configuration
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
   loop: "{{ labs_engine.files }}"
+  tags: config
 
 - name: Create django_cache table with 'manage.py createcachetable'
   shell: >
@@ -35,6 +38,7 @@
     python manage.py createcachetable
   args:
     chdir: "{{ project_root }}"
+  tags: django
 
 - name: Ensure app superuser login
   shell: >
@@ -48,6 +52,7 @@
     chdir: "{{ project_root }}"
   ignore_errors: yes
   when: admin_user.email and not skip_database_migration
+  tags: django
 
 - name: update project ownership
   ansible.builtin.file:
@@ -56,12 +61,15 @@
     recurse: yes
     owner: ubuntu
     group: ubuntu
+  tags: permissions
 
 - name: update media file ownership
   file: dest={{ django_root }}/app/media owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
+  tags: permissions
 
 - name: update log file ownership
   file: dest={{ django_root }}/app/logs owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
+  tags: permissions
 
 - name: make update.sh executable to root
   ansible.builtin.file:
@@ -69,6 +77,7 @@
     owner: root
     group: root
     mode: '0744'
+  tags: permissions
 
 - name: enable labs_engine socket
   ansible.builtin.systemd:
@@ -84,3 +93,6 @@
 
 - name: run update.sh
   shell: /home/ubuntu/update.sh
+  tags:
+    - django
+    - update
