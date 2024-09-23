@@ -19,12 +19,7 @@ TEST_LAB_ACCORDION_TEXT = (
     'Assemble Nanopore long reads.',
 )
 TEST_LAB_CONTENT_URL = f'{MOCK_LAB_BASE_URL}/static/labs/content/docs/base.yml'
-TEST_LAB_URL = f'/lab/export?content_root={TEST_LAB_CONTENT_URL}'
-
-
-def test_lab_url_for(lab):
-    """Return the URL for the given lab name."""
-    return TEST_LAB_URL.replace('docs', lab)
+TEST_LAB_URL = f'/?content_root={TEST_LAB_CONTENT_URL}'
 
 
 class LabExportTestCase(TestCase):
