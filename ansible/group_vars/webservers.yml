@@ -34,10 +34,8 @@ server_root: "{{ project_root }}/serve"
 
 create_directories:
   - "{{ server_root }}"
-  - "{{ project_root }}"
-  - "{{ project_root }}/app"
-  - "{{ project_root }}/app/media"
-  - "{{ project_root }}/app/logs"
+  - "{{ django_root }}/app/media"
+  - "{{ django_root }}/app/logs"
 
 # Admin user login for the web admin
 admin_user:
