@@ -87,9 +87,9 @@ services:
       - ./app/app/static:/var/www/static:ro
       - ./app/app/media:/var/www/media:ro
       - ./server/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./server/nginx/ssl:/etc/nginx/ssl:ro
       - /var/log/nginx:/var/log/nginx:rw
       - /var/www/certbot/:/var/www/certbot/:ro
-      - /etc/nginx/ssl:/etc/nginx/ssl:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: always
 
