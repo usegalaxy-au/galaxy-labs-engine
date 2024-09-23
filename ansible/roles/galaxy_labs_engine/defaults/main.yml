@@ -15,8 +15,6 @@ labs_engine:
       dest: "{{ server_root }}/nginx.conf"
     - src: "{{ role_path }}/templates/.env.j2"
       dest: "{{ project_root }}/.env"
-    - src: "{{ role_path }}/templates/update.sh.j2"
-      dest: "/home/ubuntu/update.sh"
 
   files:
     - src: "{{ role_path }}/files/labs_engine.socket"

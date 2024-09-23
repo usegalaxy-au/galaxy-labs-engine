@@ -33,7 +33,7 @@
   loop: "{{ labs_engine.files }}"
   tags: config
 
-- name: Create django_cache table with 'manage.py createcachetable'
+- name: Django create django_cache table with 'manage.py createcachetable'
   shell: >
     docker compose --profile prod run --remove-orphans labs-engine
     python manage.py createcachetable
@@ -41,7 +41,27 @@
     chdir: "{{ project_root }}"
   tags: django
 
-- name: Ensure app superuser login
+- name: Django run migrations
+  shell: >
+    docker compose --profile prod run
+    --remove-orphans
+    labs-engine
+    python manage.py migrate
+  args:
+    chdir: "{{ project_root }}"
+  tags: django,update
+
+- name: Django collect static files
+  shell: >
+    docker compose --profile prod run
+    --remove-orphans
+    labs-engine
+    python manage.py collectstatic --noinput
+  args:
+    chdir: "{{ project_root }}"
+  tags: django,update
+
+- name: Django ensure superuser login
   shell: >
     docker compose --profile prod run
     --remove-orphans
@@ -59,19 +79,11 @@
 
 - name: update media file ownership
   file: dest={{ django_root }}/app/media owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
-  tags: permissions
+  tags: permissions,update
 
 - name: update log file ownership
   file: dest={{ django_root }}/app/logs owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
-  tags: permissions
-
-- name: make update.sh executable to root
-  ansible.builtin.file:
-    path: /home/ubuntu/update.sh
-    owner: root
-    group: root
-    mode: '0744'
-  tags: permissions
+  tags: permissions,update
 
 - name: enable labs_engine socket
   ansible.builtin.systemd:
@@ -85,9 +97,9 @@
     enabled: yes
     state: started
 
-- name: run update.sh
-  shell: /home/ubuntu/update.sh
-  tags:
-    - django
-    - update
-    - config
+- name: Enable and restart labs_engine service
+  ansible.builtin.systemd:
+    name: labs_engine
+    enabled: yes
+    state: restarted
+  tags: always
