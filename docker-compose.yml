@@ -84,8 +84,8 @@ services:
     volumes:
       - ./app/app/static:/var/www/static:ro
       - ./app/app/media:/var/www/media:ro
-      - ./server/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - ./server/nginx/ssl:/etc/nginx/ssl:ro
+      - /srv/serve/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - /var/log/nginx:/var/log/nginx:rw
       - /var/www/certbot/:/var/www/certbot/:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
