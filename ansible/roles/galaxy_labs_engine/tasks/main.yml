@@ -10,6 +10,7 @@
     dest: "{{ project_root }}"
     clone: yes
     force: yes
+  tags: always
 
 - name: create directories
   file:
@@ -54,16 +55,7 @@
     chdir: "{{ project_root }}"
   ignore_errors: yes
   when: admin_user.email and not skip_database_migration
-  tags: django
-
-- name: update project ownership
-  ansible.builtin.file:
-    path: /home/ubuntu
-    state: directory
-    recurse: yes
-    owner: ubuntu
-    group: ubuntu
-  tags: permissions
+  tags: django,superuser
 
 - name: update media file ownership
   file: dest={{ django_root }}/app/media owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
@@ -98,3 +90,4 @@
   tags:
     - django
     - update
+    - config
