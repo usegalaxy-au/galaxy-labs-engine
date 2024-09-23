@@ -6,6 +6,9 @@
 # The domain name that you've registered for the target webserver
 domain_name: "{{ inventory_hostname }}"
 
+# The Labs Engine container name defined in docker-compose.yml
+docker_container_name: labs-engine
+
 docker_install_compose: false
 docker_compose_version: "2.29.2"
 

@@ -11,6 +11,8 @@ labs_engine:
       dest: "{{ server_root }}/gunicorn.py"
     - src: "{{ role_path }}/templates/labs_engine.service.j2"
       dest: /etc/systemd/system/labs_engine.service
+    - src: "{{ role_path }}/templates/nginx.conf.j2"
+      dest: "{{ server_root }}/nginx.conf"
     - src: "{{ role_path }}/templates/.env.j2"
       dest: "{{ project_root }}/.env"
     - src: "{{ role_path }}/templates/update.sh.j2"
