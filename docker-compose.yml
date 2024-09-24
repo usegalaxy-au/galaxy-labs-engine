@@ -49,6 +49,7 @@ services:
     profiles:
       - prod
     image: neoformit/galaxy-labs-engine:latest
+    user: "33:33"
     container_name: labs-engine
     networks:
       - labs-engine-network

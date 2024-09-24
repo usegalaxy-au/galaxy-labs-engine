@@ -4,8 +4,8 @@ Requires=labs_engine.socket
 After=network.target
 
 [Service]
-User = www-data
-Group = www-data
+User = root
+Group = root
 WorkingDirectory={{ project_root }}
 ExecStart=docker compose --profile production up
 ExecReload=/bin/kill -s HUP $MAINPID
