@@ -1,18 +1,20 @@
 ---
 project_root: /home/ubuntu/labs-engine
-server_root: /home/ubuntu/server
+config_root: /home/ubuntu/config
 django_root: "{{ project_root }}/app"
 
 labs_engine_docker_image: neoformit/galaxy-labs-engine:latest
 
 labs_engine:
   templates:
+    - src: "{{ role_path }}/templates/docker-compose.yml.j2"
+      dest: "{{ config_root }}/docker-compose.yml"
     - src: "{{ role_path }}/templates/gunicorn.py.j2"
-      dest: "{{ server_root }}/gunicorn.py"
+      dest: "{{ config_root }}/gunicorn.py"
     - src: "{{ role_path }}/templates/labs_engine.service.j2"
       dest: /etc/systemd/system/labs_engine.service
     - src: "{{ role_path }}/templates/nginx.conf.j2"
-      dest: "{{ server_root }}/nginx.conf"
+      dest: "{{ config_root }}/nginx.conf"
     - src: "{{ role_path }}/templates/.env.j2"
       dest: "{{ project_root }}/.env"
 

@@ -33,10 +33,10 @@ skip_database_migration: false
 project_root: /srv/labs-engine
 
 # This is where server conf files (nginx/gunicorn) will be created
-server_root: "{{ project_root }}/serve"
+config_root: "/srv/config"
 
 create_directories:
-  - "{{ server_root }}"
+  - "{{ config_root }}"
   - "{{ django_root }}/app/media"
   - "{{ django_root }}/app/logs"
 

@@ -65,7 +65,7 @@ services:
         --error-logfile='-'
         --capture-output
         --log-level info
-        -c /srv/serve/gunicorn.py
+        -c /srv/config/gunicorn.py
         app.wsgi:application
     restart: always
     working_dir: /srv/labs-engine/app
@@ -85,7 +85,7 @@ services:
       - ./app/app/static:/var/www/static:ro
       - ./app/app/media:/var/www/media:ro
       - ./server/nginx/ssl:/etc/nginx/ssl:ro
-      - /srv/serve/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - /srv/config/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - /var/log/nginx:/var/log/nginx:rw
       - /var/www/certbot/:/var/www/certbot/:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
