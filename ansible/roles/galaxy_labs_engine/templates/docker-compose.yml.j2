@@ -12,7 +12,7 @@ services:
       - "5678:5678"
     volumes:
       - type: bind
-        source: .
+        source: "{{ project_root }}"
         target: "{{ project_root }}"
     environment:
       - DJANGO_SETTINGS_MODULE=app.settings.dev
@@ -33,7 +33,7 @@ services:
       - "5678:5678"  # attach vscode debug
     volumes:
       - type: bind
-        source: .
+        source: "{{ project_root }}"
         target: "{{ project_root }}"
     environment:
       - DJANGO_SETTINGS_MODULE=app.settings.dev
@@ -85,7 +85,7 @@ services:
     volumes:
       - "{{ django_root }}/app/static:/var/www/static:ro"
       - "{{ django_root }}/app/media:/var/www/media:ro"
-      - "{{ project_root }}/server/nginx/ssl:/etc/nginx/ssl:ro"
+      - "{{ config_root }}/nginx/ssl:/etc/nginx/ssl:ro"
       - "{{ config_root }}/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro"
       - /var/log/nginx:/var/log/nginx:rw
       - /var/www/certbot/:/var/www/certbot/:ro

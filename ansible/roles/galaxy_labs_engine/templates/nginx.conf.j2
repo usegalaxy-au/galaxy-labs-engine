@@ -1,15 +1,11 @@
 # Server config for {{ inventory_hostname }} in docker
 
+{% if certbot_certificates.stat.exists %}
 upstream {{ docker_container_name }} {
     server {{ docker_container_name }}:8000;
 }
 
-map $http_upgrade $connection_upgrade {
-  default upgrade;
-  '' close;
-}
-
-server {
+    server {
     # redirect www to non-www
     server_name www.{{ inventory_hostname }};
     return 301 $scheme://{{ inventory_hostname }}$request_uri;
@@ -63,14 +59,14 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
 }
+{% endif %}
 
 
 server {
 
     listen 80;
-    server_name  {{ inventory_hostname }};
+    server_name {{ inventory_hostname }};
 
     location /.well-known/acme-challenge {
         root /var/www/certbot;

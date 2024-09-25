@@ -19,12 +19,23 @@
   loop: "{{ create_directories }}"
   tags: config
 
+- name: check if SSL certificate is installed
+  stat:
+    path: /etc/letsencrypt/options-ssl-nginx.conf
+  register: certbot_certificates
+  tags: config,certbot
+
+- name: obtain initial SSL certificate with certbot
+  include_tasks: certbot.yml
+  when: certbot_certificates.stat.exists == false
+  tags: certbot
+
 - name: template webserver configuration
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
   loop: "{{ labs_engine.templates }}"
-  tags: config
+  tags: config,certbot
 
 - name: copy webserver configuration
   copy:
@@ -35,36 +46,33 @@
 
 - name: Django create django_cache table with 'manage.py createcachetable'
   shell: >
-    docker compose --profile prod run --remove-orphans labs-engine
+    docker compose --profile prod run --rm labs-engine
     python manage.py createcachetable
   args:
-    chdir: "{{ project_root }}"
+    chdir: "{{ config_root }}"
   tags: django
 
 - name: Django run migrations
   shell: >
-    docker compose --profile prod run
-    --remove-orphans
+    docker compose --profile prod run --rm
     labs-engine
     python manage.py migrate
   args:
-    chdir: "{{ project_root }}"
+    chdir: "{{ config_root }}"
   tags: django,update
 
 - name: Django collect static files
   shell: >
-    docker compose --profile prod run
-    --remove-orphans
+    docker compose --profile prod run --rm
     labs-engine
     python manage.py collectstatic --noinput
   args:
-    chdir: "{{ project_root }}"
+    chdir: "{{ config_root }}"
   tags: django,update
 
 - name: Django ensure superuser login
   shell: >
-    docker compose --profile prod run
-    --remove-orphans
+    docker compose --profile prod run --rm
     -e DJANGO_SUPERUSER_PASSWORD={{ admin_user.password }}
     labs-engine
     python manage.py createsuperuser --noinput
@@ -72,7 +80,7 @@
     --first_name {{ admin_user.first_name }}
     --last_name {{ admin_user.last_name }}
   args:
-    chdir: "{{ project_root }}"
+    chdir: "{{ config_root }}"
   ignore_errors: yes
   when: admin_user.email and not skip_database_migration
   tags: django,superuser
@@ -84,6 +92,13 @@
 - name: update log file ownership
   file: dest={{ django_root }}/app/logs owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
   tags: permissions,update
+
+- name: setup certbot renew cron job
+  cron:
+    name: "certbot-renew"
+    minute: "0"
+    hour: "0"
+    job: "docker compose --profile certbot run --rm certbot renew"
 
 - name: enable labs_engine socket
   ansible.builtin.systemd:

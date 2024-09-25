@@ -14,6 +14,7 @@ docker_compose_version: "2.29.2"
 
 # If you don't want SSL certs, just flip this:
 certbot_ssl: true
+certbot_domain: "{{ domain_name }}"
 certbot_renew_email: "{{ vault_admin_email }}"
 
 # 4 web workers should be plenty - increase for machines with >2 CPUs

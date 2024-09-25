@@ -6,7 +6,6 @@
     - group_vars/secrets.yml
     - group_vars/webservers.yml
   roles:
-    - geerlingguy.nginx
-    - role: geerlingguy.postgresql
-      become: true
+    # - role: geerlingguy.postgresql
+    #   become: true
     - galaxy_labs_engine

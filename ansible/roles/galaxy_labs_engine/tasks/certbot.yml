@@ -1,0 +1,35 @@
+---
+
+- name: template webserver configuration
+  # N.B. nginx.conf conditional render on certbot_certificates
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop: "{{ labs_engine.templates }}"
+  tags: cerbot
+
+- name: Stop labs_engine service
+  ansible.builtin.systemd:
+    name: labs_engine
+    enabled: yes
+    state: stopped
+  tags: cerbot
+
+- name: Request SSL certificate with certbot
+  shell: >
+    docker compose --profile certbot run --rm certbot certonly
+      --webroot
+      --webroot-path /var/www/certbot/
+      --agree-tos
+      --non-interactive
+      -d "{{ certbot_domain }}"
+      -m "{{ certbot_renew_email }}"
+  args:
+    chdir: "{{ config_root }}"
+  tags: cerbot
+
+- name: update fact certbot_certificates
+  stat:
+    path: /etc/letsencrypt/options-ssl-nginx.conf
+  register: certbot_certificates
+  tags: cerbot
