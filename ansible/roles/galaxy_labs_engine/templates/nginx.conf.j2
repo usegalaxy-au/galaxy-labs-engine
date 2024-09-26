@@ -1,11 +1,10 @@
-# Server config for {{ inventory_hostname }} in docker
+{% if certbot_certificates.stat.exists %}# Server config for {{ inventory_hostname }} in docker
 
-{% if certbot_certificates.stat.exists %}
 upstream {{ docker_container_name }} {
     server {{ docker_container_name }}:8000;
 }
 
-    server {
+server {
     # redirect www to non-www
     server_name www.{{ inventory_hostname }};
     return 301 $scheme://{{ inventory_hostname }}$request_uri;
@@ -57,25 +56,27 @@ server {
     listen 443 ssl;
     ssl_certificate /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
 }
 {% endif %}
 
+
+# Server config for certbot
 
 server {
 
     listen 80;
     server_name {{ inventory_hostname }};
 
-    location /.well-known/acme-challenge {
-        root /var/www/certbot;
+    location /.well-known/acme-challenge/ {
+        alias /var/www/certbot/.well-known/acme-challenge/;
     }
 
-    if ($host = {{ inventory_hostname }}) {
-        return 301 https://$host$request_uri;
+    # Redirect all other traffic to HTTPS, but not the challenge
+    location / {
+        if ($host = labs.neoformit.com) {
+            return 301 https://$host$request_uri;
+        }
     }
-
-    return 404;
 
 }

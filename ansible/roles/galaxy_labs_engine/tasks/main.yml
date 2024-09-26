@@ -21,7 +21,7 @@
 
 - name: check if SSL certificate is installed
   stat:
-    path: /etc/letsencrypt/options-ssl-nginx.conf
+    path: /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem
   register: certbot_certificates
   tags: config,certbot
 

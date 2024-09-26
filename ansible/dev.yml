@@ -7,7 +7,8 @@
     - group_vars/webservers.yml
     - host_vars/labs.neoformit.com.yml
   roles:
-    - geerlingguy.docker
+    - role: geerlingguy.docker
+      tags: init
     # - role: geerlingguy.postgresql
     #   become: true
     - galaxy_labs_engine
