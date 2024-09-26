@@ -33,7 +33,7 @@ def filter_exc_by_pattern(record):
     return True
 
 
-def configure_logging(LOG_ROOT):
+def configure_logging(log_root, levels):
     """Return logging configuration."""
     return {
         'version': 1,
@@ -61,7 +61,7 @@ def configure_logging(LOG_ROOT):
                 'class': 'logging.handlers.RotatingFileHandler',
                 'maxBytes': 1000000,  # 1MB ~ 20k rows
                 'backupCount': 5,
-                'filename': LOG_ROOT / 'debug.log',
+                'filename': log_root / 'debug.log',
                 'formatter': 'verbose',
                 'filters': ['filter_exc_by_type'],
             },
@@ -71,7 +71,16 @@ def configure_logging(LOG_ROOT):
                 'class': 'logging.handlers.RotatingFileHandler',
                 'maxBytes': 1000000,  # 1MB ~ 20k rows
                 'backupCount': 5,
-                'filename': LOG_ROOT / 'main.log',
+                'filename': log_root / 'main.log',
+                'formatter': 'verbose',
+            },
+            'cache_file': {
+                'delay': True,
+                'level': levels.get('console', 'INFO'),
+                'class': 'logging.handlers.RotatingFileHandler',
+                'maxBytes': 1000000,  # 1MB ~ 20k rows
+                'backupCount': 1,
+                'filename': log_root / 'cache.log',
                 'formatter': 'verbose',
             },
             'error_file': {
@@ -80,7 +89,7 @@ def configure_logging(LOG_ROOT):
                 'class': 'logging.handlers.RotatingFileHandler',
                 'maxBytes': 1000000,  # 1MB ~ 20k rows
                 'backupCount': 5,
-                'filename': LOG_ROOT / 'error.log',
+                'filename': log_root / 'error.log',
                 'formatter': 'verbose',
             },
             'error_mail': {
@@ -96,7 +105,7 @@ def configure_logging(LOG_ROOT):
             },
             'console': {
                 'class': 'logging.StreamHandler',
-                'level': 'INFO',
+                'level': levels.get('console', 'INFO'),
                 'formatter': 'verbose',
             },
         },

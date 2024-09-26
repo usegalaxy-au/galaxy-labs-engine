@@ -30,3 +30,9 @@ gunicorn:
 skip_database_migration: false
 
 admin_user: null
+
+# Override log levels for specific loggers
+# Value must be one of DEBUG, INFO, WARNING, ERROR, CRITICAL
+django_log_levels:
+  console: INFO
+  cache: INFO
