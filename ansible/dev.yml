@@ -9,6 +9,4 @@
   roles:
     - role: geerlingguy.docker
       tags: init
-    # - role: geerlingguy.postgresql
-    #   become: true
     - galaxy_labs_engine
