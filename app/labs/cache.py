@@ -23,15 +23,18 @@ class LabCache:
         cache_key = cls._generate_cache_key(request)
         body = cache.get(cache_key)
         if body:
-            logger.debug(f"Cache HIT for {dict(request.GET)}")
+            logger.debug(
+                f"Cache HIT for {request.GET.get('content_root', 'root')}")
             response = HttpResponse(body)
             response['X-Cache-Status'] = 'HIT'
             return response
-        logger.debug(f"Cache MISS for {dict(request.GET)}")
+        logger.debug(
+            f"Cache MISS for {request.GET.get('content_root', 'root')}")
 
     @classmethod
     def put(cls, request, body):
-        logger.debug(f"Cache PUT for {dict(request.GET)}")
+        logger.debug(
+            f"Cache PUT for {request.GET.get('content_root', 'root')}")
         cache_key = cls._generate_cache_key(request)
         timeout = (settings.CACHE_TIMEOUT
                    if request.GET.get('content_root')
