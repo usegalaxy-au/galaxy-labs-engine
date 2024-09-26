@@ -160,6 +160,8 @@ if not GITHUB_API_TOKEN:
           " be rate-limited at 60 requests per hour which may result in"
           " errors.")
 
+CACHE_TIMEOUT = 60 * 60  # 1 hour
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 

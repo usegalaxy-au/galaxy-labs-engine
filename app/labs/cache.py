@@ -1,6 +1,7 @@
 """Cache lab pages because rendering is expensive."""
 
 import logging
+from django.conf import settings
 from django.core.cache import cache
 from django.utils.http import urlencode
 from django.http import HttpResponse
@@ -32,7 +33,10 @@ class LabCache:
     def put(cls, request, body):
         logger.debug(f"Cache PUT for {request.path}")
         cache_key = cls._generate_cache_key(request)
-        cache.set(cache_key, body, timeout=3600)
+        timeout = (settings.CACHE_TIMEOUT
+                   if request.GET.get('content_root')
+                   else None)  # No timeout for default "Docs Lab" page
+        cache.set(cache_key, body, timeout=timeout)
         response = HttpResponse(body)
         response['X-Cache-Status'] = 'MISS'
         return response
