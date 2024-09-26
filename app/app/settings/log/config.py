@@ -76,7 +76,7 @@ def configure_logging(log_root, levels):
             },
             'cache_file': {
                 'delay': True,
-                'level': levels.get('console', 'INFO'),
+                'level': levels.get('cache', 'INFO'),
                 'class': 'logging.handlers.RotatingFileHandler',
                 'maxBytes': 1000000,  # 1MB ~ 20k rows
                 'backupCount': 1,
@@ -103,7 +103,7 @@ def configure_logging(log_root, levels):
                 'class': 'app.settings.log.handlers.SlackHandler',
                 'filters': ['filter_exc_by_pattern'],
             },
-            'debug_slack': {
+            'debug_slack': {  # For debugging logging only
                 'level': 'DEBUG',
                 'class': 'app.settings.log.handlers.SlackHandler',
                 'filters': ['filter_exc_by_pattern'],
@@ -130,11 +130,10 @@ def configure_logging(log_root, levels):
             'django.cache': {
                 'handlers': [
                     'cache_file',
-                    'debug_slack',
                     'console',
                 ],
                 'level': 'DEBUG',
-                'propagate': True,
+                'propagate': False,
             },
             'django.utils.autoreload': {
                 'level': 'WARNING',  # This logger is way too noisy on DEBUG
