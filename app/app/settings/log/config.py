@@ -103,6 +103,11 @@ def configure_logging(log_root, levels):
                 'class': 'app.settings.log.handlers.SlackHandler',
                 'filters': ['filter_exc_by_pattern'],
             },
+            'debug_slack': {
+                'level': 'DEBUG',
+                'class': 'app.settings.log.handlers.SlackHandler',
+                'filters': ['filter_exc_by_pattern'],
+            },
             'console': {
                 'class': 'logging.StreamHandler',
                 'level': levels.get('console', 'INFO'),
@@ -117,7 +122,16 @@ def configure_logging(log_root, levels):
                     'error_file',
                     'error_mail',
                     'error_slack',
-                    'console'
+                    'console',
+                ],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'django.cache': {
+                'handlers': [
+                    'cache_file',
+                    'debug_slack',
+                    'console',
                 ],
                 'level': 'DEBUG',
                 'propagate': True,

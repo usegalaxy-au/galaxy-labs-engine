@@ -10,7 +10,7 @@ from django.template import (
 from django.template.loader import render_to_string
 
 from utils.exceptions import LabBuildError
-from .lab_cache import LabCache
+from .cache import LabCache
 from .lab_export import ExportLabContext
 
 logger = logging.getLogger('django')

@@ -21,7 +21,7 @@ from pydantic import ValidationError
 from types import SimpleNamespace
 from utils.exceptions import LabBuildError
 from .lab_schema import LabSchema, LabSectionSchema
-from .lab_cache import WebCache
+from .cache import WebCache
 
 logger = logging.getLogger('django')
 
