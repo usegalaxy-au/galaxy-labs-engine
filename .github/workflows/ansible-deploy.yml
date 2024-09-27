@@ -30,10 +30,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible
 
-      - name: Write SSH Key
+      - name: install ssh keys
+        # check this thread to understand why install is needed:
+        # https://stackoverflow.com/a/70447517
         run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST_DEV }} > ~/.ssh/known_hosts
 
       - name: Run Ansible Playbook
         run: |
