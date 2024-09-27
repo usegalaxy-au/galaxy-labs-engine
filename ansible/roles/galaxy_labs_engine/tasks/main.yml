@@ -11,6 +11,7 @@
     clone: yes
     force: yes
   tags: always
+  register: git
 
 - name: create directories
   file:
@@ -56,45 +57,6 @@
     chdir: "{{ config_root }}"
   tags: django
 
-- name: Django run migrations
-  shell: >
-    docker compose --profile prod run --rm
-    labs-engine
-    python manage.py migrate
-  args:
-    chdir: "{{ config_root }}"
-  tags:
-    - django
-    - update
-
-- name: Django collect static files
-  shell: >
-    docker compose --profile prod run --rm
-    labs-engine
-    python manage.py collectstatic --noinput
-  args:
-    chdir: "{{ config_root }}"
-  tags:
-    - django
-    - update
-
-- name: Django ensure superuser login
-  shell: >
-    docker compose --profile prod run --rm
-    -e DJANGO_SUPERUSER_PASSWORD={{ admin_user.password }}
-    labs-engine
-    python manage.py createsuperuser --noinput
-    --email {{ admin_user.email }}
-    --first_name {{ admin_user.first_name }}
-    --last_name {{ admin_user.last_name }}
-  args:
-    chdir: "{{ config_root }}"
-  ignore_errors: yes
-  when: admin_user.email and not skip_database_migration
-  tags:
-    - django
-    - superuser
-
 - name: update media file ownership
   file: dest={{ django_root }}/app/media owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
   tags:
@@ -122,6 +84,45 @@
   tags:
     - permissions
     - update
+
+- name: Django run migrations
+  shell: >
+    docker compose --profile prod run --rm
+    labs-engine
+    python manage.py migrate
+  args:
+    chdir: "{{ config_root }}"
+  when: not skip_database_migration
+  tags:
+    - django
+    - update
+
+- name: Django collect static files
+  shell: >
+    docker compose --profile prod run --rm
+    labs-engine
+    python manage.py collectstatic --noinput
+  args:
+    chdir: "{{ config_root }}"
+  when: git.changed
+  tags: always
+
+- name: Django ensure superuser login
+  shell: >
+    docker compose --profile prod run --rm
+    -e DJANGO_SUPERUSER_PASSWORD={{ admin_user.password }}
+    labs-engine
+    python manage.py createsuperuser --noinput
+    --email {{ admin_user.email }}
+    --first_name {{ admin_user.first_name }}
+    --last_name {{ admin_user.last_name }}
+  args:
+    chdir: "{{ config_root }}"
+  ignore_errors: yes
+  when: admin_user.email and not skip_database_migration
+  tags:
+    - init
+    - django
 
 - name: setup certbot renew cron job
   cron:
