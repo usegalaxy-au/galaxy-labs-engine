@@ -1,9 +1,11 @@
 # Vault password in Shared Devops
 
-vault_admin_email:          <str>
-vault_admin_password:       <str>
-vault_django_secret_key:    <str>
-vault_smtp_password:        <str>
-vault_slack_error_api_key:  <str>
-vault_recaptcha_secret_key: <str>
-vault_recaptcha_site_key:   <str>
+vault_admin_email:            <str>
+vault_admin_password:         <str>
+vault_django_secret_key:      <str>
+vault_smtp_username:          <str>
+vault_smtp_password:          <str>
+vault_github_api_token:       <str>
+vault_slack_api_key:          <str>
+vault_slack_channel_id:       <str>
+vault_slack_mention_user_id:  <str>

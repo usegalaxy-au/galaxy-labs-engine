@@ -9,9 +9,9 @@ from django.template import (
 )
 from django.template.loader import render_to_string
 
-from utils.exceptions import SubsiteBuildError
-from .lab_cache import LabCache
-from .lab_export import ExportSubsiteContext
+from utils.exceptions import LabBuildError
+from .cache import LabCache
+from .lab_export import ExportLabContext
 
 logger = logging.getLogger('django')
 
@@ -31,13 +31,13 @@ def export_lab(request):
 
     try:
         if request.GET.get('content_root'):
-            context = ExportSubsiteContext(request.GET.get('content_root'))
+            context = ExportLabContext(request.GET.get('content_root'))
         else:
-            context = ExportSubsiteContext(
+            context = ExportLabContext(
                 settings.DEFAULT_EXPORTED_LAB_CONTENT_ROOT)
         context['HOSTNAME'] = settings.HOSTNAME
         context.validate()
-    except SubsiteBuildError as exc:
+    except LabBuildError as exc:
         return render(request, 'labs//export-error.html', {
             'exc': exc,
         }, status=400)

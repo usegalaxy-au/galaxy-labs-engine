@@ -33,8 +33,8 @@ def _get_schema_help(loc):
             }
 
 
-class SubsiteBuildError(Exception):
-    """Raised when an error occurs during subsite build."""
+class LabBuildError(Exception):
+    """Raised when an error occurs during lab build."""
 
     def __init__(self, exc=None, url=None, section_id=None, source=''):
         """Initialize the exception."""

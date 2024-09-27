@@ -1,18 +1,24 @@
 ---
+git_branch: main
+
 project_root: /home/ubuntu/labs-engine
-server_root: /home/ubuntu/server
+config_root: /home/ubuntu/config
+django_root: "{{ project_root }}/app"
+
 labs_engine_docker_image: neoformit/galaxy-labs-engine:latest
 
 labs_engine:
   templates:
+    - src: "{{ role_path }}/templates/docker-compose.yml.j2"
+      dest: "{{ config_root }}/docker-compose.yml"
     - src: "{{ role_path }}/templates/gunicorn.py.j2"
-      dest: "{{ server_root }}/gunicorn.py"
+      dest: "{{ config_root }}/gunicorn.py"
     - src: "{{ role_path }}/templates/labs_engine.service.j2"
       dest: /etc/systemd/system/labs_engine.service
+    - src: "{{ role_path }}/templates/nginx.conf.j2"
+      dest: "{{ config_root }}/nginx.conf"
     - src: "{{ role_path }}/templates/.env.j2"
       dest: "{{ project_root }}/.env"
-    - src: "{{ role_path }}/templates/update.sh.j2"
-      dest: "/home/ubuntu/update.sh"
 
   files:
     - src: "{{ role_path }}/files/labs_engine.socket"
@@ -26,3 +32,9 @@ gunicorn:
 skip_database_migration: false
 
 admin_user: null
+
+# Override log levels for specific loggers
+# Value must be one of DEBUG, INFO, WARNING, ERROR, CRITICAL
+django_log_levels:
+  console: INFO
+  cache: INFO

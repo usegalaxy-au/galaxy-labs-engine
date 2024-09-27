@@ -12,6 +12,9 @@
           "program": "${workspaceFolder}/app/manage.py",
           "cwd": "${workspaceFolder}/app",
           "args": ["runserver"],
+          "env": {
+            "DJANGO_SETTINGS_MODULE": "app.settings.base",
+          },
           "django": true,
           "justMyCode": true
         },
@@ -23,6 +26,9 @@
           "program": "${workspaceFolder}/app/manage.py",
           "cwd": "${workspaceFolder}/app",
           "args": ["shell"],
+          "env": {
+            "DJANGO_SETTINGS_MODULE": "app.settings.base",
+          },
           "django": true,
           "justMyCode": true
         },
@@ -34,6 +40,9 @@
           "program": "${workspaceFolder}/app/manage.py",
           "cwd": "${workspaceFolder}/app",
           "args": ["test"],
+          "env": {
+            "DJANGO_SETTINGS_MODULE": "app.settings.test",
+          },
           "django": true,
           "justMyCode": true,
         },

@@ -1,1 +1,4 @@
-geerlingguy.docker
+---
+- geerlingguy.nginx
+- geerlingguy.postgresql
+- geerlingguy.docker

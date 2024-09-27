@@ -43,8 +43,10 @@ STATIC_ROOT = BASE_DIR / 'app/static'
 MEDIA_ROOT = BASE_DIR / 'app/media'
 LOG_ROOT = ensure_dir(BASE_DIR / 'app/logs')
 DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
-    f'http://{HOSTNAME}/static/labs/content/docs/base.yml'
-)
+    f'http://{HOSTNAME}/static/labs/content/docs/base.yml')
+GITHUB_CONTENT_ROOT_BASE_URL = (
+    "https://raw.githubusercontent.com/neoformit"
+    "/galaxy-labs-engine/dev/app/labs/content")
 
 # Hostnames
 ALLOWED_HOSTS = [
@@ -63,7 +65,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_recaptcha',
     'labs',
 ]
 
@@ -108,6 +109,12 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'django_cache',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -144,14 +151,16 @@ SERVER_EMAIL = os.environ['MAIL_FROM_ADDRESS']
 EMAIL_SUBJECT_PREFIX = os.getenv('EMAIL_SUBJECT_PREFIX',
                                  'Galaxy Labs Engine: ')
 
-RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_SITE_KEY')
-RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
+RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '')
 
 GITHUB_API_TOKEN = os.getenv('GITHUB_API_TOKEN')
 if not GITHUB_API_TOKEN:
     print("Warning: GITHUB_API_TOKEN not set. Requests to api.github.com will"
           " be rate-limited at 60 requests per hour which may result in"
           " errors.")
+
+CACHE_TIMEOUT = 60 * 60  # 1 hour
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

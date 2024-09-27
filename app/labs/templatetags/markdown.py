@@ -33,12 +33,17 @@ def render_markdown(md):
     return html.strip(' \n')
 
 
+def expand_tags(html):
+    if '{gtn modal}<a' in html:
+        html = html.replace('{gtn modal}<a ', '<a class="gtn-modal" ')
+    return html
+
+
 @register.filter()
 def markdown(md):
     """Render html from markdown string."""
     html = render_markdown(md)
-    if '{gtn modal}<a' in html:
-        html = html.replace('{gtn modal}<a ', '<a class="gtn-modal" ')
+    html = expand_tags(html)
     return mark_safe(html)
 
 
@@ -48,6 +53,7 @@ def inline_markdown(md):
     html = render_markdown(md)
     if html.startswith('<p>'):
         html = html[3:-4]
+    html = expand_tags(html)
     return mark_safe(html)
 
 

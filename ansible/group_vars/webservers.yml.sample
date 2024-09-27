@@ -31,7 +31,7 @@ gunicorn:
 project_root: /home/ubuntu/labs-engine
 
 # This is where server conf files (nginx/gunicorn) will be created
-server_root: /home/ubuntu/serve
+config_root: /home/ubuntu/config
 
 # Admin user login for the web admin
 admin_user:

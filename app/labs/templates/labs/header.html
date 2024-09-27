@@ -41,17 +41,6 @@
         });
       }
 
-      // Determine whether page is being viewed in iframe
-      function inIframe () {
-        try {
-            return window.self !== window.top;
-        } catch (e) {
-            return true;
-        }
-      }
-
-      const subdomainLanding = () => window.location.pathname.includes('/landing/');
-
       $(document).ready( () => {
         // Enable bootstrap tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))

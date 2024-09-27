@@ -1,7 +1,7 @@
 import requests_mock
 from pathlib import Path
 
-from .lab_export import ExportSubsiteContext
+from .lab_export import ExportLabContext
 from .test.data import (
     MOCK_REQUESTS,
     MOCK_LAB_BASE_URL,
@@ -19,12 +19,7 @@ TEST_LAB_ACCORDION_TEXT = (
     'Assemble Nanopore long reads.',
 )
 TEST_LAB_CONTENT_URL = f'{MOCK_LAB_BASE_URL}/static/labs/content/docs/base.yml'
-TEST_LAB_URL = f'/lab/export?content_root={TEST_LAB_CONTENT_URL}'
-
-
-def test_lab_url_for(lab):
-    """Return the URL for the given lab name."""
-    return TEST_LAB_URL.replace('docs', lab)
+TEST_LAB_URL = f'/?content_root={TEST_LAB_CONTENT_URL}'
 
 
 class LabExportTestCase(TestCase):
@@ -32,15 +27,19 @@ class LabExportTestCase(TestCase):
 
     @requests_mock.Mocker()
     def setUp(self, mock_request):
-        for url, text in MOCK_REQUESTS.items():
-            mock_request.get(url, text=text, status_code=200)
-        self.context = ExportSubsiteContext(TEST_LAB_CONTENT_URL)
+        for r in MOCK_REQUESTS:
+            mock_request.get(r['url_pattern'],
+                             text=r['response'],
+                             status_code=r.get('status_code', 200))
+        self.context = ExportLabContext(TEST_LAB_CONTENT_URL)
 
     @requests_mock.Mocker()
     def test_exported_lab_docs(self, mock_request):
         """Mock requests to localhost."""
-        for url, text in MOCK_REQUESTS.items():
-            mock_request.get(url, text=text, status_code=200)
+        for r in MOCK_REQUESTS:
+            mock_request.get(r['url_pattern'],
+                             text=r['response'],
+                             status_code=r.get('status_code', 200))
         response = self.client.get(TEST_LAB_URL)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, TEST_LAB_NAME)
@@ -58,13 +57,13 @@ class LabExportTestCase(TestCase):
             'galaxy-labs-engine/dev/README.md')
 
     def test_it_can_filter_sections_by_root_domain(self):
-        root_domain = 'antarctica.org'
-        self.context['root_domain'] = root_domain
+        hostname = 'antarctica.org'
+        self.context['root_domain'] = hostname
         self.context['sections'] = [
             {'id': 'section1'},
             {
                 'id': 'section2',
-                'exclude_from': [root_domain],
+                'exclude_from': [hostname],
             },
             {
                 'id': 'section3',
@@ -74,7 +73,7 @@ class LabExportTestCase(TestCase):
                     },
                     {
                         'id': 'item2',
-                        'exclude_from': [root_domain],
+                        'exclude_from': [hostname],
                     },
                     {
                         'id': 'item3',
@@ -82,7 +81,7 @@ class LabExportTestCase(TestCase):
                     },
                     {
                         'id': 'item4',
-                        'exclude_from': [root_domain, 'other.domain.com'],
+                        'exclude_from': [hostname, 'other.domain.com'],
                     },
                 ]
             },

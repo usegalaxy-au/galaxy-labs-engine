@@ -38,12 +38,6 @@ nav a.active {
   color: white;
   font-weight: bold;
 }
-.australia {
-  color: #cebd2c;
-}
-a:hover .australia {
-  color: #eedd5c;
-}
 nav #admin-login {
   opacity: 0;
   transition-duration: .25s;

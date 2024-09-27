@@ -6,7 +6,7 @@ from .forms import LabFeedbackForm
 
 
 def lab_feedback(request, subdomain):
-    """Process feedback form for *.usegalaxy.org.au subsites."""
+    """Process feedback form for *.usegalaxy.org.au labs."""
     if request.method != 'POST':
         return HttpResponseBadRequest()
     form = LabFeedbackForm(request.POST)
