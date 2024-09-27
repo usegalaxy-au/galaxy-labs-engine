@@ -1,4 +1,6 @@
 ---
+git_branch: main
+
 project_root: /home/ubuntu/labs-engine
 config_root: /home/ubuntu/config
 django_root: "{{ project_root }}/app"
