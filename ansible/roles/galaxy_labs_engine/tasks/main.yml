@@ -23,7 +23,9 @@
   stat:
     path: /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem
   register: certbot_certificates
-  tags: config,certbot
+  tags:
+    - config
+    - certbot
 
 - name: obtain initial SSL certificate with certbot
   include_tasks: certbot.yml
@@ -35,7 +37,9 @@
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
   loop: "{{ labs_engine.templates }}"
-  tags: config,certbot
+  tags:
+    - config
+    - certbot
 
 - name: copy webserver configuration
   copy:
@@ -59,7 +63,9 @@
     python manage.py migrate
   args:
     chdir: "{{ config_root }}"
-  tags: django,update
+  tags:
+    - django
+    - update
 
 - name: Django collect static files
   shell: >
@@ -68,7 +74,9 @@
     python manage.py collectstatic --noinput
   args:
     chdir: "{{ config_root }}"
-  tags: django,update
+  tags:
+    - django
+    - update
 
 - name: Django ensure superuser login
   shell: >
@@ -83,15 +91,37 @@
     chdir: "{{ config_root }}"
   ignore_errors: yes
   when: admin_user.email and not skip_database_migration
-  tags: django,superuser
+  tags:
+    - django
+    - superuser
 
 - name: update media file ownership
   file: dest={{ django_root }}/app/media owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
-  tags: permissions,update
+  tags:
+    - permissions
+    - update
 
 - name: update log file ownership
   file: dest={{ django_root }}/app/logs owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
-  tags: permissions,update
+  tags:
+    - permissions
+    - update
+
+- name: update sqlite3 database ownership
+  file: dest={{ django_root }}/db.sqlite3 owner=www-data group=www-data mode=u=rw,g=rw,o=r
+  tags:
+    - permissions
+    - update
+
+- name: update sqlite3 database directory permissions
+  file:
+    dest: "{{ django_root }}"
+    owner: root
+    group: www-data
+    mode: u=rwx,g=rwx,o=rx
+  tags:
+    - permissions
+    - update
 
 - name: setup certbot renew cron job
   cron:
@@ -99,18 +129,14 @@
     minute: "0"
     hour: "0"
     job: "docker compose --profile certbot run --rm certbot renew"
+  tags: certbot
 
 - name: enable labs_engine socket
   ansible.builtin.systemd:
     name: labs_engine.socket
     enabled: yes
     state: started
-
-- name: enable labs_engine service
-  ansible.builtin.systemd:
-    name: labs_engine
-    enabled: yes
-    state: started
+  tags: init
 
 - name: Run systemctl daemon-reload
   ansible.builtin.command: "systemctl daemon-reload"
