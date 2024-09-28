@@ -33,15 +33,15 @@ jobs:
       - name: Install ssh keys
         # For reference: https://stackoverflow.com/a/70447517
         run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          install -m 600 -D /dev/null ~/.ssh/galaxy
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/galaxy
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
       - name: Run Ansible Playbook
         run: |
           cd ansible
-          ansible-playbook -i hosts dev.yml --key-file ~/.ssh/id_rsa
+          ansible-playbook -i hosts dev.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: 'False'
           ANSIBLE_REMOTE_USER: ${{ secrets.SSH_USER }}
-          ANSIBLE_PRIVATE_KEY_FILE: ~/.ssh/id_rsa
+          ANSIBLE_PRIVATE_KEY_FILE: ~/.ssh/galaxy
