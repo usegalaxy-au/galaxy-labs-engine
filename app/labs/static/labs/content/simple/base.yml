@@ -1,6 +1,6 @@
 # Default spec for an exported lab landing page
 
-# You can test with: /lab/export?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/base.yml
+# You can test with: /?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/docs/base.yml
 
 site_name: Archaeology
 lab_name: Archaeology Lab

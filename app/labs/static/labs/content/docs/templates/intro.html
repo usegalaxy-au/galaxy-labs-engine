@@ -14,18 +14,18 @@
     </li>
     <li>
       See a full working example of an exported Galaxy Lab page
-      <a href="/lab/export?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-media-site/dev/webapp/home/labs/genome/base.yml">here</a>.
+      <a href="/?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-media-site/dev/webapp/home/labs/genome/base.yml">here</a>.
     </li>
     <li>
       See a minimal working example of a lab page
-      <a href="/lab/export?content_root=http://{{ HOSTNAME }}/static/labs/content/simple/base.yml">here</a>.
+      <a href="/?content_root=http://{{ HOSTNAME }}/static/labs/content/simple/base.yml">here</a>.
     </li>
   </ul>
 
   <p>
     This custom introductory text was pulled down from GitHub and rendered in real time.
     Updates to
-    <a href="https://github.com/neoformit/galaxy-labs-engine/blob/dev/app/labs/content/docs/templates/intro.html" target="_blank">
+    <a href="https://github.com/neoformit/galaxy-labs-engine/blob/dev/app/labs/static/labs/content/docs/templates/intro.html" target="_blank">
       this text
     </a>
     on the remote will be reflected on this page. Note that GitHub raw content is
@@ -59,8 +59,8 @@
                 For example, we can explicitly request this page with:
                 <br>
                 <small>
-                  <a href="/lab/export?content_root={{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/base.yml" target="_blank">
-                    http://{{ HOSTNAME }}/lab/export?content_root={{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/base.yml
+                  <a href="/?content_root={{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/base.yml" target="_blank">
+                    http://{{ HOSTNAME }}/?content_root={{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/base.yml
                   </a>
                 </small>
               </li>
@@ -110,7 +110,7 @@
                 <br>
                 <small>
                   <code>
-                    http://{{ HOSTNAME }}/lab/export?content_root=https://raw.githubusercontent.com/myusername/myrepo/path/to/content/base.yml
+                    http://{{ HOSTNAME }}/?content_root=https://raw.githubusercontent.com/myusername/myrepo/path/to/content/base.yml
                   </code>
                 </small>
               </li>
@@ -192,7 +192,7 @@
     const exportInfoButton = $(`
       <a
         class="export-info-button"
-        href="https://github.com/neoformit/galaxy-labs-engine/blob/dev/app/labs/content/docs/${relpath}"
+        href="https://github.com/neoformit/galaxy-labs-engine/blob/dev/app/labs/static/labs/content/docs/${relpath}"
         target="_blank"
       >
         <i class="fab fa-github"></i>
