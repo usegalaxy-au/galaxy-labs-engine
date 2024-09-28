@@ -140,12 +140,9 @@ class ExportLabContext(dict):
 
     def _validate_url(self, url, expected_type):
         """Validate URL to prevent circular request."""
-        if (
-            '/lab/export' in url
-            and url.split('/')[1, 2] == ['lab', 'export']
-        ):
+        if url.strip('/').split('/')[-1] == settings.HOSTNAME:
             raise LabBuildError(
-                "URL cannot contain '/lab/export'.",
+                "URL cannot match the root URL of this server",
                 url=url,
                 source=expected_type,
             )
