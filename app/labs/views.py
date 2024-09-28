@@ -35,10 +35,13 @@ def export_lab(request):
         else:
             context = ExportLabContext(
                 settings.DEFAULT_EXPORTED_LAB_CONTENT_ROOT)
-        context['HOSTNAME'] = settings.HOSTNAME
+            context.update({
+                'LABS_ENGINE_GITHUB_URL': settings.LABS_ENGINE_GITHUB_URL,
+                'EXAMPLE_LABS': settings.EXAMPLE_LABS,
+            })
         context.validate()
     except LabBuildError as exc:
-        return render(request, 'labs//export-error.html', {
+        return render(request, 'labs/export-error.html', {
             'exc': exc,
         }, status=400)
 

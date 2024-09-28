@@ -1,10 +1,10 @@
 """Exported landing pages to be requested by external Galaxy servers.
 
 Example with local YAML:
-http://127.0.0.1:8000/landing/export?content_root=http://127.0.0.1:8000/static/labs/content/genome/main.yml
+http://127.0.0.1:8000/?content_root=http://127.0.0.1:8000/static/labs/content/simple/base.yml
 
 Example URL with remote YAML:
-http://127.0.0.1:8000/landing/export?content_root=https://raw.githubusercontent.com/neoformit/galaxy-labs-engine/dev/app/labs/content/... base.yml  # noqa
+http://127.0.0.1:8000/?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-labs-engine/blob/main/app/labs/content/simple/base.yml
 
 """
 
@@ -140,12 +140,9 @@ class ExportLabContext(dict):
 
     def _validate_url(self, url, expected_type):
         """Validate URL to prevent circular request."""
-        if (
-            '/lab/export' in url
-            and url.split('/')[1, 2] == ['lab', 'export']
-        ):
+        if url.strip('/').split('/')[-1] == settings.HOSTNAME:
             raise LabBuildError(
-                "URL cannot contain '/lab/export'.",
+                "URL cannot match the root URL of this server",
                 url=url,
                 source=expected_type,
             )
