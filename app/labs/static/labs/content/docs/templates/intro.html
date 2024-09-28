@@ -8,24 +8,24 @@
 
   <ul>
     <li>See the content used to generate this documentation page
-      <a href="https://github.com/neoformit/galaxy-labs-engine/tree/dev/app/labs/content/docs" target="_blank">
+      <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_URL }}" target="_blank">
         here.
       </a>
     </li>
     <li>
       See a full working example of an exported Galaxy Lab page
-      <a href="/?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-media-site/dev/webapp/home/labs/genome/base.yml">here</a>.
+      <a href="/?content_root={{ EXAMPLE_LABS.FULL.RAW_URL }}">here</a>.
     </li>
     <li>
       See a minimal working example of a lab page
-      <a href="/?content_root=http://{{ HOSTNAME }}/static/labs/content/simple/base.yml">here</a>.
+      <a href="/?content_root={{ EXAMPLE_LABS.SIMPLE.RAW_URL }}">here</a>.
     </li>
   </ul>
 
   <p>
     This custom introductory text was pulled down from GitHub and rendered in real time.
     Updates to
-    <a href="https://github.com/neoformit/galaxy-labs-engine/blob/dev/app/labs/static/labs/content/docs/templates/intro.html" target="_blank">
+    <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/templates/intro.html" target="_blank">
       this text
     </a>
     on the remote will be reflected on this page. Note that GitHub raw content is
@@ -48,7 +48,7 @@
             <ul>
               <li>
                 The root of your site's content should be a YAML file - see
-                <a href="https://github.com/neoformit/galaxy-labs-engine/tree/dev/app/labs/content/docs/base.yml" target="_blank">
+                <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/base.yml" target="_blank">
                   base.yml
                 </a>
                 for the content root of this page.
@@ -59,8 +59,8 @@
                 For example, we can explicitly request this page with:
                 <br>
                 <small>
-                  <a href="/?content_root={{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/base.yml" target="_blank">
-                    http://{{ HOSTNAME }}/?content_root={{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/base.yml
+                  <a href="/?content_root={{ EXAMPLE_LABS.DOCS.RAW_URL }}" target="_blank">
+                    http://{{ HOSTNAME }}/?content_root={{ EXAMPLE_LABS.DOCS.RAW_URL }}
                   </a>
                 </small>
               </li>
@@ -73,9 +73,9 @@
               <li>
                 The most useful part of this machinery is the <code>sections</code> content, which populates the tool/workflow sections below.
                 See
-                <a href="{{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/data.yml" target="_blank">data.yml</a>
+                <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/section_1.yml" target="_blank">section_1.yml</a>
                 and
-                <a href="{{ GITHUB_CONTENT_ROOT_BASE_URL }}/docs/assembly.yml" target="_blank">assembly.yml</a>
+                <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/section_2.yml" target="_blank">section_2.yml</a>
                 for examples of how to structure this content in YAML format.
               </li>
             </ul>
@@ -96,7 +96,7 @@
             <ol>
               <li>
                 Copy our
-                <a href="https://github.com/neoformit/galaxy-labs-engine/tree/dev/app/labs/content/docs" target="_blank">
+                <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_URL }}" target="_blank">
                   example content
                 </a>
                 directory to your own github repository.
@@ -139,7 +139,7 @@
             defined there. This means you can have webforms, interactive elements,
             and more. Check out the
             <a
-              href="https://github.com/usegalaxy-au/galaxy-media-site/blob/dev/webapp/home/labs/genome/conclusion.yml"
+              href="{{ EXAMPLE_LABS.FULL.WEB_DIR_ROOT }}/conclusion.yml"
               target="_blank"
             >
               Genome Lab conclusion.html
@@ -170,7 +170,7 @@
         <p>
           This is not a real Galaxy Lab page! It's a documentation page, to show
           you how to create your own Galaxy Lab pages using the
-          <a href="https://github.com/neoformit/galaxy-labs-engine" target="_blank">
+          <a href="{{ LABS_ENGINE_GITHUB_URL }}" target="_blank">
             Galaxy Labs Engine</a>.
         </p>
 
@@ -192,7 +192,7 @@
     const exportInfoButton = $(`
       <a
         class="export-info-button"
-        href="https://github.com/neoformit/galaxy-labs-engine/blob/dev/app/labs/static/labs/content/docs/${relpath}"
+        href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/${relpath}"
         target="_blank"
       >
         <i class="fab fa-github"></i>
