@@ -1,4 +1,4 @@
-name: Dev deploy with Ansible playbook
+name: Deploy to dev server with Ansible playbook
 
 on:
   workflow_run:
