@@ -5,7 +5,7 @@
   vars_files:
     - group_vars/VAULT
     - group_vars/webservers.yml
-    - host_vars/labs.neoformit.com.yml
+    - host_vars/dev-labs.gvl.org.au.yml
   roles:
     - role: geerlingguy.docker
       tags: init
