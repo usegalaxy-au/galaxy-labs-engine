@@ -7,7 +7,7 @@
 - name: clone git repository for galaxy-labs-engine
   ansible.builtin.git:
     repo: https://github.com/neoformit/galaxy-labs-engine.git
-    branch: "{{ git_branch }}"
+    version: "{{ git_branch }}"
     dest: "{{ project_root }}"
     clone: yes
     force: yes
@@ -50,14 +50,6 @@
   loop: "{{ labs_engine.files }}"
   tags: config
 
-- name: Django create django_cache table with 'manage.py createcachetable'
-  shell: >
-    docker compose --profile prod run --rm labs-engine
-    python manage.py createcachetable
-  args:
-    chdir: "{{ config_root }}"
-  tags: django
-
 - name: update media file ownership
   file: dest={{ django_root }}/app/media owner=www-data group=www-data mode=u=rwX,g=rwX,o=rwX recurse=yes
   tags:
@@ -75,6 +67,7 @@
   tags:
     - permissions
     - update
+  ignore_errors: yes
 
 - name: update sqlite3 database directory permissions
   file:
@@ -85,6 +78,14 @@
   tags:
     - permissions
     - update
+
+- name: Django create django_cache table with 'manage.py createcachetable'
+  shell: >
+    docker compose --profile prod run --rm labs-engine
+    python manage.py createcachetable
+  args:
+    chdir: "{{ config_root }}"
+  tags: django
 
 - name: Django run migrations
   shell: >
@@ -100,12 +101,11 @@
 
 - name: Django collect static files
   shell: >
-    docker compose --profile prod run --rm
+    docker compose --profile prod run --rm --user root
     labs-engine
     python manage.py collectstatic --noinput
   args:
     chdir: "{{ config_root }}"
-  when: git.changed
   tags: always
 
 - name: Django ensure superuser login

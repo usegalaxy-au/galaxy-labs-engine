@@ -44,9 +44,40 @@ MEDIA_ROOT = BASE_DIR / 'app/media'
 LOG_ROOT = ensure_dir(BASE_DIR / 'app/logs')
 DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
     f'http://{HOSTNAME}/static/labs/content/docs/base.yml')
-GITHUB_CONTENT_ROOT_BASE_URL = (
-    "https://raw.githubusercontent.com/neoformit"
-    "/galaxy-labs-engine/dev/app/labs/content")
+
+CODEX_REPO = 'galaxyproject/galaxy_codex'
+CODEX_GITHUB_URL = f'https://github.com/{CODEX_REPO}'
+LABS_ENGINE_GITHUB_REPO = 'usegalaxy-au/galaxy-labs-engine'
+LABS_ENGINE_GITHUB_URL = f'https://github.com/{LABS_ENGINE_GITHUB_REPO}'
+EXAMPLE_LABS = {
+    'FULL': {
+        'RAW_URL': (
+            f'https://raw.githubusercontent.com/{CODEX_REPO}/refs/heads/main'
+            '/communities/genome/lab/base.yml'),
+        'WEB_DIR_URL': (
+            f'{CODEX_GITHUB_URL}/blob/main'
+            '/communities/genome/lab'),
+    },
+    'DOCS': {
+        'RAW_URL': (
+            f'https://raw.githubusercontent.com/{LABS_ENGINE_GITHUB_REPO}/refs'
+            '/heads/main/app/labs/static/labs/content/docs/base.yml'),
+        'WEB_DIR_URL': (
+            f'{LABS_ENGINE_GITHUB_URL}/tree/dev/app/labs/static/labs/content'
+            '/docs'),
+        'WEB_DIR_ROOT': (
+            f'{LABS_ENGINE_GITHUB_URL}/blob/dev/app/labs/static/labs/content'
+            '/docs'),
+    },
+    'SIMPLE': {
+        'RAW_URL': (
+            f'https://raw.githubusercontent.com/{LABS_ENGINE_GITHUB_REPO}'
+            '/refs/heads/main/app/labs/static/labs/content/simple/base.yml'),
+        'WEB_DIR_URL': (
+            f'{LABS_ENGINE_GITHUB_URL}/blob/dev/app/labs/static/labs/content'
+            '/simple'),
+    },
+}
 
 # Hostnames
 ALLOWED_HOSTS = [

@@ -3,7 +3,10 @@
   remote_user: ubuntu
   become: true
   vars_files:
-    - group_vars/secrets.yml
+    - group_vars/VAULT
     - group_vars/webservers.yml
+    - host_vars/labs.usegalaxy.org.au.yml
   roles:
+    - role: geerlingguy.docker
+      tags: init
     - galaxy_labs_engine
