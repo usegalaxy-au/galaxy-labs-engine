@@ -11,6 +11,7 @@
     dest: "{{ project_root }}"
     clone: yes
     force: yes
+    update: yes
   tags: always
   register: git
 
