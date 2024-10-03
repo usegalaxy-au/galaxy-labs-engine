@@ -1,5 +1,7 @@
 # Project paths
 *.sqlite3
+app/app/static/
+app/app/media/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
