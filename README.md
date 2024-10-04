@@ -27,4 +27,3 @@ https://labs.usegalaxy.org.au/?content_root=https://raw.githubusercontent.com/my
 
 To get a webpage like
 [this](https://labs.usegalaxy.org.au/?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-labs-engine/dev/app/labs/content/simple/main.yml).
-
