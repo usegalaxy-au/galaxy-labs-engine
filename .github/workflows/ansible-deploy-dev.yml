@@ -40,7 +40,7 @@ jobs:
       - name: Run Ansible Playbook
         run: |
           cd ansible
-          ansible-playbook -i hosts dev.yml
+          ansible-playbook -i hosts dev.yml --tags update
         env:
           ANSIBLE_HOST_KEY_CHECKING: 'False'
           ANSIBLE_REMOTE_USER: ${{ secrets.SSH_USER }}
