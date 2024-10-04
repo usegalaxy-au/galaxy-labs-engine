@@ -6,8 +6,8 @@
 
 - name: clone git repository for galaxy-labs-engine
   ansible.builtin.git:
-    repo: https://github.com/neoformit/galaxy-labs-engine.git
-    version: "{{ git_branch }}"
+    repo: "{{ labs_engine_repo }}"
+    version: "{{ labs_engine_branch }}"
     dest: "{{ project_root }}"
     clone: yes
     force: yes
