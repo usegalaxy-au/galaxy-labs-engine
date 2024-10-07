@@ -20,6 +20,8 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('labs.urls')),
+    # Add test error url
+    path('test-error-handlers/', lambda request: 1 / 0),
 ]
 
 handler400 = 'labs.views.custom_400'
