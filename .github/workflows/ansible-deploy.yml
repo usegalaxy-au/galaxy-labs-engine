@@ -2,26 +2,26 @@ name: Deploy to prod server with Ansible playbook
 
 on:
   workflow_run:
-    workflows: ["Django tests"]
+    workflows: ["Build and Push Docker Image"]
     types:
       - completed
     branches:
+      - dev
       - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: deployment
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     concurrency:
-      group: docker-build-group
-      cancel-in-progress: false
+      group: deploy-group
+      cancel-in-progress: true
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
         with:
-          ref: main
+          ref: ${{ github.ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -42,8 +42,13 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
+          if [ $GITHUB_REF == "refs/heads/dev" ]; then
+            PLAYBOOK=dev.yml
+          else
+            PLAYBOOK=prod.yml
+          fi
           cd ansible
-          ansible-playbook -i hosts prod.yml --tags update
+          ansible-playbook -i hosts $PLAYBOOK --tags update
         env:
           ANSIBLE_HOST_KEY_CHECKING: 'False'
           ANSIBLE_REMOTE_USER: ${{ secrets.SSH_USER }}
