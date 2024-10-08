@@ -1,11 +1,12 @@
+# flake8: noqa
+
 """Settings for production.
 
 See base.py for mail config read from .env file.
 """
 
-# flake8: noqa
-
 import os
+import logging
 import sentry_sdk
 
 from .base import *
@@ -43,3 +44,4 @@ if SENTRY_DNS:
         # of transactions for tracing.
         traces_sample_rate=1.0,
     )
+logging.getLogger('sentry_sdk').setLevel(logging.ERROR)
