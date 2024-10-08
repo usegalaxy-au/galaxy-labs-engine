@@ -1,4 +1,4 @@
-name: Deploy to prod server with Ansible playbook
+name: Deploy with Ansible playbook
 
 on:
   workflow_run:
