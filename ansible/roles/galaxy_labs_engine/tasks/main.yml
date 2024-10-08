@@ -4,6 +4,12 @@
   ansible.builtin.apt:
     update_cache: yes
 
+- name: Docker pull labs-engine image
+  ansible.builtin.docker_image:
+    name: "{{ labs_engine_docker_image }}"
+    source: pull
+  tags: update
+
 - name: clone git repository for galaxy-labs-engine
   ansible.builtin.git:
     repo: "{{ labs_engine_repo }}"
