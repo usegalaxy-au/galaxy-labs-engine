@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: build
     concurrency:
       group: docker-build-group
       cancel-in-progress: false
