@@ -69,3 +69,5 @@ github_api_token: "{{ vault_github_api_token }}"
 django_log_levels:
   console: INFO
   cache: DEBUG
+
+django_sentry_dns: "{{ vault_sentry_dns }}"

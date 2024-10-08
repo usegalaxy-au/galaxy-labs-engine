@@ -8,7 +8,6 @@ project_root: /home/ubuntu/labs-engine
 config_root: /home/ubuntu/config
 django_root: "{{ project_root }}/app"
 
-
 labs_engine:
   templates:
     - src: "{{ role_path }}/templates/docker-compose.yml.j2"
@@ -40,3 +39,6 @@ admin_user: null
 django_log_levels:
   console: INFO
   cache: INFO
+
+# Set this to enable logging to sentry
+django_sentry_dns: null
