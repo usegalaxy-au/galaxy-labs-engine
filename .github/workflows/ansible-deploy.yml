@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: deployment
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    concurrency:
+      group: docker-build-group
+      cancel-in-progress: false
 
     steps:
       - name: Checkout Repository
