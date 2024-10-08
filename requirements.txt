@@ -10,3 +10,4 @@ beautifulsoup4
 django_light
 requests==2.*
 requests_mock==1.*
+sentry-sdk==2.*
