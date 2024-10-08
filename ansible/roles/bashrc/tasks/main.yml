@@ -1,0 +1,15 @@
+---
+
+- name: Add user .bash_aliases
+  ansible.builtin.copy:
+    content: |
+      alias sk='nano ~/.bash_aliases && . ~/.bash_aliases && echo "Sourced new .bash_aliases"'
+      alias l='ls -lh --group-directories-first'
+      alias la='ls -lhXa --group-directories-first'
+      alias c='clear'
+      alias ..='cd ..'
+      alias ...='cd ../..'
+      alias ....='cd ../../..'
+      alias path='echo $PATH | sed "s/:/\n/g"'
+      alias greps='ps aux | grep -v "grep" | grep'
+    dest: /home/{{ ansible_user }}/.bash_aliases
