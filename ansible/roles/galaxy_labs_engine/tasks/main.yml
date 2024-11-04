@@ -38,7 +38,7 @@
 
 - name: obtain initial SSL certificate with certbot
   include_tasks: certbot.yml
-  when: certbot_certificates.stat.exists == false
+  when: certbot_ssl and certbot_certificates.stat.exists is false
   tags: certbot
 
 - name: template webserver configuration
