@@ -130,13 +130,15 @@
     - init
     - django
 
-- name: setup certbot renew cron job
-  cron:
-    name: "certbot-renew"
-    minute: "0"
-    hour: "0"
-    job: "docker compose --profile certbot run --rm certbot renew"
-  tags: certbot
+- name: Django clear cache
+  shell: >
+    docker compose --profile prod run --rm
+    labs-engine
+    python manage.py shell -c
+      "from django.core.cache import cache; cache.clear()"
+  args:
+    chdir: "{{ config_root }}"
+  tags: clear_cache
 
 - name: enable labs_engine socket
   ansible.builtin.systemd:
