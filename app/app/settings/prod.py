@@ -17,12 +17,7 @@ validate.env()
 
 DEBUG = False
 
-log_levels = {
-    'console': os.getenv('LOG_LEVEL_CONSOLE', 'INFO'),
-    'cache': os.getenv('LOG_LEVEL_CACHE', 'INFO'),
-}
-
-LOGGING = config.configure_logging(LOG_ROOT, log_levels)
+LOGGING = config.configure_logging(LOG_ROOT)
 
 ADMIN_NAME = os.getenv('ADMIN_NAME', 'Admin')
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL',
