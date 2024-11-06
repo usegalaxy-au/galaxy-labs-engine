@@ -26,4 +26,4 @@ And then request your page anywhere like this:
 https://labs.usegalaxy.org.au/?content_root=https://raw.githubusercontent.com/my-username/my-labs-repo/my-lab/base.yml
 
 To get a webpage like
-[this](https://labs.usegalaxy.org.au/?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-labs-engine/dev/app/labs/content/simple/main.yml).
+[this](https://labs.usegalaxy.org.au/?content_root=https://github.com/usegalaxy-au/galaxy-labs-engine/blob/dev/app/labs/static/labs/content/simple/base.yml).
