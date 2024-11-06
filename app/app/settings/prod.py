@@ -1,11 +1,13 @@
+# flake8: noqa
+
 """Settings for production.
 
 See base.py for mail config read from .env file.
 """
 
-# flake8: noqa
-
 import os
+import logging
+import sentry_sdk
 
 from .base import *
 from . import validate
@@ -33,3 +35,13 @@ if ADMIN_EMAIL:
 # Use manifest to manage static file versions for cache busting:
 STATICFILES_STORAGE = ('django.contrib.staticfiles.storage'
                        '.ManifestStaticFilesStorage')
+
+SENTRY_DNS = os.getenv('SENTRY_DNS')
+if SENTRY_DNS:
+    sentry_sdk.init(
+        dsn=SENTRY_DNS,
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for tracing.
+        traces_sample_rate=1.0,
+    )
+logging.getLogger('sentry_sdk').setLevel(logging.ERROR)

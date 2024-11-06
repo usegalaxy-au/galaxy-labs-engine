@@ -27,7 +27,7 @@ def export_lab(request):
     if response := LabCache.get(request):
         return response
 
-    template = 'labs//exported.html'
+    template = 'labs/exported.html'
 
     try:
         if request.GET.get('content_root'):
@@ -47,14 +47,20 @@ def export_lab(request):
 
     # Multiple rounds of templating to render recursive template tags from
     # remote data with embedded template tags
-    i = 0
-    prev_template_str = ''
-    template_str = render_to_string(template, context, request)
-    while prev_template_str.strip('\n') != template_str.strip('\n') and i < 4:
-        prev_template_str = template_str
-        t = Template('{% load markdown %}\n\n' + template_str)
-        template_str = t.render(RequestContext(request, context))
-        i += 1
+    try:
+        i = 0
+        prev_template_str = ''
+        template_str = render_to_string(template, context, request)
+        while (
+            prev_template_str.strip('\n') != template_str.strip('\n')
+            and i < 4
+        ):
+            prev_template_str = template_str
+            t = Template('{% load markdown %}\n\n' + template_str)
+            template_str = t.render(RequestContext(request, context))
+            i += 1
+    except Exception as exc:
+        return report_exception_response(request, exc)
 
     response = LabCache.put(request, template_str)
 
@@ -65,8 +71,8 @@ def report_exception_response(request, exc, title=None):
     """Report an exception to the user."""
     return render(request, 'generic.html', {
         'message': str(exc),
-        'title': title or "Sorry, an error has occurred",
-    })
+        'title': title or "Sorry, an error occurred rendering this page.",
+    }, status=400)
 
 
 def custom_400(request, exception, template_name="400.html"):

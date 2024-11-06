@@ -1,11 +1,12 @@
 ---
-git_branch: main
+
+labs_engine_repo: https://github.com/usegalaxy-au/galaxy-labs-engine.git
+labs_engine_branch: main
+labs_engine_docker_image: neoformit/galaxy-labs-engine:latest
 
 project_root: /home/ubuntu/labs-engine
 config_root: /home/ubuntu/config
 django_root: "{{ project_root }}/app"
-
-labs_engine_docker_image: neoformit/galaxy-labs-engine:latest
 
 labs_engine:
   templates:
@@ -38,3 +39,6 @@ admin_user: null
 django_log_levels:
   console: INFO
   cache: INFO
+
+# Set this to enable logging to sentry
+django_sentry_dns: null

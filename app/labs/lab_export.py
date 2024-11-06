@@ -287,8 +287,12 @@ class ExportLabContext(dict):
 
     def _fetch_img_src(self, relpath):
         """Build URL for image."""
-        if self.content_root:
-            return (self.parent_url + relpath.lstrip('./'))
+        url = relpath
+        if not relpath.startswith('http'):
+            url = self.parent_url + relpath.lstrip('./')
+        if 'github.com' in url:
+            return self._make_raw(url)
+        return url
 
     def _fetch_snippet(self, relpath):
         """Fetch HTML snippet from remote URL."""

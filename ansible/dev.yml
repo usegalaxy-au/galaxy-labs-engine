@@ -9,4 +9,7 @@
   roles:
     - role: geerlingguy.docker
       tags: init
-    - galaxy_labs_engine
+    - role: bashrc
+      tags: init
+    - role: galaxy_labs_engine
+      tags: always
