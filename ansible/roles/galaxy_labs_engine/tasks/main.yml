@@ -135,7 +135,7 @@
     docker compose --profile prod run --rm
     labs-engine
     python manage.py shell -c
-      "from django.core.cache import cache; cache.clear()"
+    "from django.core.cache import cache; cache.clear()"
   args:
     chdir: "{{ config_root }}"
   tags: clear_cache
