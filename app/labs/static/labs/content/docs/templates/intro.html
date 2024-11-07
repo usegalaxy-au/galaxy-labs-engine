@@ -110,17 +110,35 @@
                 <br>
                 <small>
                   <code>
-                    http://{{ HOSTNAME }}/?content_root=https://raw.githubusercontent.com/myusername/myrepo/path/to/content/base.yml
+                    http://{{ HOSTNAME }}/?content_root=https://github.com/myusername/myrepo/blob/branch/content/base.yml
                   </code>
                 </small>
               </li>
-              <li>
-                If using GitHub to serve your content, make sure that your URL (as shown above) starts with
-                <code>https://raw.githubusercontent.com</code>! You can click on the "Raw" button on any file in
-                GitHub to get the correct URL.
-              </li>
             </ol>
           </p>
+
+          <div class="alert alert-warning my-4">
+            <p class="lead text-bf">A note on caching</p>
+            <p>
+              When making changes to your Lab content, you may notice that updates are not immediate. This is because of caching. There are two levels of caching to keep in mind:
+            </p>
+            <ul>
+              <li>
+                The Labs Engine caches Lab content forever, unless a request is made with the <code>cache=false</code> parameter. When you are developing your Lab page, use this parameter to see your changes immediately, for example:
+                <a href="">http://{{ HOSTNAME }}/?content_root=https://github.com/myusername/myrepo/blob/branch/content/base.yml&cache=false</a>
+              </li>
+              <li>
+                Using the <code>cache=false</code> parameter will refresh the cache. This happens automatically on every pull request to the
+                <a href="https://github.com/galaxyproject/galaxy_codex">
+                  Galaxy Codex
+                </a>
+                repository, where global Labs content is stored.
+              </li>
+              <li>
+                When making changes to your Lab content, you may notice that updates are not immediate, because GitHub raw content is cached for 5 minutes.
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -137,12 +155,12 @@
             The webpage includes Bootstrap 5.1, Material icons, and
             FontAwesome 5.15 and JQuery 3.6 so you can use any styling/functionality
             defined there. This means you can have webforms, interactive elements,
-            and more. Check out the
+            and more. Check out Galaxy Australia's
             <a
-              href="{{ EXAMPLE_LABS.FULL.WEB_DIR_ROOT }}/conclusion.yml"
+              href="{{ EXAMPLE_LABS.FULL.WEB_DIR_URL }}/usegalaxy.org.au/templates/conclusion.html"
               target="_blank"
             >
-              Genome Lab conclusion.html
+              Genome Lab conclusion
             </a>
             for an example of more complex usage including modals and webforms. Modals
             (popups) are a great way to hide additional information until the user
