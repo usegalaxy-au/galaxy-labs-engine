@@ -48,6 +48,14 @@
       register: certbot_certificates
       tags: certbot
 
+    - name: setup certbot renew cron job
+      cron:
+        name: "certbot-renew"
+        minute: "0"
+        hour: "0"
+        job: "docker compose --profile certbot run --rm certbot renew"
+      tags: certbot
+
   always:
     - name: run docker compose down
       shell: >

@@ -1,6 +1,7 @@
 """Logging configuration."""
 
 import re
+import os
 from django.template.base import VariableDoesNotExist
 
 
@@ -13,6 +14,12 @@ EXCLUDE_PATTERNS = [
     r'invalid http_host header',
     r"Field '.+' expected an? \w+ but got '.+'"
 ]
+
+
+log_levels = {
+    'console': os.getenv('LOG_LEVEL_CONSOLE', 'INFO'),
+    'cache': os.getenv('LOG_LEVEL_CACHE', 'INFO'),
+}
 
 
 def filter_exc_by_type(record):
@@ -33,7 +40,7 @@ def filter_exc_by_pattern(record):
     return True
 
 
-def configure_logging(log_root, levels):
+def configure_logging(log_root):
     """Return logging configuration."""
     return {
         'version': 1,
@@ -76,7 +83,7 @@ def configure_logging(log_root, levels):
             },
             'cache_file': {
                 'delay': True,
-                'level': levels.get('cache', 'INFO'),
+                'level': log_levels.get('cache', 'INFO'),
                 'class': 'logging.handlers.RotatingFileHandler',
                 'maxBytes': 1000000,  # 1MB ~ 20k rows
                 'backupCount': 1,
@@ -110,7 +117,7 @@ def configure_logging(log_root, levels):
             },
             'console': {
                 'class': 'logging.StreamHandler',
-                'level': levels.get('console', 'INFO'),
+                'level': log_levels.get('console', 'INFO'),
                 'formatter': 'verbose',
             },
         },

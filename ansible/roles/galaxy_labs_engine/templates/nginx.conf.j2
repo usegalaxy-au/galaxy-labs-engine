@@ -1,8 +1,16 @@
 {% if certbot_certificates.stat.exists %}# Server config for {{ inventory_hostname }} in docker
 
+
+{% if nginx_limit_requests_per_minute %}
+# Define a zone to store client IP rate data, 1MB can store data for about 16,000 IPs
+limit_req_zone $binary_remote_addr zone=one:10m rate={{ nginx_limit_requests_per_minute }}r/m;
+{% endif %}
+
+
 upstream {{ docker_container_name }} {
     server {{ docker_container_name }}:8000;
 }
+
 
 server {
     # redirect www to non-www
@@ -51,6 +59,9 @@ server {
         proxy_hide_header     X-Frame-Options;
         proxy_read_timeout    600;  # seconds
         client_max_body_size  1000m;
+        {% if nginx_limit_requests_per_minute %}
+        limit_req zone=one burst=5 nodelay;
+        {% endif %}
     }
 
     listen 443 ssl;
@@ -64,7 +75,6 @@ server {
 # Server config for certbot
 
 server {
-
     listen 80;
     server_name {{ inventory_hostname }};
 
@@ -78,5 +88,4 @@ server {
             return 301 https://$host$request_uri;
         }
     }
-
 }
