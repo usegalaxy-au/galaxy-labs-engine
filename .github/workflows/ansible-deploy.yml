@@ -42,6 +42,7 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
+          echo "GITHUB_REF = $GITHUB_REF"
           if [ $GITHUB_REF == "refs/heads/dev" ]; then
             PLAYBOOK=dev.yml
           else
