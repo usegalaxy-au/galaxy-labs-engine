@@ -44,6 +44,7 @@ jobs:
         run: |
           # If PR reference base ref, else use current ref
           REF="${{ github.event.workflow_run.base_ref || github.ref }}"
+          echo "Selected REF: $REF"
           if [ $REF == *"dev" ]; then
             PLAYBOOK=dev.yml
           else
