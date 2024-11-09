@@ -43,6 +43,8 @@ jobs:
       - name: Run Ansible Playbook
         run: |
           echo "GITHUB_REF = $GITHUB_REF"
+          echo "github.event.workflow_run.head_branch = ${{ github.event.workflow_run.head_branch }}"
+          echo "github.event.workflow_run.base_ref = ${{ github.event.workflow_run.base_ref }}"
           if [ $GITHUB_REF == "refs/heads/dev" ]; then
             PLAYBOOK=dev.yml
           else
