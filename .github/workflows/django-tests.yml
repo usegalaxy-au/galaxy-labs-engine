@@ -48,10 +48,15 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+      if: success()
+
     - name: Install Dependencies
+      if: success()
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+
     - name: Run Tests
+      if: success()
       run: |
         cd app && python manage.py test
