@@ -9,6 +9,7 @@ from typing import Optional, Union
 
 def html_tags(v: str) -> str:
     """Validate markdown content."""
+    v = str(v)
     if "<" not in v:
         return v
     # Remove self closing tags
