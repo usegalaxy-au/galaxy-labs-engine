@@ -12,6 +12,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     environment: deployment
     concurrency:
       group: deploy-group-${{ github.event.workflow_run.outputs.branch }}
