@@ -31,12 +31,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
-    - name: Debug github refs
-      run: |
-        echo "github.head_ref = ${{ github.head_ref }}"
-        echo "github.event.workflow_run.head_branch = ${{ github.event.workflow_run.head_branch }}"
-        echo "github.event.workflow_run.base_ref = ${{ github.event.workflow_run.base_ref }}"
+      with:
+        ref: ${{ github.ref }}
 
     - name: Check if event is a push to PR branch
       id: check_event

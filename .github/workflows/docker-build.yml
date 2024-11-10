@@ -23,9 +23,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-          with:
-            ref: github.event.workflow_run.outputs.branch
-            fetch-depth: 0  # Fetch the entire history to ensure 'HEAD^' is resolvable
+        with:
+          ref: github.event.workflow_run.outputs.branch
+          fetch-depth: 0  # Fetch the entire history to ensure 'HEAD^' is resolvable
 
       - name: Debug github refs
         run: |
