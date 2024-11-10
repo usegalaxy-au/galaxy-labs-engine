@@ -17,23 +17,24 @@ jobs:
     concurrency:
       group: deploy-group-${{ github.ref }}
       cancel-in-progress: true
+    outputs:
+      branch: "${{ github.event.workflow_run.outputs.branch }}"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
           with:
+            ref: github.event.workflow_run.outputs.branch
             fetch-depth: 0  # Fetch the entire history to ensure 'HEAD^' is resolvable
 
       - name: Debug github refs
         run: |
-          echo "GITHUB_REF = $GITHUB_REF"
-          echo "github.event.workflow_run.head_branch = ${{ github.event.workflow_run.head_branch }}"
-          echo "github.event.workflow_run.base_ref = ${{ github.event.workflow_run.base_ref }}"
+          echo "github.event.workflow_run.outputs.branch = ${{ github.event.workflow_run.outputs.branch }}"
 
       - name: Check if Dockerfile or requirements.txt was changed
         id: check_dependencies
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q -e 'Dockerfile' -e 'requirements.txt'; then
+          if git diff --name-only github.event.workflow_run.outputs.branch | grep -q -e 'Dockerfile' -e 'requirements.txt'; then
             echo "Dockerfile or requirements.txt changed"
             echo "::set-output name=updated::true"
           else

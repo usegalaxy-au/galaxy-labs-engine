@@ -14,14 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: deployment
     concurrency:
-      group: deploy-group-${{ github.ref }}
+      group: deploy-group-${{ github.event.workflow_run.outputs.branch }}
       cancel-in-progress: true
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.event.workflow_run.outputs.branch }}
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -42,13 +42,10 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
-          echo "GITHUB_REF = $GITHUB_REF"
-          echo "github.event.workflow_run.head_branch = ${{ github.event.workflow_run.head_branch }}"
-          echo "github.event.workflow_run.base_ref = ${{ github.event.workflow_run.base_ref }}"
-          if [ $GITHUB_REF == "refs/heads/dev" ]; then
-            PLAYBOOK=dev.yml
-          else
+          if [ ${{ github.event.workflow_run.outputs.branch }} == "main" ]; then
             PLAYBOOK=prod.yml
+          else
+            PLAYBOOK=dev.yml
           fi
           cd ansible
           ansible-playbook -i hosts $PLAYBOOK --tags update
