@@ -22,6 +22,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Debug github refs
+        run: |
+          echo "GITHUB_REF = $GITHUB_REF"
+          echo "github.event.workflow_run.head_branch = ${{ github.event.workflow_run.head_branch }}"
+          echo "github.event.workflow_run.base_ref = ${{ github.event.workflow_run.base_ref }}"
+
       - name: Check if Dockerfile or requirements.txt was changed
         id: check_dependencies
         run: |
