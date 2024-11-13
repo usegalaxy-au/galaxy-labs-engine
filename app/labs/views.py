@@ -1,6 +1,7 @@
 """Views for home app."""
 
 import logging
+import traceback
 from django.conf import settings
 from django.shortcuts import render
 from django.template import (
@@ -41,6 +42,7 @@ def export_lab(request):
             })
         context.validate()
     except LabBuildError as exc:
+        logger.warning(f"Error building lab: {traceback.format_exc()}")
         return render(request, 'labs/export-error.html', {
             'exc': exc,
         }, status=400)
@@ -60,6 +62,10 @@ def export_lab(request):
             template_str = t.render(RequestContext(request, context))
             i += 1
     except Exception as exc:
+        logger.error(
+            f"Error rendering template for"
+            f" content_root={request.GET.get('content_root')}:"
+            f"\n{traceback.format_exc()}")
         return report_exception_response(request, exc)
 
     response = LabCache.put(request, template_str)
