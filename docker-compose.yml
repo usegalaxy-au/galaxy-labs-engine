@@ -92,11 +92,22 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: always
 
-  certbot:
+  certbot-init:
     profiles:
       - certbot
     depends_on:
       - nginx
+    image: certbot/certbot:latest
+    container_name: certbot
+    volumes:
+      - /var/www/certbot:/var/www/certbot:rw
+      - /etc/letsencrypt:/etc/letsencrypt:rw
+
+  certbot:
+    profiles:
+      - certbot
+    # depends_on:  # N.B. certbot depends on nginx but it's usually running and
+    #   - nginx    # causes a container name collision
     image: certbot/certbot:latest
     container_name: certbot
     volumes:

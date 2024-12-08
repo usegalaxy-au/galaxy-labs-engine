@@ -31,12 +31,12 @@
 
     - name: Request SSL certificate with certbot
       shell: >
-        docker compose --profile certbot run --rm certbot certonly \
-          --webroot                                                \
-          --webroot-path /var/www/certbot/                         \
-          --agree-tos                                              \
-          --non-interactive                                        \
-          -d "{{ certbot_domain }}"                                \
+        docker compose --profile certbot run --rm certbot-init certonly \
+          --webroot                                                     \
+          --webroot-path /var/www/certbot/                              \
+          --agree-tos                                                   \
+          --non-interactive                                             \
+          -d "{{ certbot_domain }}"                                     \
           -m "{{ certbot_renew_email }}"
       args:
         chdir: "{{ config_root }}"
@@ -53,7 +53,7 @@
         name: "certbot-renew"
         minute: "0"
         hour: "0"
-        job: "docker compose --profile certbot run --rm certbot renew"
+        job: "cd {{ config_root }} && docker compose --profile certbot run --rm certbot renew"
       tags: certbot
 
   always:
