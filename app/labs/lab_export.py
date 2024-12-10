@@ -16,7 +16,7 @@ import yaml
 from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
 from django.conf import settings
 from markdown2 import Markdown
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from types import SimpleNamespace
 from utils.exceptions import LabBuildError
@@ -75,15 +75,19 @@ class ExportLabContext(dict):
 
     def _validate_sections(self):
         """Validate sections against Pydantic schema."""
+        validated_sections = []
         for section in self['sections']:
             try:
-                LabSectionSchema(**section)
+                validated_sections.append(
+                    LabSectionSchema(**section).model_dump()
+                )
             except ValidationError as e:
                 raise LabBuildError(
                     e,
                     section_id=section["id"],
                     source='YAML',
                 )
+        self['sections'] = validated_sections
 
     def _get(
         self,
@@ -167,7 +171,7 @@ class ExportLabContext(dict):
         context = self._fetch_yaml_content(self.content_root, extend=False)
 
         if not self.content_root.endswith('base.yml'):
-            # Attempt to extend base.yml with self.content_root
+            # Attempt to extend base.yml with the given content_root
             base_content_url = (self.parent_url + 'base.yml')
             base_context = self._fetch_yaml_content(
                 base_content_url, ignore_404=True, extend=False)
@@ -176,7 +180,7 @@ class ExportLabContext(dict):
                 context = base_context
 
         try:
-            LabSchema(**context)
+            context = LabSchema(**context).model_dump()
         except ValidationError as exc:
             raise LabBuildError(exc, url=self.content_root, source='YAML')
 
@@ -216,6 +220,11 @@ class ExportLabContext(dict):
                     for item in data
                     if not is_excluded_item(item)
                 ]
+            elif isinstance(data, BaseModel):
+                data = {
+                    k: filter_excluded_items(v)
+                    for k, v in data.model_dump().items()
+                }
             return data
 
         if self.get('root_domain'):
