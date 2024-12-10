@@ -91,3 +91,21 @@ ul.nav-pills li.nav-item {
   background-color: #25537B;
   padding: 0.25rem 0.5rem;
 }
+
+@media screen and (max-width: 850px) {
+  .lab-header {
+    font-size: 3.5rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .lab-header {
+    font-size: 3rem;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .lab-header {
+    font-size: 2.5rem;
+  }
+}
