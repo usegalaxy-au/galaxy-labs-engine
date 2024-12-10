@@ -30,17 +30,8 @@
     {% block script %}
     {% endblock %}
 
+    <script src="{% static 'labs/js/load-fonts.js' %}"></script>
     <script type="text/javascript">
-
-      // Load material icons and display when page has loaded
-      document.fonts.onloadingdone = () => {
-        $('.material-icons').css({
-          'opacity': 1,
-          'max-width': 'unset',
-          'overflow': 'visible'
-        });
-      }
-
       $(document).ready( () => {
         // Enable bootstrap tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
