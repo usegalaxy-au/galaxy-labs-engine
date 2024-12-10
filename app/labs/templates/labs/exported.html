@@ -27,7 +27,7 @@
 
 <main>
 
-  {% include 'labs//components/gtn-modal.html' %}
+  {% include 'labs/components/gtn-modal.html' %}
 
   <section id="headerSection" class="lab-header d-flex align-items-center h-100">
     {% if snippets.header_logo %}
@@ -41,7 +41,7 @@
   {% endif %}
 
   {% for section in sections %}
-    {% include 'labs//components/section.html' with section=section %}
+    {% include 'labs/components/section.html' with section=section %}
   {% endfor %}
 
   {% if snippets.conclusion_md %}
@@ -49,14 +49,14 @@
   {% endif %}
 
   {% if contributors %}
-  {% include 'labs//components/contributors.html' %}
+  {% include 'labs/components/contributors.html' %}
   {% endif %}
 
 </main>
 
 
 {% if feedback_email %}
-{% include 'labs//components/feedback-modal.html' %}
+{% include 'labs/components/feedback-modal.html' %}
 {% endif %}
 
 

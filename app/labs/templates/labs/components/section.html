@@ -41,10 +41,10 @@
           {% if tab.content.subsections %}
             {% for subsection in tab.content.subsections %}
             <p class="fw-bold my-3 mt-4 mx-3">{{ subsection.title }}</p>
-            {% include 'labs//components/accordion.html' with content=subsection.content tab_id=tab.id accordion_id=subsection.id %}
+            {% include 'labs/components/accordion.html' with content=subsection.content tab_id=tab.id accordion_id=subsection.id %}
             {% endfor %}
           {% else %}
-            {% include 'labs//components/accordion.html' with content=tab.content tab_id=tab.id %}
+            {% include 'labs/components/accordion.html' with content=tab.content tab_id=tab.id %}
           {% endif %}
         </div>
       </div>
