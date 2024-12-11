@@ -98,10 +98,11 @@ class SectionTab(BaseModel):
 class LabSectionSchema(BaseModel):
     """Validate Galaxy Lab section."""
     id: str
+    title: str
     tabs: list[SectionTab]
 
 
-class LabSchema(BaseModel):
+class LabSchema(BaseModel, extra='allow'):
     """Validate Galaxy Lab content."""
     site_name: str
     lab_name: str
