@@ -39,7 +39,6 @@
                 title="{{ item.button_tip|default:'Run tool' }}"
                 data-bs-toggle="tooltip"
                 data-bs-placement="left"
-                target="_blank"
               >
                 {% if item.button_icon %}
                 <span class="material-icons">{{ item.button_icon|iconkey }}</span>
@@ -55,7 +54,6 @@
               <a
                 href="{{ item.view_link }}"
                 class="btn btn-galaxy"
-                target="_blank"
                 {% if item.view_tip %}
                 title="{{ item.view_tip }}"
                 data-bs-toggle="tooltip"

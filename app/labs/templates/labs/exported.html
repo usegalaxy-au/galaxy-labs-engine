@@ -77,9 +77,12 @@
     if (
       item.href
       && item.href.slice(0, 1) !== "/"
-      && !item.href.includes("{{ galaxy_base_url }}")
     ) {
-      item.target = '_blank';
+      if (item.href.includes("{{ galaxy_base_url }}")) {
+        item.target = '_top';
+      } else {
+        item.target = '_blank';
+      }
     }
   });
 {% endblock %}
