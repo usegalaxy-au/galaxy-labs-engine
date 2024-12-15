@@ -6,6 +6,8 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from utils.mail import retry_send_mail
 
+from . import bootstrap
+
 logger = logging.getLogger('django')
 
 MAIL_APPEND_TEXT = f"Sent from {settings.HOSTNAME}"
@@ -80,3 +82,43 @@ class LabFeedbackForm(SupportRequestForm):
                 + data['message']
             )
         )
+
+
+class LabBootstrapForm(forms.Form):
+    """Form to bootstrap a new lab."""
+
+    lab_name = forms.CharField(
+        label="Lab name",
+        widget=forms.TextInput(attrs={
+            'placeholder': "e.g. Genome Lab",
+            'autocomplete': 'off',
+        }),
+    )
+    subdomain = forms.CharField(
+        label="Galaxy Lab Subdomain",
+        widget=forms.TextInput(attrs={
+            'placeholder': "e.g. genome",
+            'autocomplete': 'off',
+        }),
+        help_text="The subdomain that the lab will be served under.",
+    )
+    logo = forms.FileField(
+        label="Lab logo",
+        help_text=("(Optional) Upload a custom logo to be displayed in the Lab"
+                   " header."),
+        required=False,
+    )
+    # sections_json = forms.CharField()
+
+    # def clean_section_json(self):
+    #     """Validate the section JSON."""
+    #     try:
+    #         data = json.loads(self.cleaned_data['sections_json'])
+    #         # Validate with Pydantic models...?
+    #     except Exception as exc:
+    #         raise forms.ValidationError(f"Invalid JSON: {exc}")
+
+    #     return data
+
+    def bootstrap_lab(self):
+        return bootstrap.lab(self.cleaned_data)

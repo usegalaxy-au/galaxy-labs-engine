@@ -1,0 +1,24 @@
+# Default spec for a Lab page
+# Any variables defined here can be used in Md/HTML templates, like:
+# "# Welcome to the {{ lab_name }}"
+
+site_name: ""
+lab_name: {{ lab_name }}
+galaxy_base_url: {{ galaxy_base_url }}
+subdomain: {{ subdomain }}
+root_domain: {{ root_domain }}
+
+# These files need to be accessible on the internet, relative to the content_root URL!
+# -----------------------------------------------------------------------------
+# Custom content relative to this file URL
+header_logo: static/{{ logo_filename }}
+custom_css: static/custom.css
+intro_md: templates/intro.md
+footer_md: templates/footer.md
+conclusion_md: templates/conclusion.md
+
+# Data to be rendered into sections/tabs/accordion elements:
+sections:
+  {% for relpath in section_paths %}
+  - {{ relpath }}
+  {% endfor %}

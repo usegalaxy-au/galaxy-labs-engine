@@ -42,6 +42,7 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = BASE_DIR / 'app/static'
 MEDIA_ROOT = BASE_DIR / 'app/media'
 LOG_ROOT = ensure_dir(BASE_DIR / 'app/logs')
+TEMP_DIR = ensure_dir(BASE_DIR / 'app/temp')
 DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
     f'http://{HOSTNAME}/static/labs/content/docs/base.yml')
 
@@ -97,7 +98,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'labs',
+    'crispy_forms',
+    "crispy_bootstrap5",
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
