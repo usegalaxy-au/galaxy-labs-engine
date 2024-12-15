@@ -7,16 +7,21 @@ import time
 import zipfile
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.utils.text import slugify
 from pathlib import Path
 
 HOURS_72 = 3 * 24 * 60 * 60
 ALPHANUMERIC = string.ascii_letters + string.digits
-TEMPLATE_DIR = Path('labs/boilerplate')
+TEMPLATE_DIR = Path('labs/bootstrap')
 TEMPLATES_TO_RENDER = [
     'base.yml',
     'intro.md',
     'conclusion.md',
     'footer.md',
+    'section-1.yml',
+    'README.md',
+    'custom.css',
+    'CONTRIBUTORS',
 ]
 GALAXY_SERVERS = {
     '': 'usegalaxy.org',
@@ -33,37 +38,31 @@ def lab(form_data):
     """Render a new lab from form data."""
     clean_dir(settings.TEMP_DIR)
     output_dir = settings.TEMP_DIR / random_string(6)
-    form_data.update({
-        'intro_md': 'Welcome to the Galaxy {{ site_name }} {{ lab_name }}!',
-        'conclusion_md': ('Thanks for checking out the Galaxy {{ site_name }}'
-                          ' {{ lab_name }}!'),
-        'footer_md': 'Some text to be displayed in the footer.',
-        'galaxy_base_url': f"https://{form_data['subdomain']}.usegalaxy.org",
-    })
+    form_data['logo_filename'] = create_logo(form_data, output_dir)
     render_templates(form_data, output_dir)
     render_server_yml(form_data, output_dir)
-    insert_logo(form_data, output_dir)
     zipfile_path = output_dir.with_suffix('.zip')
+    root_dir = Path(slugify(form_data['lab_name']))
     with zipfile.ZipFile(zipfile_path, 'w') as zf:
         for path in output_dir.rglob('*'):
-            zf.write(path, path.relative_to(output_dir))
+            zf.write(path, root_dir / path.relative_to(output_dir))
     return zipfile_path
 
 
 def render_templates(data, output_dir):
     for template in TEMPLATES_TO_RENDER:
-        subdir = 'templates' if template.endswith('.md') else None
-        filename = (
-            data['root_domain'] + '.yml'
-            if template == 'server.yml'
-            else None
-        )
+        subdir = None
+        if template.endswith('.md') and 'README' not in template:
+            subdir = 'templates'
+        elif template.endswith('css'):
+            subdir = 'static'
+        elif template == 'section-1.yml':
+            subdir = 'sections'
         render_file(
             data,
             template,
             output_dir,
             subdir=subdir,
-            filename=filename,
         )
 
 
@@ -97,14 +96,16 @@ def render_server_yml(data, output_dir):
         )
 
 
-def insert_logo(data, output_dir):
+def create_logo(data, output_dir):
     """Copy the uploaded logo to the output directory."""
-    logo = data.get('logo')
-    if logo:
-        logo_path = output_dir / 'static' / logo.name
-        logo_path.parent.mkdir(parents=True, exist_ok=True)
-        with logo.open('rb') as src, logo_path.open('wb') as dest:
-            shutil.copyfileobj(src, dest)
+    logo_file = data.get(
+        'logo'
+    ) or settings.BASE_DIR / 'labs/example_labs/docs/static/flask.svg'
+    logo_dest_path = output_dir / 'static' / logo_file.name
+    logo_dest_path.parent.mkdir(parents=True, exist_ok=True)
+    with logo_file.open('rb') as src, logo_dest_path.open('wb') as dest:
+        shutil.copyfileobj(src, dest)
+    return logo_dest_path.name
 
 
 def clean_dir(directory):

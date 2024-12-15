@@ -11,6 +11,7 @@ from django.template import (
     Template,
 )
 from django.template.loader import render_to_string
+from django.utils.text import slugify
 from django.views import View
 
 from utils.exceptions import LabBuildError
@@ -90,7 +91,7 @@ class BootstrapLab(View):
             return self.force_download(
                 request,
                 zipfile_path,
-                form.cleaned_data['lab_name'] + '.zip',
+                slugify(form.cleaned_data['lab_name']) + '.zip',
             )
         return render(request, 'labs/bootstrap.html', {
             'form': form,

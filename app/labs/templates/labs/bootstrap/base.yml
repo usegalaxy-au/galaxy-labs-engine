@@ -8,7 +8,7 @@ galaxy_base_url: {{ galaxy_base_url }}
 subdomain: {{ subdomain }}
 root_domain: {{ root_domain }}
 
-# These files need to be accessible on the internet, relative to the content_root URL!
+# The files below must be accessible on the internet, relative to this file
 # -----------------------------------------------------------------------------
 # Custom content relative to this file URL
 header_logo: static/{{ logo_filename }}
@@ -19,6 +19,5 @@ conclusion_md: templates/conclusion.md
 
 # Data to be rendered into sections/tabs/accordion elements:
 sections:
-  {% for relpath in section_paths %}
-  - {{ relpath }}
+  {% for relpath in section_paths %}- {{ relpath }}
   {% endfor %}

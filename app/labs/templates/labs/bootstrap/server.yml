@@ -2,3 +2,4 @@
 
 site_name: "{{ site_name }}"
 galaxy_base_url: {{ galaxy_base_url }}
+root_domain: {{ root_domain }}
