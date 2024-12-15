@@ -32,6 +32,12 @@ MarkdownStr = Annotated[
 ]
 
 
+class ItemInput(BaseModel):
+    """An expected dataset input for a Galaxy tool."""
+    datatypes: list[str]
+    label: str
+
+
 class IconEnum(str, Enum):
     """Define material icon types for buttons."""
     run = 'run'            # play_arrow
@@ -62,6 +68,7 @@ class TabItem(BaseModel):
     view_md: Optional[MarkdownStr] = None
     view_icon: Optional[IconEnum] = None
     exclude_from: Optional[list[str]] = []
+    inputs: Optional[list[ItemInput]] = None
 
     @field_validator(
         'title_md', 'description_md', 'button_md', 'view_md',
@@ -106,7 +113,7 @@ class LabSchema(BaseModel, extra='allow'):
     """Validate Galaxy Lab content."""
     site_name: str
     lab_name: str
-    nationality: str
+    nationality: Optional[str] = ''
     galaxy_base_url: str
     subdomain: str
     root_domain: str
