@@ -32,7 +32,9 @@ a:hover .lab-header {
 }
 .table-inputs td {
   padding: .5rem 1rem;
-  border: 1px solid #ddd;
+}
+.table-inputs tr:not(:last-child) {
+  border-bottom: 1px solid #ddd;
 }
 .contributor {
   margin: 0 4px;
