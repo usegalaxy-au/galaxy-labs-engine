@@ -34,8 +34,8 @@ MarkdownStr = Annotated[
 
 class ItemInput(BaseModel):
     """An expected dataset input for a Galaxy tool."""
-    datatypes: list[str]
-    label: str
+    datatypes: Optional[list[str]] = []
+    label: Optional[str] = ''
 
 
 class IconEnum(str, Enum):
