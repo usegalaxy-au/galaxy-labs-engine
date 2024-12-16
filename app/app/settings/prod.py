@@ -34,7 +34,7 @@ STORAGES = {
     },
     "staticfiles": {
         "BACKEND": ('django.contrib.staticfiles.storage'
-                       '.ManifestStaticFilesStorage'),0
+                       '.ManifestStaticFilesStorage'),
     },
 }
 
