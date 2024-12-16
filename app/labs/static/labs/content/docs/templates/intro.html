@@ -80,7 +80,8 @@
                 <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/section_1.yml" target="_blank">section_1.yml</a>
                 and
                 <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/section_2.yml" target="_blank">section_2.yml</a>
-                for examples of how to structure this content in YAML format.
+                for examples of how to structure this content in YAML format, or check out the full
+                <a href="/schema">sections schema definition</a> to see exactly how this YAML should be structured.
               </li>
             </ul>
           </p>
@@ -181,6 +182,33 @@
   </div>
 </section>
 
+<script>
+  function addHoverInfo(id, relpath) {
+    const exportInfoButton = $(`
+      <a
+        class="export-info-button"
+        href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/${relpath}"
+        target="_blank"
+      >
+        <i class="fab fa-github"></i>
+        View on GitHub
+      </a>
+    `);
+    $(`#${id}`).addClass('export-info-hover');
+    $(`#${id}`).append(exportInfoButton);
+  }
+  $(document).ready(function() {
+    addHoverInfo('headerSection', 'base.yml');
+    addHoverInfo('introSection', 'templates/intro.html');
+    addHoverInfo('section_1Section', 'section_1.yml');
+    addHoverInfo('section_2Section', 'section_2.yml');
+    addHoverInfo('footer', 'templates/footer.html');
+  });
+</script>
+
+
+<!-- Modals -->
+
 <div class="modal fade" id="infoModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -207,28 +235,3 @@
     </div>
   </div>
 </div>
-
-
-<script>
-  function addHoverInfo(id, relpath) {
-    const exportInfoButton = $(`
-      <a
-        class="export-info-button"
-        href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/${relpath}"
-        target="_blank"
-      >
-        <i class="fab fa-github"></i>
-        View on GitHub
-      </a>
-    `);
-    $(`#${id}`).addClass('export-info-hover');
-    $(`#${id}`).append(exportInfoButton);
-  }
-  $(document).ready(function() {
-    addHoverInfo('headerSection', 'base.yml');
-    addHoverInfo('introSection', 'templates/intro.html');
-    addHoverInfo('section_1Section', 'section_1.yml');
-    addHoverInfo('section_2Section', 'section_2.yml');
-    addHoverInfo('footer', 'templates/footer.html');
-  });
-</script>

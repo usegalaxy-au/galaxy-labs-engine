@@ -1,0 +1,263 @@
+{% extends 'labs/header.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'labs/css/schema.css' %}" />
+{% endblock %}
+
+{% block content %}
+<main class="container">
+  <h1>Galaxy Lab Section Schema Documentation</h1>
+
+  <p>
+    This document describes the structure and validation rules for a
+    Galaxy Lab <code>sections.yml</code> file.
+  </p>
+
+  <hr>
+
+  <h2>Section</h2>
+
+  <h3>Description</h3>
+
+  <p>
+    A Galaxy Lab section - this is the root of the <code>section.yml</code>
+    file.
+  </p>
+
+  <h3>Properties</h3>
+
+  <ul>
+    <li>
+      <p>
+        <strong><code>id</code></strong> <em>(string, required)</em><br />
+        Unique identifier for the section.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>title</code></strong> <em>(string, required)</em><br />
+        Title of the section.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>tabs</code></strong>
+        <em>(array of <a href="#sectiontab">SectionTab</a>, required)</em><br />
+        List of tabs to be displayed for this section.
+      </p>
+    </li>
+  </ul>
+
+  <hr />
+
+  <h3 id="sectiontab">SectionTab</h3>
+
+  <h4>Description</h4>
+
+  <p>A tab with a list of expandable items to be shown in the section.</p>
+
+  <h4>Properties</h4>
+
+  <ul>
+    <li>
+      <p>
+        <strong><code>id</code></strong> <em>(string, required)</em><br />
+        Unique identifier for the tab.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>title</code></strong> <em>(string or null, optional)</em
+        ><br />
+        Title of the tab. Defaults to <code>null</code>.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>content</code></strong>
+        <em
+          >(array of <a href="#tabitem">TabItem</a>, object, or null,
+          optional)</em
+        ><br />
+        A list of content items to be displayed in this tab.
+        This can be omitted to create a tab with arbitrary MD/HTML content
+        using the <code>heading_md</code> property.
+        Can be any of:
+      </p>
+
+      <ul>
+        <li>An array of TabItems.</li>
+        <li>
+          An object of {
+            'subsections': array of <a href="#tabsubsection">TabSubsections</a>.
+          }
+        </li>
+        <li><code>null</code>. Defaults to <code>null</code>.</li>
+      </ul>
+    </li>
+    <li>
+      <p>
+        <strong><code>heading_md</code></strong>
+        <em>(string or null, optional)</em><br />
+        Markdown or HTML formatted string for the heading. The value can be any
+        length, so can even be extended to create a block of MD/HTML content.
+        Defaults to <code>null</code>.
+      </p>
+    </li>
+  </ul>
+
+  <hr />
+
+  <h3 id="tabsubsection">TabSubsection</h3>
+
+  <h4>Description</h4>
+
+  <p>
+    A content subsection, to be used for dividing content into subsections, each
+    with a title. e.g. "Short-read", "Long-read", "Hybrid".
+  </p>
+
+  <h4>Properties</h4>
+
+  <ul>
+    <li>
+      <p>
+        <strong><code>id</code></strong> <em>(string, required)</em><br />
+        Unique identifier for the subsection.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>title</code></strong> <em>(string, required)</em><br />
+        Title of the subsection.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>content</code></strong>
+        <em>(array of <a href="#tabitem">TabItem</a>, required)</em><br />
+        Content of the subsection.
+      </p>
+    </li>
+  </ul>
+
+  <hr />
+
+  <h3 id="tabitem">TabItem</h3>
+
+  <h4>Description</h4>
+
+  <p>
+    A content item, which is typically a Galaxy tool, workflow or tutorial.
+    In the UI, this will be rendered as an "accordion" item. If button/view
+    links are not specified, no buttons will be displayed. For tools and
+    workflows, <code>inputs</code> can be used to describe the essential inputs.
+  </p>
+
+  <h4>Properties</h4>
+
+  <ul>
+    <li>
+      <p>
+        <strong><code>title_md</code></strong> <em>(string, required)</em><br />
+        Markdown or HTML formatted title.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>description_md</code></strong> <em>(string, required)</em
+        ><br />
+        Markdown or HTML formatted description.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>button_link</code></strong>
+        <em>(string or null, optional)</em><br />
+        URL for the button link. Defaults to <code>null</code>.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>button_tip</code></strong>
+        <em>(string or null, optional)</em><br />
+        Tooltip text for the button. Defaults to <code>null</code>.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>button_md</code></strong>
+        <em>(string or null, optional)</em><br />
+        Markdown or HTML formatted button label. Defaults to <code>null</code>.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>button_icon</code></strong>
+        <em>(<a href="#iconenum">ButtonIcon</a> or null, optional)</em><br />
+        Icon for the button. Defaults to <code>null</code>.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>view_link</code></strong>
+        <em>(string or null, optional)</em><br />
+        URL for the view link. Defaults to <code>null</code>.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>view_tip</code></strong>
+        <em>(string or null, optional)</em><br />
+        Tooltip text for the view. Defaults to <code>null</code>.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>view_md</code></strong> <em>(string or null, optional)</em
+        ><br />
+        Markdown or HTML formatted view label. Defaults to <code>null</code>.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>view_icon</code></strong>
+        <em>(<a href="#iconenum">ButtonIcon</a> or null, optional)</em><br />
+        Icon for the view. Defaults to <code>null</code>.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>exclude_from</code></strong>
+        <em>(array of strings or null, optional)</em><br />
+        List of items to exclude. Defaults to an empty array.
+      </p>
+    </li>
+  </ul>
+
+  <hr />
+
+  <h3 id="iconenum">ButtonIcon</h3>
+
+  <h4>Description</h4>
+
+  <p>Available icons for buttons.</p>
+
+  <h4>Enum Values</h4>
+
+  <ul>
+    <li><code>run</code></li>
+    <li><code>tutorial</code></li>
+    <li><code>social</code></li>
+    <li><code>help</code></li>
+    <li><code>view</code></li>
+  </ul>
+</main>
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block onload %}
+{% endblock%}

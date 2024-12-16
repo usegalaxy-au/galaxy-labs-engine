@@ -73,6 +73,11 @@ def export_lab(request):
     return response
 
 
+def schema(request):
+    """Render the schema page."""
+    return render(request, 'labs/schema.html')
+
+
 class BootstrapLab(View):
     """Generate new lab content from submitted form data."""
 
