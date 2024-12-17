@@ -11,6 +11,7 @@ nginx_limit_requests_per_minute: 10
 project_root: /home/ubuntu/labs-engine
 config_root: /home/ubuntu/config
 django_root: "{{ project_root }}/app"
+temp_dir: /tmp/labs_engine
 
 labs_engine:
   templates:
