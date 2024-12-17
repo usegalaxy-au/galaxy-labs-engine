@@ -36,10 +36,10 @@ jobs:
         run: |
           if git diff --name-only "${{ github.event.workflow_run.head_branch }}" | grep -q -e 'Dockerfile' -e 'requirements.txt'; then
             echo "Dockerfile or requirements.txt changed"
-            echo "::set-output name=updated::true"
+            echo echo "updated=true" >> $GITHUB_OUTPUT
           else
             echo "Dockerfile or requirements.txt not changed"
-            echo "::set-output name=updated::false"
+            echo echo "updated=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Set up Docker Buildx
