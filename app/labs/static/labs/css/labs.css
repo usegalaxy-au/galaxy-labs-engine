@@ -88,11 +88,6 @@ ul.nav-pills li.nav-item {
   background-color: inherit;
   box-shadow: none;
 }
-.btn.btn-galaxy {
-  color: white;
-  background-color: #25537B;
-  padding: 0.25rem 0.5rem;
-}
 
 @media screen and (max-width: 850px) {
   .lab-header {

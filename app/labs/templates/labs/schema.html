@@ -2,21 +2,99 @@
 {% load static %}
 
 {% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.css">
+<link rel="stylesheet" href="{% static 'labs/css/labs.css' %}">
 <link rel="stylesheet" href="{% static 'labs/css/schema.css' %}" />
 {% endblock %}
 
 {% block content %}
+
 <main class="container">
   <h1>Galaxy Lab Section Schema Documentation</h1>
 
-  <p>
+  <p class="lead">
     This document describes the structure and validation rules for a
-    Galaxy Lab <code>sections.yml</code> file.
+    Galaxy Lab <code>section.yml</code> file.
+  </p>
+
+  <p>
+    A minimal example of the full schema is shown below, but a real example
+    would have more tabs and content items.
+  </p>
+
+  {% verbatim %}
+  <pre class="prettyprint lang-yaml">
+    id: section_1
+    title: Example section
+    tabs:
+      - id: tools
+        title: Tools
+        heading_md: Common tools are listed here, or search for more in the full tool panel to the left.
+        content:
+          - button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fdevteam%2Ffastqc%2Ffastqc"
+            title_md: &lt;code&gt;FastQC&lt;/code&gt; - sequence quality reports
+            description_md: |
+              Before using your sequencing data, it&rsquo;s important to ensure that
+              the data quality is sufficient for your analysis.
+            inputs:
+              - label: Sequencing data for analysis
+                datatypes:
+                  - fasta
+                  - fastq
+                  - bam
+                  - sam
+      - id: workflows
+        title: Workflows
+        heading_md: |
+          A workflow is a series of Galaxy tools that have been linked together
+          to perform a specific analysis. You can use and customize the example workflows
+          below.
+          &lt;a href="https://galaxyproject.org/learn/advanced-workflow/"&gt;
+            Learn more
+          &lt;/a&gt;.
+        content:
+          - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=222"
+            button_tip: Import to Galaxy AU
+            title_md: Data QC
+            view_link: https://workflowhub.eu/workflows/222
+            view_tip: View in WorkflowHub
+            description_md: |
+              Report statistics from sequencing reads.
+
+              **Tools**
+
+              - `nanoplot`
+              - `fastqc`
+              - `multiqc`</pre>
+  {% endverbatim %}
+
+  <p>The above YAML results in the following element being rendered:</p>
+
+  <div class="example">
+    {% include 'labs/snippets/example-section.html' %}
+  </div>
+
+  <p>
+    The YAML data above can be broken down into the following components:
+  </p>
+
+  <ol>
+    <li><a href="#section">Section</a></li>
+    <li><a href="#sectiontab">Section Tab</a></li>
+    <li><a href="#tabsubsection">Tab Subsection</a></li>
+    <li><a href="#tabitem">Content Item</a></li>
+    <li><a href="#inputitem">Input Item</a></li>
+    <li><a href="#iconenum">Button Icons</a></li>
+  </ol>
+
+  <p>
+    Items 1-5 are expected as YAML lists, so these elements can be repeated
+    to provide as many Tabs, Content Items etc. as you like.
   </p>
 
   <hr>
 
-  <h2>Section</h2>
+  <h2 id="section">Section</h2>
 
   <h3>Description</h3>
 
@@ -49,15 +127,24 @@
     </li>
   </ul>
 
+  <h3>Example</h3>
+
+  <pre class="prettyprint lang-yaml">
+    id: section_1
+    title: Example section
+    tabs:
+      - &lt;SectionTab&gt;
+      - &lt;SectionTab&gt;</pre>
+
   <hr />
 
-  <h3 id="sectiontab">SectionTab</h3>
+  <h2 id="sectiontab">Section Tab</h2>
 
-  <h4>Description</h4>
+  <h3>Description</h3>
 
   <p>A tab with a list of expandable items to be shown in the section.</p>
 
-  <h4>Properties</h4>
+  <h3>Properties</h3>
 
   <ul>
     <li>
@@ -70,14 +157,14 @@
       <p>
         <strong><code>title</code></strong> <em>(string or null, optional)</em
         ><br />
-        Title of the tab. Defaults to <code>null</code>.
+        Title of the tab.
       </p>
     </li>
     <li>
       <p>
         <strong><code>content</code></strong>
         <em
-          >(array of <a href="#tabitem">TabItem</a>, object, or null,
+          >(array of <a href="#tabitem">Content Items</a>, object, or null,
           optional)</em
         ><br />
         A list of content items to be displayed in this tab.
@@ -87,13 +174,13 @@
       </p>
 
       <ul>
-        <li>An array of TabItems.</li>
+        <li>An array of <a href="#tabitem">Content Items</a>.</li>
         <li>
           An object of {
             'subsections': array of <a href="#tabsubsection">TabSubsections</a>.
           }
         </li>
-        <li><code>null</code>. Defaults to <code>null</code>.</li>
+        <li><code>null</code>. </li>
       </ul>
     </li>
     <li>
@@ -102,23 +189,46 @@
         <em>(string or null, optional)</em><br />
         Markdown or HTML formatted string for the heading. The value can be any
         length, so can even be extended to create a block of MD/HTML content.
-        Defaults to <code>null</code>.
+
       </p>
     </li>
   </ul>
 
+  <h3>Example</h3>
+
+  <pre class="prettyprint lang-yaml">
+    id: section_1_tools
+    title: Tools
+    heading_md: |
+      These tools will get you started with your analysis.
+      More advanced tools are available in the
+      [next section](#advancedSection).
+    content:
+      - &lt;ContentItem&gt;
+      - &lt;ContentItem&gt;</pre>
+
+  <pre class="prettyprint lang-yaml">
+    id: section_1_tools
+    title: Tools with subsections
+    heading_md: |
+      These tools are listed in subsections for easier navigation.
+    content:
+      subsections:
+        - &lt;TabSubsection&gt;
+        - &lt;TabSubsection&gt;</pre>
+
   <hr />
 
-  <h3 id="tabsubsection">TabSubsection</h3>
+  <h2 id="tabsubsection">Tab Subsection</h2>
 
-  <h4>Description</h4>
+  <h3>Description</h3>
 
   <p>
     A content subsection, to be used for dividing content into subsections, each
     with a title. e.g. "Short-read", "Long-read", "Hybrid".
   </p>
 
-  <h4>Properties</h4>
+  <h3>Properties</h3>
 
   <ul>
     <li>
@@ -136,17 +246,38 @@
     <li>
       <p>
         <strong><code>content</code></strong>
-        <em>(array of <a href="#tabitem">TabItem</a>, required)</em><br />
+        <em>(array of <a href="#tabitem">ContentItem</a>, required)</em><br />
         Content of the subsection.
       </p>
     </li>
   </ul>
 
+  <h3>Example</h3>
+
+  <pre class="prettyprint lang-yaml">
+    id: tools_short_read
+    title: These tools are optimized for short-read analysis
+    content:
+      - &lt;ContentItem&gt;
+      - &lt;ContentItem&gt;</pre>
+
+  <p>
+    An example of this can be found on the
+    <a href="https://genome.usegalaxy.org.au/">Genome Lab</a>,
+    where subsections are used to separate Nanopore, Illumina and PacBio tools:
+  </p>
+
+  <img
+    class="example"
+    src="{% static 'labs/img/schema/tabsubsection-screenshot.png' %}"
+    alt="The tab subsection in the Genome Lab web page"
+  />
+
   <hr />
 
-  <h3 id="tabitem">TabItem</h3>
+  <h2 id="tabitem">Content Item</h2>
 
-  <h4>Description</h4>
+  <h3>Description</h3>
 
   <p>
     A content item, which is typically a Galaxy tool, workflow or tutorial.
@@ -155,7 +286,16 @@
     workflows, <code>inputs</code> can be used to describe the essential inputs.
   </p>
 
-  <h4>Properties</h4>
+  {% verbatim %}
+  <p class="alert alert-info">
+    When inserting URLs for the Galaxy server (e.g. link to Galaxy tool),
+    ensure that you make use of the <code>{{ galaxy_base_url }}</code>
+    variable to ensure that the link is correctly generated for different
+    Galaxy servers! See below for an example.
+  </p>
+  {% endverbatim %}
+
+  <h3>Properties</h3>
 
   <ul>
     <li>
@@ -175,89 +315,229 @@
       <p>
         <strong><code>button_link</code></strong>
         <em>(string or null, optional)</em><br />
-        URL for the button link. Defaults to <code>null</code>.
+        URL for the button link - this is typically used as a "run" button
+        for tools or workflows, but can be customized by setting the other
+        <code>button_*</code> properties.
       </p>
     </li>
     <li>
       <p>
         <strong><code>button_tip</code></strong>
         <em>(string or null, optional)</em><br />
-        Tooltip text for the button. Defaults to <code>null</code>.
+        Tooltip text for the button - this will be shown when the user's mouse
+        passes over the item.
       </p>
     </li>
     <li>
       <p>
         <strong><code>button_md</code></strong>
         <em>(string or null, optional)</em><br />
-        Markdown or HTML formatted button label. Defaults to <code>null</code>.
+        Markdown or HTML formatted string to display inside the "button" button.
       </p>
     </li>
     <li>
       <p>
         <strong><code>button_icon</code></strong>
         <em>(<a href="#iconenum">ButtonIcon</a> or null, optional)</em><br />
-        Icon for the button. Defaults to <code>null</code>.
+        Icon for the button - must be one of the accepted
+        <a href="#iconenum">ButtonIcon</a>
+        strings.
       </p>
     </li>
     <li>
       <p>
         <strong><code>view_link</code></strong>
         <em>(string or null, optional)</em><br />
-        URL for the view link. Defaults to <code>null</code>.
+        URL for the "view" link - this is typically a link to view more
+        information about the item e.g. a workflow in WorkFlowHub.
       </p>
     </li>
     <li>
       <p>
         <strong><code>view_tip</code></strong>
         <em>(string or null, optional)</em><br />
-        Tooltip text for the view. Defaults to <code>null</code>.
+        Tooltip text for the view - this will be shown when the user's mouse
+        passes over the item.
       </p>
     </li>
     <li>
       <p>
         <strong><code>view_md</code></strong> <em>(string or null, optional)</em
         ><br />
-        Markdown or HTML formatted view label. Defaults to <code>null</code>.
+        Markdown or HTML formatted string to display inside the "view" button.
       </p>
     </li>
     <li>
       <p>
         <strong><code>view_icon</code></strong>
         <em>(<a href="#iconenum">ButtonIcon</a> or null, optional)</em><br />
-        Icon for the view. Defaults to <code>null</code>.
+        Icon for the "view" button - must be one of the accepted
+        <a href="#iconenum">ButtonIcon</a>
+        strings.
       </p>
     </li>
     <li>
       <p>
         <strong><code>exclude_from</code></strong>
         <em>(array of strings or null, optional)</em><br />
-        List of items to exclude. Defaults to an empty array.
+        List of Galaxy domain names (e.g. <code>usegalaxy.eu</code>) that this
+        item should be excluded from e.g. if a feature is not implemented or a
+        tool is not available. Defaults to an empty array.
       </p>
     </li>
   </ul>
 
+  <h3>Example</h3>
+
+  {% verbatim %}
+  <pre class="prettyprint lang-yaml">
+    - button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fdevteam%2Ffastqc%2Ffastqc"
+      title_md: <code>FastQC</code> - sequence quality reports
+      description_md: |
+          Before using your sequencing data, it&rsquo;s important to ensure that
+          the data quality is sufficient for your analysis.
+      inputs:
+        - &lt;ItemInput&gt;
+        - &lt;ItemInput&gt;</pre>
+  {% endverbatim %}
+
+  <p>
+    The above YAML is rendered as:
+  </p>
+
+  <img
+    class="example"
+    src="{% static 'labs/img/schema/tabitem-screenshot.png' %}"
+    alt="The content item rendered in Galaxy Lab web page as an expandable accordion item"
+  />
+
+  {% verbatim %}
+  <pre class="prettyprint lang-yaml">
+    - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=222"
+      button_tip: Import to Galaxy AU
+      title_md: Data QC
+      view_link: https://workflowhub.eu/workflows/222
+      view_tip: View in WorkflowHub
+      description_md: |
+          Report statistics from sequencing reads.
+
+          **Tools**
+
+          - `nanoplot`
+          - `fastqc`
+          - `multiqc`</pre>
+  {% endverbatim %}
+
+  <p>
+    The above YAML is rendered as:
+  </p>
+
+  <img
+    class="example"
+    src="{% static 'labs/img/schema/tabitem-2-screenshot.png' %}"
+    alt="The content item rendered in Galaxy Lab web page as an expandable accordion item"
+  />
+
   <hr />
 
-  <h3 id="iconenum">ButtonIcon</h3>
+  <h2 id="inputitem">InputItem</h2>
 
-  <h4>Description</h4>
+  <h3>Description</h3>
 
-  <p>Available icons for buttons.</p>
+  <p>
+    An input dataset, typically for a Galaxy tool or workflow. The list of inputs
+    will be displayed as a table.
+  </p>
 
-  <h4>Enum Values</h4>
+  <h3>Properties</h3>
 
   <ul>
-    <li><code>run</code></li>
-    <li><code>tutorial</code></li>
-    <li><code>social</code></li>
-    <li><code>help</code></li>
-    <li><code>view</code></li>
+    <li>
+      <p>
+        <strong><code>datatypes</code></strong>
+        <em>(array of strings, optional)</em>
+        <br />
+        List of accepted Galaxy datatypes for this input dataset. e.g.
+        <code>['fastqsanger', 'fasta']</code>.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>label</code></strong>
+        <em>(string or <code>null</code>, optional)</em>
+        <br />
+        Short description for the input dataset e.g. "Raw reads".
+      </p>
+    </li>
   </ul>
+
+  <h3>Example</h3>
+
+  <pre class="prettyprint lang-yaml">
+    label: Raw reads
+    datatypes:
+      - fasta
+      - fastqsanger</pre>
+
+  <hr />
+
+  <h2 id="iconenum">ButtonIcon</h2>
+
+  <h3>Description</h3>
+
+  <p>Accepted icons identifiers for buttons.</p>
+
+  <table class="table" style="max-width: 500px;">
+    <tr>
+      <td><code>run</code></td>
+      <td>
+        <button class="btn btn-galaxy">
+          <span class="material-icons">play_arrow</span>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td><code>tutorial</code></td>
+      <td>
+        <button class="btn btn-galaxy">
+          <span class="material-icons">school</span>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td><code>social</code></td>
+      <td>
+        <button class="btn btn-galaxy">
+          <span class="material-icons">group</span>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td><code>help</code></td>
+      <td>
+        <button class="btn btn-galaxy">
+          <span class="material-icons">help</span>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td><code>view</code></td>
+      <td>
+        <button class="btn btn-galaxy">
+          <span class="material-icons">visibility</span>
+        </button>
+      </td>
+    </tr>
+  </table>
 </main>
+
 {% endblock %}
 
 {% block script %}
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/src/lang-yaml.js"></script>
 {% endblock %}
 
 {% block onload %}
+  PR.prettyPrint();
 {% endblock%}

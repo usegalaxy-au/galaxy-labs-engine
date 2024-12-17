@@ -1,0 +1,38 @@
+h2 {
+  margin-bottom: 2rem;
+}
+h3 {
+  font-size: 1.25rem;
+  color: var(--bs-gray-600);
+}
+hr {
+  margin: 2rem 0;
+}
+pre.prettyprint {
+  background-color: var(--bs-gray-100);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 2rem 0;
+}
+img.example,
+div.example {
+  padding: 1rem;
+  margin: 2rem 0;
+  box-shadow: .5rem .5rem 2rem rgba(0, 0, 0, 0.1);
+}
+code {
+  color: var(--bs-pink);
+  background: var(--bs-gray-200);
+}
+section code {
+  color: var(--bs-gray-800);
+  background-color: var(--bs-gray-300);
+}
+
+/* YAML syntax */
+.kwd {
+  color: var(--bs-pink);
+}
+.pln {
+  color: var(--bs-green);
+}
