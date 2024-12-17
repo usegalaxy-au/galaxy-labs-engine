@@ -28,8 +28,15 @@ if ADMIN_EMAIL:
     ]
 
 # Use manifest to manage static file versions for cache busting:
-STATICFILES_STORAGE = ('django.contrib.staticfiles.storage'
-                       '.ManifestStaticFilesStorage')
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": ('django.contrib.staticfiles.storage'
+                    '.ManifestStaticFilesStorage'),
+    },
+}
 
 SENTRY_DNS = os.getenv('SENTRY_DNS')
 if SENTRY_DNS:

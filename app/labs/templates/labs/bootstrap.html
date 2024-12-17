@@ -1,0 +1,59 @@
+{% extends 'labs/header.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block head %}
+{% endblock %}
+
+
+{% block content %}
+
+<main class="container">
+  <h1 class="lab-header">CREATE A NEW GALAXY LAB</h1>
+
+  <p>
+    This form allows you to quickly generate a content folder for a new Galaxy
+    Lab.
+  </p>
+
+  <ol class="mb-5">
+    <li>
+      Unzip the downloaded ZIP archive and edit the content to your liking.
+    </li>
+    <li>
+      Put it somewhere on GitHub. Production Lab content currently lives in the
+      <a href="https://github.com/galaxyproject/galaxy_codex" target="_blank">galaxyproject/galaxy_codex</a>
+      repository.
+    </li>
+    <li>
+      Copy the GitHub URL and use it to render your new page by
+      building a URL that points to your GitHub content, like:
+      <br>
+      <code>
+        https://{{ HOSTNAME }}/?content_root=https://github.com/USERNAME/REPO/PATH/TO/MY/CONTENT/base.yml
+      </code>
+    </li>
+    <li>
+      Refer to the
+      <a href="/">Docs page</a>
+      and
+      <a href="/schema">YAML Schema specification</a>
+      for more information on building your content.
+    </li>
+  </ol>
+
+  {% crispy form %}
+
+</main>
+
+{% endblock %}
+
+
+{% block script %}
+{% endblock %}
+
+
+{% block onload %}
+{% endblock %}

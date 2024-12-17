@@ -8,6 +8,8 @@
   ansible.builtin.docker_image:
     name: "{{ labs_engine_docker_image }}"
     source: pull
+    force_source: yes  # Ensures it re-checks the remote registry
+    state: present
   tags: update
 
 - name: clone git repository for galaxy-labs-engine

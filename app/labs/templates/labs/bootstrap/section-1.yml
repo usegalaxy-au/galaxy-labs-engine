@@ -1,0 +1,24 @@
+id: introduction
+title: Introduction
+tabs:
+  - id: overview
+    title: Overview
+    heading_md: "Here are some basic tools to get you started."
+    content:
+      - title_md: FastQC
+        description_md: Evaluate the quality of your raw sequencing data.
+        inputs:  # A list of essential inputs for the tool
+          - datatypes:  # The accepted datatypes for this input
+              - fastqsanger
+            label: Input data  # A label for this input
+        # Get this link by selecting "Copy link" in the tool form on Galaxy. Make sure to strip version number(s) from the end:
+        button_link: "{% verbatim %}{{ galaxy_base_url }}{% endverbatim %}/?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fdevteam%2Ffastqc%2Ffastqc"
+  - id: learning
+    title: Learning
+    heading_md: "Here are some resources for you to learn more."
+    content:
+      - title_md: A brief introduction to sequence QC
+        description_md: Learn how to evaluate the quality of your raw sequencing data with FastQC.
+        button_link: "https://training.galaxyproject.org/training-material/topics/introduction/tutorials/vsi_qc/tutorial.html"
+        button_tip: View tutorial
+        button_icon: tutorial

@@ -11,3 +11,5 @@ django_light
 requests==2.*
 requests_mock==1.*
 sentry-sdk==2.*
+django-crispy-forms==2.*
+crispy-bootstrap5==2024.*

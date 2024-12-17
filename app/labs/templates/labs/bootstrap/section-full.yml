@@ -1,0 +1,27 @@
+id: {{ section_id }}
+title: {{ section_title }}
+tabs:
+  {% for tab in tabs %}
+  - id: {{ tab.id }}
+    title: {{ tab.title }}
+    heading_md: {{ tab.heading_md }}
+    content:
+      {% for item in tab.content %}
+      - title_md: {{ item.title_md }}
+        description_md: {{ item.description_md }}
+        inputs:
+          {% for input in item.inputs %}
+          - datatypes
+            {% for datatype in input.datatypes %}
+            - {{ datatype }}
+            {% endfor %}
+            label: {{ input.label }}
+          {% endfor %}
+        button_link: {{ item.button_link }}
+        button_md: {{ item.button_md }}
+        button_tip: {{ item.button_tip }}
+        view_link: {{ item.view_link }}
+        view_md: {{ item.view_md }}
+        view_tip: {{ item.view_tip }}
+    {% endfor %}
+  {% endfor %}

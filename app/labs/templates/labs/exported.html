@@ -10,9 +10,6 @@
 
 
 {% block head %}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="{% static 'labs/css/labs.css' %}">
 
@@ -76,7 +73,7 @@
   $('a').each( (i, item) => {
     if (
       item.href
-      && item.href.slice(0, 1) !== "/"
+      && item.pathname.slice(0, 1) !== "/"
     ) {
       if (item.href.includes("{{ galaxy_base_url }}")) {
         item.target = '_top';

@@ -2,6 +2,7 @@
 *.sqlite3
 app/app/static/
 app/app/media/
+temp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
