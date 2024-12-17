@@ -5,7 +5,6 @@
 
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'labs/css/custom.css' %}">
 {% endblock %}
 
 
@@ -14,14 +13,8 @@
 <main class="container">
   <h1>Create a new Galaxy Lab</h1>
 
-  <form method="post" enctype="multipart/form-data">
+  {% crispy form %}
 
-    {% csrf_token %}
-
-    {{ form|crispy }}
-
-    <button type="submit" class="btn btn-primary">Build</button>
-  </form>
 </main>
 
 {% endblock %}

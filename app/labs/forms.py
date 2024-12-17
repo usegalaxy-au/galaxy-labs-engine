@@ -1,11 +1,14 @@
 """User facing forms for making support requests (help/tools/data)."""
 
 import logging
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, HTML, Submit
 from django import forms
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import FileExtensionValidator
 from utils.mail import retry_send_mail
+from utils.webforms import SpamFilterFormMixin
 
 from . import bootstrap, validators
 
@@ -95,7 +98,7 @@ class LabFeedbackForm(SupportRequestForm):
         )
 
 
-class LabBootstrapForm(forms.Form):
+class LabBootstrapForm(SpamFilterFormMixin, forms.Form):
     """Form to bootstrap a new lab."""
 
     lab_name = forms.CharField(
@@ -144,7 +147,18 @@ class LabBootstrapForm(forms.Form):
             'accept': ','.join(f"image/{ext}" for ext in IMAGE_EXTENSIONS),
         }),
     )
-    # sections_json = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'lab_name',
+            'subdomain',
+            'github_username',
+            'logo',
+            HTML(self.antispam_html),
+            Submit('submit', 'Build'),
+        )
 
     def clean_subdomain(self):
         """Validate the subdomain."""
@@ -163,16 +177,6 @@ class LabBootstrapForm(forms.Form):
     def clean_github_username(self):
         username = self.cleaned_data.get('github_username')
         return username.strip() if username else None
-
-    # def clean_section_json(self):
-    #     """Validate the section JSON."""
-    #     try:
-    #         data = json.loads(self.cleaned_data['sections_json'])
-    #         # Validate with Pydantic models...?
-    #     except Exception as exc:
-    #         raise forms.ValidationError(f"Invalid JSON: {exc}")
-
-    #     return data
 
     def bootstrap_lab(self):
         data = self.cleaned_data
