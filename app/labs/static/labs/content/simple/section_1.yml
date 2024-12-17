@@ -43,28 +43,27 @@ tabs:
 
   - id: workflows
     title: Workflows
-    heading_md: |
+    heading_md: >
       A workflow is a series of Galaxy tools that have been linked together
       to perform a specific analysis. You can use and customize the example workflows
       below.
-      <a href="https://galaxyproject.org/learn/advanced-workflow/" target="_blank">
+      <a href="https://galaxyproject.org/learn/advanced-workflow/">
         Learn more
       </a>.
     content:
       - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=222"
         button_tip: Import to Galaxy AU
         title_md: Data QC
-        view_link: https://workflowhub.eu/workflows/222
+        view_link: "https://workflowhub.eu/workflows/222"
         view_tip: View in WorkflowHub
         description_md: |
-          <p>
             Report statistics from sequencing reads.
-            <br><br>
-            Tools:
-            <code>nanoplot</code>
-            <code>fastqc</code>
-            <code>multiqc</code>
-          </p>
+
+            **Tools**
+
+            - `nanoplot`
+            - `fastqc`
+            - `multiqc`
       - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=223"
         button_tip: Import to Galaxy AU
         description_md: |
