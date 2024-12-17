@@ -10,14 +10,6 @@ code {
   width: 4rem;
   margin-right: 3rem;
 }
-.lab-header {
-  color: #cebd2c;
-  font-size: 4rem;
-  font-family: 'Exo 2', sans-serif;
-}
-a:hover .lab-header {
-  color: #eedd5c;
-}
 #workflow-table {
   max-height: 400px;
   overflow-y: auto;
