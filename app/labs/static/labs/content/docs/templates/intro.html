@@ -104,15 +104,15 @@
           <p>
             <ol>
               <li>
-                Copy our
-                <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_URL }}" target="_blank">
-                  example content
-                </a>
-                directory to your own github repository.
+                Generate a new content folder using our
+                <a href="/bootstrap">Lab Generator</a>.
               </li>
               <li>
-                Build your Galaxy Lab's info, tools and workflows by editing the YAML and HTML files.
-                Custom CSS and JavaScript are possible too.
+                Build on your Galaxy Lab content by editing the downloaded YAML
+                and MD/HTML files. Custom CSS and JavaScript are possible too.
+                Try to keep the content as concise and modular as possible, and
+                think about what essential resources your users should know about.
+                Critical Tools, Workflows and tutorials are a great place to start.
               </li>
               <li>
                 Request the site with the <code>content_root</code> GET parameter pointing to your remote content:
@@ -180,36 +180,19 @@
               data-bs-target="#infoModal"
             >Try one now!</a>
           </p>
+
+          <p class="alert alert-info">
+            Try to make all Markdown/HTML content as modular as possible by using
+            variables defined in the <code>base.yml</code> and
+            <code>server.yml</code> files. This means that content will be rendered
+            differently on each Galaxy server, depending on what's in that
+            server's <code>server.yml</code> file!
+          </p>
         </div>
       </div>
     </div>
   </div>
 </section>
-
-<script>
-  function addHoverInfo(id, relpath) {
-    const exportInfoButton = $(`
-      <a
-        class="export-info-button"
-        href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/${relpath}"
-        target="_blank"
-      >
-        <i class="fab fa-github"></i>
-        View on GitHub
-      </a>
-    `);
-    $(`#${id}`).addClass('export-info-hover');
-    $(`#${id}`).append(exportInfoButton);
-  }
-  $(document).ready(function() {
-    addHoverInfo('headerSection', 'base.yml');
-    addHoverInfo('introSection', 'templates/intro.html');
-    addHoverInfo('section_1Section', 'section_1.yml');
-    addHoverInfo('section_2Section', 'section_2.yml');
-    addHoverInfo('footer', 'templates/footer.html');
-  });
-</script>
-
 
 <!-- Modals -->
 
@@ -239,3 +222,29 @@
     </div>
   </div>
 </div>
+
+
+<script>
+  // Some fancy JavaScript to add "View on GitHub" overlay to each section
+  function addHoverInfo(id, relpath) {
+    const exportInfoButton = $(`
+      <a
+        class="export-info-button"
+        href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/${relpath}"
+        target="_blank"
+      >
+        <i class="fab fa-github"></i>
+        View on GitHub
+      </a>
+    `);
+    $(`#${id}`).addClass('export-info-hover');
+    $(`#${id}`).append(exportInfoButton);
+  }
+  $(document).ready(function() {
+    addHoverInfo('headerSection', 'base.yml');
+    addHoverInfo('introSection', 'templates/intro.html');
+    addHoverInfo('section_1Section', 'section_1.yml');
+    addHoverInfo('section_2Section', 'section_2.yml');
+    addHoverInfo('footer', 'templates/footer.html');
+  });
+</script>
