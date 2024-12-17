@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.text import slugify
 from pathlib import Path
 
-HOURS_72 = 3 * 24 * 60 * 60
+HOURS_1 = 60 * 60
 ALPHANUMERIC = string.ascii_letters + string.digits
 TEMPLATE_DIR = Path('labs/bootstrap')
 TEMPLATES_TO_RENDER = [
@@ -111,6 +111,6 @@ def create_logo(data, output_dir):
 def clean_dir(directory):
     """Delete directories that were created more than 7 days ago."""
     for path in directory.iterdir():
-        if path.is_dir() and path.stat().st_ctime < time.time() - HOURS_72:
+        if path.is_dir() and path.stat().st_ctime < time.time() - HOURS_1:
             shutil.rmtree(path)
     return directory
