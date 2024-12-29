@@ -58,7 +58,11 @@ def export_lab(request):
     try:
         i = 0
         prev_template_str = ''
-        template_str = render_to_string(template, context, request)
+        template_str = render_to_string(
+            template,
+            context,
+            request,
+        )
         while (
             prev_template_str.strip('\n') != template_str.strip('\n')
             and i < 4

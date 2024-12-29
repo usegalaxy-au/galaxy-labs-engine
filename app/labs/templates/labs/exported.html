@@ -24,6 +24,12 @@
 
 <main>
 
+  {% if undefined_var %}
+  BLAHBLAH
+  {% endif %}
+
+  {{ another_undefined_var }}
+
   {% include 'labs/components/gtn-modal.html' %}
 
   <section id="headerSection" class="lab-header d-flex align-items-center h-100">

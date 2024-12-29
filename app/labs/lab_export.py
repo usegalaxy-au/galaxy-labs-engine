@@ -15,6 +15,7 @@ import warnings
 import yaml
 from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
 from django.conf import settings
+from django.utils.safestring import mark_safe
 from markdown2 import Markdown
 from pydantic import BaseModel, ValidationError
 
@@ -62,6 +63,20 @@ class ExportLabContext(dict):
         self._fetch_yaml_context()
         self._fetch_sections()
         self._fetch_contributors()
+
+    def __getitem__(self, key):
+        if key in self:
+            return super().__getitem__(key)
+        print("Missing key:", key)
+        return f'<span data-missing-var="{key}">HELLLOO</span>'  # TODO: mark_safe
+
+    def get(self, key, default=None):
+        print(f"get called with key: {key}")
+        return super().get(key, default)
+
+    def __getattr__(self, key):
+        print(f"__getattr__ called with key: {key}")
+        return self.get(key, f"Missing string: {key}")
 
     def _clean(self):
         """Format params for rendering."""
