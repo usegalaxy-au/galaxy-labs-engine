@@ -5,25 +5,6 @@ tabs:
     title: Tools
     heading_md: Common tools are listed here, or search for more in the full tool panel to the left.
     content:
-
-      # Accordion item schema:
-      #   title_md: <str>  # inline MD accepted e.g. *italics*, **bold**, `code`
-      #   description_md: <str>
-      #   inputs: <optional>
-      #     - datatypes:  # tool input 1 - two accepted datatypes
-      #       - <str>
-      #       - <str>
-      #       label: <str optional>
-      #     - datatypes:  # tool input 2 - one accepted datatype
-      #       - <str>
-      #       label: <str optional>
-      #   button_link: <str optional>
-      #   button_md: <str optional>
-      #   button_tip: <str optional>
-      #   view_link: <str optional>
-      #   view_md: <str optional>
-      #   view_tip: <str optional>
-
       - button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=upload1"
         title_md: Import data to Galaxy
         description_md: Standard upload of data to Galaxy, from your computer or
