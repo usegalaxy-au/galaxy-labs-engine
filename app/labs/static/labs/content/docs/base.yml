@@ -21,3 +21,4 @@ custom_css: static/custom.css
 sections:
   - section_1.yml
   - section_2.yml
+  - section_3.yml

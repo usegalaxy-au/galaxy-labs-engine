@@ -83,6 +83,7 @@ class TabSubsection(BaseModel):
     id: str
     title: str
     content: list[TabItem]
+    exclude_from: Optional[list[str]] = []
 
 
 class SectionTab(BaseModel):
@@ -96,6 +97,7 @@ class SectionTab(BaseModel):
         ]
     ] = None
     heading_md: Optional[MarkdownStr] = None
+    exclude_from: Optional[list[str]] = []
 
     @field_validator('heading_md', mode='before')
     def validate_md(cls, value):
@@ -107,6 +109,7 @@ class LabSectionSchema(BaseModel):
     id: str
     title: str
     tabs: list[SectionTab]
+    exclude_from: Optional[list[str]] = []
 
 
 class LabSchema(BaseModel, extra='allow'):
