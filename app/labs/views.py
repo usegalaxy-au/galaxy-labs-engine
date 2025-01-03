@@ -31,8 +31,9 @@ def export_lab(request):
     repo with a YAML file root which is specified as a GET parameter.
     """
 
-    if response := LabCache.get(request):
-        return response
+    if not settings.CLI_DEV:
+        if response := LabCache.get(request):
+            return response
 
     template = 'labs/exported.html'
 
