@@ -30,3 +30,19 @@ DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
     f"http://{HOSTNAME}/static/local/{LAB_CONTENT_ENTRYPOINT}")
 
 INSTALLED_APPS.remove('django_light')
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+}
+
+class DisableMigrations:
+    def __contains__(self, item):
+        return True
+
+    def __getitem__(self, item):
+        return None
+
+MIGRATION_MODULES = DisableMigrations()

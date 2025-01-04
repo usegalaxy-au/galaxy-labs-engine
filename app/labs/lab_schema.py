@@ -131,14 +131,16 @@ def html_tags(value: str) -> str:
     if "<" not in value:
         return value
     # Remove self closing tags
-    value = (
+    value_stripped = (
         re.sub(r'(<.*?/>)|(<img.*?>)', '', value, flags=re.MULTILINE)
         .replace('<br>', '')
         .replace('<hr>', '')
     )
     # Enumerate open/close tags
-    open_tags = re.findall(r'<[^/][\s\S]*?>', value, flags=re.MULTILINE)
-    close_tags = re.findall(r'</[\s\S]*?>', value, flags=re.MULTILINE)
+    open_tags = re.findall(
+        r'<[^/][\s\S]*?>', value_stripped, flags=re.MULTILINE)
+    close_tags = re.findall(
+        r'</[\s\S]*?>', value_stripped, flags=re.MULTILINE)
     assert len(open_tags) == len(close_tags), (
         f'Unclosed HTML tag in section content:\n{value}')
     return value

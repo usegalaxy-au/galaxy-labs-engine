@@ -27,6 +27,7 @@ def main():
         sys.path.insert(0, str(BASE_DIR))
         if len(sys.argv) > 2:
             os.environ["LAB_CONTENT_ENTRYPOINT"] = sys.argv[2]
+        execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
         execute_from_command_line(["manage.py", "runserver"])
     else:
         print(f"Unknown command: {sys.argv[1]}")
