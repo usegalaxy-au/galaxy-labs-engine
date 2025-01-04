@@ -36,12 +36,15 @@ class LabCache:
 
     @classmethod
     def put(cls, request, body):
+        if settings.CLI_DEV:
+            return HttpResponse(body)
         logger.debug(
             f"Cache PUT for {request.GET.get('content_root', 'root')}")
         cache_key = cls._generate_cache_key(request)
         timeout = (settings.CACHE_TIMEOUT
                    if request.GET.get('content_root')
                    else None)  # No timeout for default "Docs Lab" page
+
         cache.set(cache_key, body, timeout=timeout)
         response = HttpResponse(body)
         response['X-Cache-Status'] = 'MISS'
@@ -75,6 +78,8 @@ class WebCache:
 
     @classmethod
     def put(cls, url, data, timeout=3600):
+        if settings.CLI_DEV:
+            return
         cache_key = cls._generate_cache_key(url)
         cache.set(cache_key, data, timeout=timeout)
 
