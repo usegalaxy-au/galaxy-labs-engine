@@ -73,6 +73,7 @@ def export_lab(request):
             f"\n{traceback.format_exc()}")
         return report_exception_response(request, exc)
 
+    template_str = context.render_relative_uris(template_str)
     response = LabCache.put(request, template_str)
 
     return response

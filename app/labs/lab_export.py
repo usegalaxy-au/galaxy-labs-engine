@@ -10,6 +10,7 @@ http://127.0.0.1:8000/?content_root=https://raw.githubusercontent.com/usegalaxy-
 
 import concurrent.futures
 import logging
+import re
 import requests
 import warnings
 import yaml
@@ -333,6 +334,20 @@ class ExportLabContext(dict):
                 BeautifulSoup(body, 'html.parser')
         except Exception as exc:
             raise LabBuildError(exc, source='HTML')
+
+    def render_relative_uris(self, template_str):
+        """Render relative URIs in HTML content."""
+        def replace_relative_uri(match):
+            attr = match.group(1)
+            relpath = match.group(2)
+            url = self._make_raw(self.parent_url + relpath)
+            return f'{attr}="{url}"'
+
+        return re.sub(
+            r'(src|href)="\./([^"]+)"',
+            replace_relative_uri,
+            template_str,
+        )
 
 
 def get_github_user(username):
