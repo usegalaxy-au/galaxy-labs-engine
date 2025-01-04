@@ -38,24 +38,11 @@ DATABASES = {
     }
 }
 
-LOGGING = {
-    'version': 1,
-    'handlers': {
-        'devnull': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.devnull,
-        },
-    },
-    'loggers': {
-        'django.db.backends.schema': {
-            'handlers': ['devnull'],
-            'propagate': True,
-            'level': 'INFO',
-        },
-        '': {
-            'handlers': ['devnull'],
-            'level': 'DEBUG',
-        }
-    }
-}
+class DisableMigrations:
+    def __contains__(self, item):
+        return True
+
+    def __getitem__(self, item):
+        return None
+
+MIGRATION_MODULES = DisableMigrations()
