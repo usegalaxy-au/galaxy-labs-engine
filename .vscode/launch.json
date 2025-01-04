@@ -6,7 +6,7 @@
     "configurations": [
         {
           "name": "Django runserver",
-          "type": "python",
+          "type": "debugpy",
           "purpose": ["debug-test"],
           "request": "launch",
           "program": "${workspaceFolder}/app/manage.py",
@@ -20,7 +20,7 @@
         },
         {
           "name": "Django shell",
-          "type": "python",
+          "type": "debugpy",
           "purpose": ["debug-test"],
           "request": "launch",
           "program": "${workspaceFolder}/app/manage.py",
@@ -34,7 +34,7 @@
         },
         {
           "name": "Django test",
-          "type": "python",
+          "type": "debugpy",
           "purpose": ["debug-test"],
           "request": "launch",
           "program": "${workspaceFolder}/app/manage.py",
@@ -43,6 +43,20 @@
           "env": {
             "DJANGO_SETTINGS_MODULE": "app.settings.test",
           },
+          "django": true,
+          "justMyCode": true,
+        },
+        {
+          "name": "Lab serve",
+          "type": "debugpy",
+          "purpose": ["debug-test"],
+          "request": "launch",
+          "program": "${workspaceFolder}/app/app/cli.py",
+          "cwd": "/home/cameron/dev/galaxy/galaxy_codex/communities/genome/lab",
+          "env": {
+            "GITHUB_API_TOKEN": "",
+          },
+          "args": ["serve"],
           "django": true,
           "justMyCode": true,
         },
