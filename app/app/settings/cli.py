@@ -30,3 +30,10 @@ DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
     f"http://{HOSTNAME}/static/local/{LAB_CONTENT_ENTRYPOINT}")
 
 INSTALLED_APPS.remove('django_light')
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+}
