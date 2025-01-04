@@ -40,6 +40,7 @@ create_directories:
   - "{{ config_root }}"
   - "{{ django_root }}/app/media"
   - "{{ django_root }}/app/logs"
+  - "{{ temp_dir }}"
 
 # Admin user login for the web admin
 admin_user:

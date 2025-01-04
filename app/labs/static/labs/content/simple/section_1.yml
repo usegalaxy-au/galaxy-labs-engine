@@ -5,25 +5,6 @@ tabs:
     title: Tools
     heading_md: Common tools are listed here, or search for more in the full tool panel to the left.
     content:
-
-      # Accordion item schema:
-      #   title_md: <str>  # inline MD accepted e.g. *italics*, **bold**, `code`
-      #   description_md: <str>
-      #   inputs: <optional>
-      #     - datatypes:  # tool input 1 - two accepted datatypes
-      #       - <str>
-      #       - <str>
-      #       label: <str optional>
-      #     - datatypes:  # tool input 2 - one accepted datatype
-      #       - <str>
-      #       label: <str optional>
-      #   button_link: <str optional>
-      #   button_md: <str optional>
-      #   button_tip: <str optional>
-      #   view_link: <str optional>
-      #   view_md: <str optional>
-      #   view_tip: <str optional>
-
       - button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=upload1"
         title_md: Import data to Galaxy
         description_md: Standard upload of data to Galaxy, from your computer or
@@ -43,28 +24,27 @@ tabs:
 
   - id: workflows
     title: Workflows
-    heading_md: |
+    heading_md: >
       A workflow is a series of Galaxy tools that have been linked together
       to perform a specific analysis. You can use and customize the example workflows
       below.
-      <a href="https://galaxyproject.org/learn/advanced-workflow/" target="_blank">
+      <a href="https://galaxyproject.org/learn/advanced-workflow/">
         Learn more
       </a>.
     content:
       - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=222"
         button_tip: Import to Galaxy AU
         title_md: Data QC
-        view_link: https://workflowhub.eu/workflows/222
+        view_link: "https://workflowhub.eu/workflows/222"
         view_tip: View in WorkflowHub
         description_md: |
-          <p>
             Report statistics from sequencing reads.
-            <br><br>
-            Tools:
-            <code>nanoplot</code>
-            <code>fastqc</code>
-            <code>multiqc</code>
-          </p>
+
+            **Tools**
+
+            - `nanoplot`
+            - `fastqc`
+            - `multiqc`
       - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=223"
         button_tip: Import to Galaxy AU
         description_md: |

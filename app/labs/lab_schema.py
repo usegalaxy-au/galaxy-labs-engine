@@ -2,40 +2,38 @@
 
 import re
 from enum import Enum
-from pydantic import BaseModel, Field, field_validator
+from pydantic import (
+    BaseModel,
+    BeforeValidator,
+    Field,
+    field_validator,
+    StrictStr,
+)
 from pydantic.types import Annotated
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 
-def html_tags(v: str) -> str:
-    """Validate markdown content."""
-    v = str(v)
-    if "<" not in v:
-        return v
-    # Remove self closing tags
-    v = (
-        re.sub(r'(<.*?/>)|(<img.*?>)', '', v, flags=re.MULTILINE)
-        .replace('<br>', '')
-        .replace('<hr>', '')
-    )
-    # Enumerate open/close tags
-    open_tags = re.findall(r'<[^/][\s\S]*?>', v, flags=re.MULTILINE)
-    close_tags = re.findall(r'</[\s\S]*?>', v, flags=re.MULTILINE)
-    assert len(open_tags) == len(close_tags), (
-        f'Unclosed HTML tag in section content:\n{v}')
+def soft_coerce_str(v: Any) -> str:
+    if isinstance(v, (int, float, bool)):
+        return str(v)
     return v
 
 
+FlexibleStr = Annotated[
+    StrictStr,
+    BeforeValidator(soft_coerce_str),
+]
+
 MarkdownStr = Annotated[
-    str,
+    FlexibleStr,
     Field(description='Markdown or HTML formatted string.'),
 ]
 
 
 class ItemInput(BaseModel):
     """An expected dataset input for a Galaxy tool."""
-    datatypes: Optional[list[str]] = []
-    label: Optional[str] = ''
+    datatypes: Optional[list[FlexibleStr]] = []
+    label: Optional[FlexibleStr] = ''
 
 
 class IconEnum(str, Enum):
@@ -59,15 +57,15 @@ class TabItem(BaseModel):
     """
     title_md: MarkdownStr
     description_md: MarkdownStr
-    button_link: Optional[str] = None
-    button_tip: Optional[str] = None
+    button_link: Optional[FlexibleStr] = None
+    button_tip: Optional[FlexibleStr] = None
     button_md: Optional[MarkdownStr] = None
     button_icon: Optional[IconEnum] = None
-    view_link: Optional[str] = None
-    view_tip: Optional[str] = None
+    view_link: Optional[FlexibleStr] = None
+    view_tip: Optional[FlexibleStr] = None
     view_md: Optional[MarkdownStr] = None
     view_icon: Optional[IconEnum] = None
-    exclude_from: Optional[list[str]] = []
+    exclude_from: Optional[list[FlexibleStr]] = []
     inputs: Optional[list[ItemInput]] = None
 
     @field_validator(
@@ -80,15 +78,16 @@ class TabItem(BaseModel):
 
 class TabSubsection(BaseModel):
     """Validate Galaxy Lab section tab subsection."""
-    id: str
-    title: str
+    id: FlexibleStr
+    title: FlexibleStr
     content: list[TabItem]
+    exclude_from: Optional[list[FlexibleStr]] = []
 
 
 class SectionTab(BaseModel):
     """Validate Galaxy Lab section tab."""
-    id: str
-    title: Optional[str] = None
+    id: FlexibleStr
+    title: Optional[FlexibleStr] = None
     content: Optional[
         Union[
             list[TabItem],
@@ -96,6 +95,7 @@ class SectionTab(BaseModel):
         ]
     ] = None
     heading_md: Optional[MarkdownStr] = None
+    exclude_from: Optional[list[FlexibleStr]] = []
 
     @field_validator('heading_md', mode='before')
     def validate_md(cls, value):
@@ -104,22 +104,41 @@ class SectionTab(BaseModel):
 
 class LabSectionSchema(BaseModel):
     """Validate Galaxy Lab section."""
-    id: str
-    title: str
+    id: FlexibleStr
+    title: FlexibleStr
     tabs: list[SectionTab]
+    exclude_from: Optional[list[FlexibleStr]] = []
 
 
 class LabSchema(BaseModel, extra='allow'):
     """Validate Galaxy Lab content."""
-    site_name: str
-    lab_name: str
-    nationality: Optional[str] = ''
-    galaxy_base_url: str
-    subdomain: str
-    root_domain: str
-    sections: list[str] | str
-    header_logo: Optional[str] = None
-    custom_css: Optional[str] = None
-    intro_md: Optional[str] = None
-    conclusion_md: Optional[str] = None
-    footer_md: Optional[str] = None
+    site_name: FlexibleStr
+    lab_name: FlexibleStr
+    nationality: Optional[FlexibleStr] = ''
+    galaxy_base_url: FlexibleStr
+    subdomain: FlexibleStr
+    root_domain: FlexibleStr
+    sections: list[FlexibleStr] | FlexibleStr
+    header_logo: Optional[FlexibleStr] = None
+    custom_css: Optional[FlexibleStr] = None
+    intro_md: Optional[FlexibleStr] = None
+    conclusion_md: Optional[FlexibleStr] = None
+    footer_md: Optional[FlexibleStr] = None
+
+
+def html_tags(value: str) -> str:
+    """Validate markdown content."""
+    if "<" not in value:
+        return value
+    # Remove self closing tags
+    value = (
+        re.sub(r'(<.*?/>)|(<img.*?>)', '', value, flags=re.MULTILINE)
+        .replace('<br>', '')
+        .replace('<hr>', '')
+    )
+    # Enumerate open/close tags
+    open_tags = re.findall(r'<[^/][\s\S]*?>', value, flags=re.MULTILINE)
+    close_tags = re.findall(r'</[\s\S]*?>', value, flags=re.MULTILINE)
+    assert len(open_tags) == len(close_tags), (
+        f'Unclosed HTML tag in section content:\n{value}')
+    return value

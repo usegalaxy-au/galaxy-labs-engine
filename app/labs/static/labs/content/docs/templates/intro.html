@@ -13,12 +13,20 @@
       </a>
     </li>
     <li>
-      See a full working example of an exported Galaxy Lab page
+      See a full working example of a Galaxy Lab page
       <a href="/?content_root={{ EXAMPLE_LABS.FULL.RAW_URL }}">here</a>.
     </li>
     <li>
       See a minimal working example of a lab page
       <a href="/?content_root={{ EXAMPLE_LABS.SIMPLE.RAW_URL }}">here</a>.
+    </li>
+    <li>
+      Start a new Lab page in 30 seconds
+      <a href="/bootstrap">here</a>.
+    </li>
+    <li>
+      View the full <code>section.yml</code> schema documentation
+      <a href="/schema">here</a>.
     </li>
   </ul>
 
@@ -76,7 +84,8 @@
                 <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/section_1.yml" target="_blank">section_1.yml</a>
                 and
                 <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_ROOT }}/section_2.yml" target="_blank">section_2.yml</a>
-                for examples of how to structure this content in YAML format.
+                for examples of how to structure this content in YAML format, or check out the full
+                <a href="/schema">sections schema definition</a> to see exactly how this YAML should be structured.
               </li>
             </ul>
           </p>
@@ -95,15 +104,15 @@
           <p>
             <ol>
               <li>
-                Copy our
-                <a href="{{ EXAMPLE_LABS.DOCS.WEB_DIR_URL }}" target="_blank">
-                  example content
-                </a>
-                directory to your own github repository.
+                Generate a new content folder using our
+                <a href="/bootstrap">Lab Generator</a>.
               </li>
               <li>
-                Build your Galaxy Lab's info, tools and workflows by editing the YAML and HTML files.
-                Custom CSS and JavaScript are possible too.
+                Build on your Galaxy Lab content by editing the downloaded YAML
+                and MD/HTML files. Custom CSS and JavaScript are possible too.
+                Try to keep the content as concise and modular as possible, and
+                think about what essential resources your users should know about.
+                Critical Tools, Workflows and tutorials are a great place to start.
               </li>
               <li>
                 Request the site with the <code>content_root</code> GET parameter pointing to your remote content:
@@ -171,11 +180,21 @@
               data-bs-target="#infoModal"
             >Try one now!</a>
           </p>
+
+          <p class="alert alert-info">
+            Try to make all Markdown/HTML content as modular as possible by using
+            variables defined in the <code>base.yml</code> and
+            <code>server.yml</code> files. This means that content will be rendered
+            differently on each Galaxy server, depending on what's in that
+            server's <code>server.yml</code> file!
+          </p>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<!-- Modals -->
 
 <div class="modal fade" id="infoModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
@@ -206,6 +225,7 @@
 
 
 <script>
+  // Some fancy JavaScript to add "View on GitHub" overlay to each section
   function addHoverInfo(id, relpath) {
     const exportInfoButton = $(`
       <a

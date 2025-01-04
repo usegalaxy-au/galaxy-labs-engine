@@ -32,3 +32,19 @@
 li {
   margin-bottom: .5rem;
 }
+pre.prettyprint,
+pre.code {
+  background-color: var(--bs-gray-100);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 2rem 0;
+}
+/* YAML syntax */
+.kwd {
+  color: var(--bs-pink);
+}
+.pln {
+  color: var(--bs-green);
+}
+
+@import url(https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.css);

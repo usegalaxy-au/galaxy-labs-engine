@@ -150,6 +150,14 @@ textarea.invalid {
 }
 
 /* Components */
+.lab-header {
+  color: #cebd2c;
+  font-size: 4rem;
+  font-family: 'Exo 2', sans-serif;
+}
+a:hover .lab-header {
+  color: #eedd5c;
+}
 .tile {
   display: flex;
   flex-grow: 1;
@@ -188,6 +196,11 @@ textarea.invalid {
 .ga-btn:hover {
   color: white;
   background-color: var(--color);
+}
+.btn.btn-galaxy {
+  color: white;
+  background-color: #25537B;
+  padding: 0.25rem 0.5rem;
 }
 .material-icons {
   vertical-align: bottom;
