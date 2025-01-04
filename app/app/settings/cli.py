@@ -54,7 +54,7 @@ LOGGING = {
             'level': 'INFO',
         },
         '': {
-            'handlers': ['file'],
+            'handlers': ['devnull'],
             'level': 'DEBUG',
         }
     }
