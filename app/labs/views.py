@@ -30,10 +30,8 @@ def export_lab(request):
     an ad hoc basis, where the content would typically be hosted in a GitHub
     repo with a YAML file root which is specified as a GET parameter.
     """
-
-    if not settings.CLI_DEV:
-        if response := LabCache.get(request):
-            return response
+    if response := LabCache.get(request):
+        return response
 
     template = 'labs/exported.html'
 

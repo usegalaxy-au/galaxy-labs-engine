@@ -17,7 +17,10 @@ logger = logging.getLogger('django.cache')
 class LabCache:
     @classmethod
     def get(cls, request):
-        if request.GET.get('cache', '').lower() == 'false':
+        if (
+            request.GET.get('cache', '').lower() == 'false'
+            or settings.CLI_DEV
+        ):
             return
 
         cache_key = cls._generate_cache_key(request)
@@ -63,6 +66,8 @@ class WebCache:
 
     @classmethod
     def get(cls, url):
+        if settings.CLI_DEV:
+            return
         cache_key = cls._generate_cache_key(url)
         data = cache.get(cache_key)
         if data:
