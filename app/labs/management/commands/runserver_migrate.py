@@ -9,4 +9,5 @@ class Command(RunserverCommand):
         self.stdout.write("Applying migrations...")
         call_command("migrate")
         self.stdout.write("Migrations applied successfully.")
+        call_command("collectstatic", "--noinput")
         super().handle(*args, **options)
