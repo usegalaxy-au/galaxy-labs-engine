@@ -37,3 +37,12 @@ DATABASES = {
         'NAME': ':memory:',
     }
 }
+
+class DisableMigrations(object):
+    def __contains__(self, _):
+        return True
+
+    def __getitem__(self, _):
+        return "notmigrations"
+
+MIGRATION_MODULES = DisableMigrations()
