@@ -12,8 +12,6 @@ def main():
     """CLI entry point for running the development server."""
     try:
         from django.core.management import execute_from_command_line
-        from django.db import connections
-        from django.apps import apps
     except ImportError as exc:
         raise ImportError(
             "Couldn't import Django. Make sure it's installed and "
@@ -29,11 +27,7 @@ def main():
         sys.path.insert(0, str(BASE_DIR))
         if len(sys.argv) > 2:
             os.environ["LAB_CONTENT_ENTRYPOINT"] = sys.argv[2]
-        execute_from_command_line(["manage.py", "migrate"])
-        for conn in connections.all():
-            conn.close()
-        apps.clear_cache()
-        execute_from_command_line(["manage.py", "runserver"])
+        execute_from_command_line(["manage.py", "runserver_migrate"])
     else:
         print(f"Unknown command: {sys.argv[1]}")
 
