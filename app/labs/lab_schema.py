@@ -128,6 +128,8 @@ class LabSchema(BaseModel, extra='allow'):
 
 def html_tags(value: str) -> str:
     """Validate markdown content."""
+    if not isinstance(value, str):
+        return value
     if "<" not in value:
         return value
     # Remove self closing tags
