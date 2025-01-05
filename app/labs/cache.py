@@ -10,6 +10,7 @@ from hashlib import md5
 CACHE_KEY_IGNORE_GET_PARAMS = (
     'cache',
 )
+NOCACHE = settings.CLI_DEV or settings.DEBUG
 
 logger = logging.getLogger('django.cache')
 
@@ -19,7 +20,7 @@ class LabCache:
     def get(cls, request):
         if (
             request.GET.get('cache', '').lower() == 'false'
-            or settings.CLI_DEV
+            or NOCACHE
         ):
             return
 
@@ -36,7 +37,7 @@ class LabCache:
 
     @classmethod
     def put(cls, request, body):
-        if settings.CLI_DEV:
+        if NOCACHE:
             return HttpResponse(body)
         logger.debug(
             f"Cache PUT for {request.GET.get('content_root', 'root')}")
@@ -69,7 +70,7 @@ class WebCache:
 
     @classmethod
     def get(cls, url):
-        if settings.CLI_DEV:
+        if NOCACHE:
             return
         cache_key = cls._generate_cache_key(url)
         data = cache.get(cache_key)
@@ -78,7 +79,7 @@ class WebCache:
 
     @classmethod
     def put(cls, url, data, timeout=3600):
-        if settings.CLI_DEV:
+        if NOCACHE:
             return
         cache_key = cls._generate_cache_key(url)
         cache.set(cache_key, data, timeout=timeout)
