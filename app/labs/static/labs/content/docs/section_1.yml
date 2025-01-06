@@ -1,16 +1,10 @@
 id: section_1
-title: Creating sections
+title: Creating your content
 tabs:
-  - id: faqs
+  - id: faq
     title: FAQs
     heading_md: |
-      This is a section. A section is composed of a title (*"Creating sections"*)
-      and one or more tabs. Each tab is composed of a title (*"FAQs"*), heading
-      text (*this*) and a collection of collapsable items.
-      Sections are rendered from data specified in a YAML file.
-      The structure of the YAML file is important, and must follow the
-      [defined schema](/schema). The two sections below give examples of how
-      content can be nested in sections.
+      Some common questions about creating content for a Galaxy Lab page.
     content:
       - title_md: Can I write content in HTML?
         description_md: |
@@ -97,3 +91,81 @@ tabs:
           <pre class="code">
           [![My Image](https://example.com/myimage.png)](https://example.com/myimage.png)
           </pre>
+
+      - title_md: Can I render my page locally?
+        description_md: |
+          Yes, rendering your lab page locally makes for much faster debugging
+          and polishing! To render your page locally, you will need to install
+          the Galaxy Labs Engine CLI:
+
+          <div class="tab-content">
+            <ul class="nav nav-tabs" id="installLabsEngine" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="windows-tab" data-bs-toggle="tab" data-bs-target="#windows" type="button" role="tab" aria-controls="windows" aria-selected="true">Windows</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="mac-linux-tab" data-bs-toggle="tab" data-bs-target="#mac-linux" type="button" role="tab" aria-controls="mac-linux" aria-selected="false">Mac/Linux</button>
+              </li>
+            </ul>
+            <div class="tab-content" id="installLabsEngineContent">
+              <div class="tab-pane fade show active" id="windows" role="tabpanel" aria-labelledby="windows-tab">
+                <pre class="prettyprint">
+                  # Navigate to your content directory
+                  cd %MY_CONTENT_DIR%
+
+                  # create a virtual environment
+                  # (you may also wish to use a conda environment for a global environment)
+                  py -m venv venv
+                  venv\Scripts\activate
+
+                  # install the Labs Engine
+                  pip install git+https://github.com/usegalaxy-au/galaxy-labs-engine.git
+
+                  # serve base.yml in the current directory
+                  labs-engine serve
+
+                  # serve a specific page from the current directory
+                  labs-engine serve usegalaxy.org.yml
+                </pre>
+              </div>
+              <div class="tab-pane fade" id="mac-linux" role="tabpanel" aria-labelledby="mac-linux-tab">
+                <pre class="prettyprint">
+                  # Navigate to your content directory
+                  cd $MY_CONTENT_DIR
+
+                  # create a virtual environment
+                  python -m venv venv
+                  source venv/bin/activate
+
+                  # install the Labs Engine
+                  pip install git+https://github.com/usegalaxy-au/galaxy-labs-engine.git
+
+                  # serve base.yml in the current directory
+                  labs-engine serve
+
+                  # serve a specific page from the current directory
+                  labs-engine serve usegalaxy.org.yml
+                </pre>
+              </div>
+            </div>
+          </div>
+
+          This should start a local development server on `http://127.0.0.1:8000`.
+          Click the link that appears and your lab page should open in the browser.
+
+      - title_md: How do I list contributors to my Galaxy Lab?
+        description_md: |
+          You can list contributors to your Galaxy Lab by adding a `CONTRIBUTORS`
+          file to your content directory. This file should be a plain-text
+          list of GitHub usernames - one per line. The Labs engine will fetch
+          the user's profile information and display it at the bottom of your
+          Lab Page.
+
+  - id: another_tab
+    title: Another tab
+    heading_md: |
+      Some more content to demonstrate multiple tabs in a section.
+      If you want to have a tab with just Markdown/HTML content and no sections,
+      you can just use the `heading_md` field and set `content: []` like we have
+      done here.
+    content: []

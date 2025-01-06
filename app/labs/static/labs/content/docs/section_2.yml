@@ -3,27 +3,15 @@ title: Example section
 tabs:
   - id: tools
     title: Tools
-    heading_md: Common tools are listed here, or search for more in the full tool panel to the left.
+    heading_md: |
+      This is a section. A section is composed of a title (*"Example section"*)
+      and one or more tabs. Each tab is composed of a title (*"Tools"*), heading
+      text (*this*) and a collection of collapsable items.
+      Sections are rendered from data specified in a YAML file.
+      The structure of the YAML file is important, and must follow the
+      [defined schema](/schema). The two sections below give examples of how
+      content can be nested in sections.
     content:
-
-      # Accordion item schema:
-      #   title_md: <str>  # inline MD accepted e.g. *italics*, **bold**, `code`
-      #   description_md: <str>
-      #   inputs: <optional>
-      #     - datatypes:  # tool input 1 - two accepted datatypes
-      #       - <str>
-      #       - <str>
-      #       label: <str optional>
-      #     - datatypes:  # tool input 2 - one accepted datatype
-      #       - <str>
-      #       label: <str optional>
-      #   button_link: <str optional>
-      #   button_md: <str optional>
-      #   button_tip: <str optional>
-      #   view_link: <str optional>
-      #   view_md: <str optional>
-      #   view_tip: <str optional>
-
       - button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=upload1"
         title_md: Import data to Galaxy
         description_md: >
