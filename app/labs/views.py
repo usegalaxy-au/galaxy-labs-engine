@@ -125,7 +125,7 @@ class BootstrapLab(View):
         response = HttpResponse()
         response['Content-Type'] = ''
         response['Content-Disposition'] = "attachment; filename=%s" % fname
-        response['X-Accel-Redirect'] = settings.INSTALLER_BASE_URL + fname
+        response['X-Accel-Redirect'] = str(fpath)
         return response
 
 
