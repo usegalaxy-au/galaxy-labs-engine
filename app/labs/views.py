@@ -123,15 +123,14 @@ class BootstrapLab(View):
             response['Content-Disposition'] = "attachment; filename=%s" % fname
             return response
 
-        srv_relpath = Path('bootstrap') / fpath.parent.name / fpath.name
-        srv_path = settings.INTERNAL_ROOT / srv_relpath
-        srv_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(fpath, srv_path)
-        logger.debug('Serving file via Nginx X-Accel-Redirect: %s' % srv_path)
+        srv_relpath = str(fpath.parent.name / fpath.name).replace(
+            settings.INTERNAL_ROOT, ''
+        )
+        logger.debug('Serving file via Nginx X-Accel-Redirect: %s' % fpath)
         response = HttpResponse()
         response['Content-Type'] = ''
         response['Content-Disposition'] = "attachment; filename=lab.zip"
-        response['X-Accel-Redirect'] = settings.INTERNAL_URL + str(srv_relpath)
+        response['X-Accel-Redirect'] = settings.INTERNAL_URL + srv_relpath
         return response
 
 

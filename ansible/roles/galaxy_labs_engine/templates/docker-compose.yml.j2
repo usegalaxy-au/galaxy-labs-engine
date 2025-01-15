@@ -87,6 +87,7 @@ services:
       - "{{ django_root }}/app/media:/var/www/media:ro"
       - "{{ config_root }}/nginx/ssl:/etc/nginx/ssl:ro"
       - "{{ config_root }}/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro"
+      - /tmp/labs_engine/:/tmp/labs_engine/:rw
       - /var/log/nginx:/var/log/nginx:rw
       - /var/www/certbot/:/var/www/certbot/:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
