@@ -1,10 +1,11 @@
 """Utility functions for interacting with paths and filesystem."""
 
-import os
+from pathlib import Path
 
 
 def ensure_dir(path):
     """Ensure given dirs exist."""
-    if not os.path.exists(path):
-        os.makedirs(path)
+    path = Path(path)
+    if not path.exists():
+        path.mkdir(parents=True, exist_ok=True)
     return path
