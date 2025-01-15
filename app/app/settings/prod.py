@@ -27,6 +27,10 @@ if ADMIN_EMAIL:
         (ADMIN_NAME, ADMIN_EMAIL),
     ]
 
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{HOSTNAME}",
+]
+
 # Use manifest to manage static file versions for cache busting:
 STORAGES = {
     "default": {

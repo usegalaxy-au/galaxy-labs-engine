@@ -4,6 +4,12 @@
   ansible.builtin.apt:
     update_cache: yes
 
+- name: install cerbot
+  ansible.builtin.apt:
+    name: certbot
+    state: present
+  tags: always
+
 - name: Docker pull labs-engine image
   ansible.builtin.docker_image:
     name: "{{ labs_engine_docker_image }}"
