@@ -28,7 +28,7 @@ if ADMIN_EMAIL:
     ]
 
 CSRF_TRUSTED_ORIGINS = [
-    HOSTNAME,
+    f"https://{HOSTNAME}",
 ]
 
 # Use manifest to manage static file versions for cache busting:
