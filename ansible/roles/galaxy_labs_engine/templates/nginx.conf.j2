@@ -50,6 +50,12 @@ server {
         root /var/www;
     }
 
+    location /internal {
+        internal;
+        root /tmp/labs_engine/;
+        add_header Content-Disposition 'attachment; filename=$request_filename';
+    }
+
     location  / {
         proxy_pass            http://{{ docker_container_name }};
         proxy_redirect        off;

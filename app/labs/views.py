@@ -1,6 +1,7 @@
 """Views for home app."""
 
 import logging
+import shutil
 import os
 import traceback
 from django.conf import settings
@@ -14,6 +15,7 @@ from django.template import (
 from django.template.loader import render_to_string
 from django.utils.text import slugify
 from django.views import View
+from pathlib import Path
 
 from utils.exceptions import LabBuildError
 from .cache import LabCache
@@ -108,7 +110,7 @@ class BootstrapLab(View):
             'form': form,
         }, status=400)
 
-    def force_download(self, request, fpath, fname=None):
+    def force_download(self, request, fpath: Path, fname=None):
         fname = fname or fpath.name
         if settings.DEBUG:
             logger.debug('Returning Django static serve (DEBUG mode)')
@@ -121,11 +123,14 @@ class BootstrapLab(View):
             response['Content-Disposition'] = "attachment; filename=%s" % fname
             return response
 
-        logger.debug('Serving file via Nginx X-Accel-Redirect: %s' % fpath)
+        srv_relpath = Path('bootstrap') / fpath.parent.name / fpath.name
+        srv_path = settings.INTERNAL_ROOT / srv_relpath
+        shutil.copyfile(fpath, srv_path)
+        logger.debug('Serving file via Nginx X-Accel-Redirect: %s' % srv_path)
         response = HttpResponse()
         response['Content-Type'] = ''
         response['Content-Disposition'] = "attachment; filename=%s" % fname
-        response['X-Accel-Redirect'] = str(fpath)
+        response['X-Accel-Redirect'] = settings.INTERNAL_URL + srv_relpath
         return response
 
 
