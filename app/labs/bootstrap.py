@@ -36,8 +36,8 @@ def random_string(length):
 
 def lab(form_data):
     """Render a new lab from form data."""
-    clean_dir(settings.TEMP_DIR)
-    output_dir = settings.TEMP_DIR / random_string(6)
+    clean_dir(settings.INTERNAL_ROOT)
+    output_dir = settings.INTERNAL_ROOT / random_string(6)
     form_data['logo_filename'] = create_logo(form_data, output_dir)
     render_templates(form_data, output_dir)
     render_server_yml(form_data, output_dir)
@@ -46,7 +46,7 @@ def lab(form_data):
     with zipfile.ZipFile(zipfile_path, 'w') as zf:
         for path in output_dir.rglob('*'):
             zf.write(path, root_dir / path.relative_to(output_dir))
-    return Path(str(zipfile_path).replace(str(settings.TEMP_DIR), ''))
+    return Path(str(zipfile_path).replace(str(settings.INTERNAL_ROOT), ''))
 
 
 def render_templates(data, output_dir):
