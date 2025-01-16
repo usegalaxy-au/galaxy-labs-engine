@@ -1,7 +1,6 @@
 """Views for home app."""
 
 import logging
-import os
 import traceback
 from django.conf import settings
 from django.http import HttpResponse
