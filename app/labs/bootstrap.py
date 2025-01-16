@@ -46,7 +46,7 @@ def lab(form_data):
     with zipfile.ZipFile(zipfile_path, 'w') as zf:
         for path in output_dir.rglob('*'):
             zf.write(path, root_dir / path.relative_to(output_dir))
-    return zipfile_path
+    return Path(str(zipfile_path).replace(str(settings.TEMP_DIR), ''))
 
 
 def render_templates(data, output_dir):

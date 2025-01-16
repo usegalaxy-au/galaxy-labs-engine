@@ -100,35 +100,30 @@ class BootstrapLab(View):
     def post(self, request):
         form = self.form(request.POST, request.FILES)
         if form.is_valid():
-            zipfile_path = form.bootstrap_lab()
+            zipfile_relpath = form.bootstrap_lab()
             return self.force_download(
                 request,
-                zipfile_path,
+                zipfile_relpath,
                 slugify(form.cleaned_data['lab_name']) + '.zip',
             )
         return render(request, 'labs/bootstrap.html', {
             'form': form,
         }, status=400)
 
-    def force_download(self, request, fpath: Path, fname=None):
-        fname = fname or fpath.name
-        if settings.DEBUG:
-            logger.debug('Returning Django static serve (DEBUG mode)')
-            logger.debug('Serving file %s' % fpath)
-            response = serve(
-                request,
-                os.path.basename(fpath),
-                os.path.dirname(fpath)
-            )
-            response['Content-Disposition'] = "attachment; filename=%s" % fname
-            return response
+    def force_download(self, request, relpath: Path, fname=None):
+        # if settings.DEBUG:
+        #     logger.debug('Returning Django static serve (DEBUG mode)')
+        #     logger.debug('Serving file %s' % relpath)
+        #     response = serve(
+        #         request,
+        #         os.path.basename(relpath),
+        #         os.path.dirname(settings.TEMP_DIR / relpath)
+        #     )
+        #     response['Content-Disposition'] = "attachment; filename=%s" % fname
+        #     return response
 
-        srv_relpath = str(fpath).replace(
-            str(settings.INTERNAL_ROOT),
-            '',
-        ).strip('/')
-        url = settings.INTERNAL_URL + srv_relpath
-        logger.debug('Serving file via Nginx X-Accel-Redirect: %s' % fpath)
+        url = settings.INTERNAL_URL + str(relpath)
+        logger.debug('Serving file via Nginx X-Accel-Redirect: %s' % relpath)
         response = HttpResponse()
         response['Content-Type'] = ''
         response['Content-Disposition'] = "attachment; filename=lab.zip"
