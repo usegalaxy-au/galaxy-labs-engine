@@ -103,13 +103,13 @@ class BootstrapLab(View):
             return self.force_download(
                 request,
                 zipfile_relpath,
-                slugify(form.cleaned_data['lab_name']) + '.zip',
+                filename=slugify(form.cleaned_data['lab_name']) + '.zip',
             )
         return render(request, 'labs/bootstrap.html', {
             'form': form,
         }, status=400)
 
-    def force_download(self, request, relpath: Path, fname=None):
+    def force_download(self, request, relpath: Path, filename=None):
         if settings.DEBUG:
             logger.debug('Returning Django static serve (DEBUG mode)')
             logger.debug('Serving file %s' % relpath)
@@ -118,7 +118,8 @@ class BootstrapLab(View):
                 relpath,
                 settings.INTERNAL_ROOT,
             )
-            response['Content-Disposition'] = "attachment; filename=%s" % fname
+            response['Content-Disposition'] = (
+                f"attachment; filename={filename}")
             return response
 
         url = settings.INTERNAL_URL + str(relpath).strip('/')

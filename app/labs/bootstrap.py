@@ -110,7 +110,8 @@ def create_logo(data, output_dir):
 
 def clean_dir(directory):
     """Delete directories that were created more than 7 days ago."""
-    for path in directory.iterdir():
-        if path.is_dir() and path.stat().st_ctime < time.time() - HOURS_1:
-            shutil.rmtree(path)
+    if directory.exists():
+        for path in directory.iterdir():
+            if path.is_dir() and path.stat().st_ctime < time.time() - HOURS_1:
+                shutil.rmtree(path)
     return directory
