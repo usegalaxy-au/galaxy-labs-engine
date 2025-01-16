@@ -111,16 +111,16 @@ class BootstrapLab(View):
         }, status=400)
 
     def force_download(self, request, relpath: Path, fname=None):
-        # if settings.DEBUG:
-        #     logger.debug('Returning Django static serve (DEBUG mode)')
-        #     logger.debug('Serving file %s' % relpath)
-        #     response = serve(
-        #         request,
-        #         os.path.basename(relpath),
-        #         os.path.dirname(settings.TEMP_DIR / relpath)
-        #     )
-        #     response['Content-Disposition'] = "attachment; filename=%s" % fname
-        #     return response
+        if settings.DEBUG:
+            logger.debug('Returning Django static serve (DEBUG mode)')
+            logger.debug('Serving file %s' % relpath)
+            response = serve(
+                request,
+                os.path.basename(relpath),
+                os.path.dirname(settings.TEMP_DIR / relpath)
+            )
+            response['Content-Disposition'] = "attachment; filename=%s" % fname
+            return response
 
         url = settings.INTERNAL_URL + str(relpath)
         logger.debug('Serving file via Nginx X-Accel-Redirect: %s' % relpath)
