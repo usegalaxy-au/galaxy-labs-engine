@@ -115,13 +115,13 @@ class BootstrapLab(View):
             logger.debug('Serving file %s' % relpath)
             response = serve(
                 request,
-                os.path.basename(relpath),
-                os.path.dirname(settings.TEMP_DIR / relpath)
+                relpath,
+                settings.INTERNAL_ROOT,
             )
             response['Content-Disposition'] = "attachment; filename=%s" % fname
             return response
 
-        url = settings.INTERNAL_URL + str(relpath)
+        url = settings.INTERNAL_URL + str(relpath).strip('/')
         logger.debug('Serving file via Nginx X-Accel-Redirect: %s' % relpath)
         response = HttpResponse()
         response['Content-Type'] = ''
