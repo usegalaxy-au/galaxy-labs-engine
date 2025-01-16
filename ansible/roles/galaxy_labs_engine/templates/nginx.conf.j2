@@ -52,7 +52,7 @@ server {
 
     location /internal {
         internal;
-        root /tmp/labs_engine/;
+        root {{ temp_dir }};
         add_header Content-Disposition 'attachment; filename=$request_filename';
     }
 
