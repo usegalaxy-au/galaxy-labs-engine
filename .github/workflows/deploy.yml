@@ -71,10 +71,9 @@ jobs:
     if: needs.build.result == 'success' || needs.build.result == 'skipped'
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - name: Checkout infrastructure repo
+        uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
           repository: usegalaxy-au/infrastructure
 
       - name: Set up Python
