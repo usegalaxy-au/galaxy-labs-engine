@@ -75,7 +75,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
-          repository: https://github.com/usegalaxy-au/infrastructure.git
+          repository: usegalaxy-au/infrastructure
 
       - name: Set up Python
         uses: actions/setup-python@v2
