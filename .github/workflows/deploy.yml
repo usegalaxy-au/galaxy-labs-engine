@@ -104,7 +104,6 @@ jobs:
           else
             PLAYBOOK=labs_engine_dev_playbook.yml
           fi
-          cd ansible
           ansible-galaxy install -p roles -r requirements.yml
           ansible-playbook -i hosts $PLAYBOOK --tags update
         env:
