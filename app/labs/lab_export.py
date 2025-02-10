@@ -360,7 +360,11 @@ def get_github_user(username):
     token = settings.GITHUB_API_TOKEN
     if token:
         headers['Authorization'] = f'Bearer {token}'
-    response = requests.get(url, headers=headers)
+    try:
+        response = requests.get(url, headers=headers)
+    except requests.exceptions.ConnectionError as exc:
+        logger.warning(f'GitHub API request failed: {exc}')
+        return {'login': username}
     if response.status_code == 200:
         user_data = response.json()
         WebCache.put(url, user_data, timeout=2_592_000)
