@@ -95,7 +95,7 @@ jobs:
 
       - name: Add ansible vault pass file
         run: |
-          echo "${{ secrets.ANSIBLE_VAULT_PASS }}" > .vault.pass.txt
+          echo "${{ secrets.ANSIBLE_VAULT_PASS }}" > .vault_pass.txt
 
       - name: Run Ansible Playbook
         run: |
