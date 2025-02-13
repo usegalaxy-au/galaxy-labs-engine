@@ -73,7 +73,7 @@
   $('a').each( (i, item) => {
     if (
       item.href
-      && item.href.includes(window.location.origin)
+      && !item.href.includes(window.location.origin)
     ) {
       if (item.href.includes("{{ galaxy_base_url }}")) {
         item.target = '_top';
