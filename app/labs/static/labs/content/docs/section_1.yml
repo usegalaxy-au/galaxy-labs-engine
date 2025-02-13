@@ -79,17 +79,17 @@ tabs:
 
           Using Markdown:
           <pre class="code">
-          ![My Image](./static/images/myimage.png)
+          ![My image description](./static/images/myimage.png)
           </pre>
 
           Using HTML (allows custom styling):
           <pre class="code">
-          &#60;img src="./static/images/myimage.png" alt="My Image" width="200" height="200"&#62;
+          &#60;img src="&period;/static/images/myimage.png" alt="My image description" width="200" height="200"&#62;
           </pre>
 
-          With a full URL:
+          Or with a full URL (any image available online):
           <pre class="code">
-          [![My Image](https://example.com/myimage.png)](https://example.com/myimage.png)
+          ![My image description](https://example.com/myimage.png)
           </pre>
 
       - title_md: Can I render my page locally?
