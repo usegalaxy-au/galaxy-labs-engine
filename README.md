@@ -4,6 +4,9 @@ This site presents a public rending engine for creating Galaxy Lab landing
 pages (known as the 'Welcome page' in Galaxy terms) from content hosted on
 GitHub.
 
+The site is fully documented at
+[https://labs.usegalaxy.org.au](https://labs.usegalaxy.org.au).
+
 Create a lab content directory like
 [this](./app/labs/content/simple/):
 
