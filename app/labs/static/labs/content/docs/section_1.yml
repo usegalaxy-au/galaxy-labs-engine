@@ -47,7 +47,7 @@ tabs:
         description_md: |
           Yes, rendering your lab page locally makes for much faster debugging
           and polishing! To render your page locally, you will need to install
-          the Galaxy Labs Engine CLI:
+          the Galaxy Labs Engine CLI (requires `python>=3.10`):
 
           <div class="tab-content">
             <ul class="nav nav-tabs" id="installLabsEngine" role="tablist">
