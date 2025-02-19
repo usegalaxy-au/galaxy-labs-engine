@@ -30,7 +30,9 @@
     {% if snippets.header_logo %}
     <img id="header-logo" src="{{ snippets.header_logo }}" alt="{{ site_name }} Logo">
     {% endif %}
-    {{ lab_name|upper }}
+    <span id="labName">
+      {{ lab_name|upper }}
+    </span>
   </section>
 
   {% if snippets.intro_md %}
