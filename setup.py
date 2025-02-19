@@ -7,7 +7,6 @@ setup(
     package_dir={'': 'app'},
     include_package_data=True,
     install_requires=[
-        "django>=4.0",  # Add any dependencies here
         "django>=5.0",
         "pyyaml>=6.0",
         "pydantic>=2.0",
