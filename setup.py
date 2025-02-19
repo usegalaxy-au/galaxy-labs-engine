@@ -21,4 +21,5 @@ setup(
             "labs-engine=app.cli:main",
         ],
     },
+    python_requires=">=3.10",
 )
