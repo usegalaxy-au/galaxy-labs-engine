@@ -34,17 +34,20 @@ li {
 }
 pre.prettyprint,
 pre.code {
-  background-color: var(--bs-gray-100);
-  border-radius: 0.5rem;
-  padding: 1rem;
+  background-color: var(--bs-gray-200);
+  border-radius: 0.25rem;
+  padding: 1rem !important;
   margin: 2rem 0;
 }
 /* YAML syntax */
 .kwd {
-  color: var(--bs-pink);
+  color: var(--bs-pink) !important;
 }
 .pln {
-  color: var(--bs-green);
+  color: var(--bs-green) !important;
+}
+.com {
+  color: var(--bs-gray-600) !important;
 }
 
 @import url(https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/prettify.css);

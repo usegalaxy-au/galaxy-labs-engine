@@ -6,91 +6,42 @@ tabs:
     heading_md: |
       Some common questions about creating content for a Galaxy Lab page.
     content:
-      - title_md: Can I write content in HTML?
+      - title_md: Why isn't my Lab page updating!?
         description_md: |
-          Yes - any file/field that accepts markdown can also accept HTML,
-          for example:
-
-          - `intro.md`
-          - `heading_md` (in section.yml)
-
-          However, be careful about nesting HTML within markdown. Anything inside
-          an HTML element must also be HTML. The following would be invalid:
-
-          <pre class="prettyprint">
-          &lt;p&gt;
-            This is a paragraph with a
-            [broken link](https://example.com).
-          &lt;/p&gt;
-          </pre>
-
-      - title_md: Can I use variables in my content?
-        description_md: |
-          Yes! Using variables is a great way to make a Lab page reuable across
-          Galaxy servers.
-          Variables defined in the base.yml/server.yml file can be used anywhere
-          that markdown or HTML content is provided. This includes templates like
-          `intro.md` and also section.yml `*_md` values. Any arbitrary variable
-          that you set in the base.yml/server.yml file can be used in the content:
-
-          1. `base.yml` or `[server].yml`:
-            <pre class="prettyprint lang-yaml">
-            myvar: foo
-            </pre>
-
-          2. `intro.md`:
-            <pre class="code">
-            &#35; Analysis methods
-            This is a great place for doing analysis such as &lbrace;&lbrace; myvar &rbrace;&rbrace;.
-            </pre>
-
-          3. `section_1.yml`:
-            <pre class="prettyprint lang-yaml">
-            ...
-            &ndash; title_md: Can I use variables in my YAML and Markdown/HTML content?
-              description_md: |
-                Yes, you can use variables like &lbrace;&lbrace; myvar &rbrace;&rbrace;.
-            </pre>
-
-      - title_md: Can I exclude an item from specific hosts?
-        description_md: |
-          Yes, you can exclude any component in the section schema from specific
-          hosts by listing hostnames under the
-          [exclude_from directive](/schema#tabitem).
-          This can be used to exclude items describing server-specific features,
-          such as:
-
-          <pre class="prettyprint lang-yaml">
-          - title_md: How can I increase my storage quota?
-            description_md: >
-              Please submit a quota request if your Galaxy  account reaches its
-              data storage limit. Requests are usually provisioned quickly if you
-              provide a reasonable use case for your request.
-            exclude_from:
-              - usegalaxy.org
-          </pre>
-
-      - title_md: Can I add images into Markdown/HTML?
-        description_md: |
-          Yes, you can use standard Markdown or HTML syntax to include images.
-          When adding the `src` atrribute to an image tag, you can use relative
-          URLs to specify an image located in your content directory, or an
-          absolute URL to an image hosted elsewhere on the web:
-
-          Using Markdown:
-          <pre class="code">
-          ![My image description](./static/images/myimage.png)
-          </pre>
-
-          Using HTML (allows custom styling):
-          <pre class="code">
-          &#60;img src="&period;/static/images/myimage.png" alt="My image description" width="200" height="200"&#62;
-          </pre>
-
-          Or with a full URL (any image available online):
-          <pre class="code">
-          ![My image description](https://example.com/myimage.png)
-          </pre>
+          <p class="lead text-bf">A note on caching</p>
+          <p>
+            When making changes to your Lab content, you may notice that updates are not immediate. This is because of caching, which is used to speed up page loading time. There are two levels of caching to keep in mind:
+          </p>
+          <ul>
+            <li>
+              The Labs Engine caches Lab content forever, unless a request is made with the <code>cache=false</code> parameter. When you are developing your Lab page, use this parameter to see your changes immediately, for example:
+              <a href="">http://{{ HOSTNAME }}/?content_root=https://github.com/myusername/myrepo/blob/branch/content/base.yml&cache=false</a>
+            </li>
+            <li>
+              Using the <code>cache=false</code> parameter will refresh the cache.
+              <!--
+              This happens automatically on every pull request to the
+              <a href="https://github.com/galaxyproject/galaxy_codex">
+                Galaxy Codex
+              </a>
+              repository, where global Labs content is stored.
+                -->
+            </li>
+            <li>
+              When making changes to your Lab content, you may notice that updates are not immediate, because GitHub raw content is cached for 5 minutes.
+            </li>
+            <li>
+              Caching is automatically disabled if you choose to
+              <a
+                href="#"
+                data-bs-toggle="collapse"
+                data-bs-target="#section_1-faq-2-collapse"
+                aria-expanded="true"
+                aria-controls="section_1-faq-2-collapse"
+                onclick="document.getElementById('section_1-faq-2-collapse').scrollIntoView();"
+              >render locally</a>!
+            </li>
+          </ul>
 
       - title_md: Can I render my page locally?
         description_md: |
@@ -126,6 +77,9 @@ tabs:
 
                   # serve a specific page from the current directory
                   labs-engine serve usegalaxy.org.yml
+
+                  # upgrade to the latest version (in future)
+                  pip install --force-reinstall git+https://github.com/usegalaxy-au/galaxy-labs-engine.git
                 </pre>
               </div>
               <div class="tab-pane fade" id="mac-linux" role="tabpanel" aria-labelledby="mac-linux-tab">
@@ -145,6 +99,9 @@ tabs:
 
                   # serve a specific page from the current directory
                   labs-engine serve usegalaxy.org.yml
+
+                  # upgrade to the latest version (in future)
+                  pip install --force-reinstall git+https://github.com/usegalaxy-au/galaxy-labs-engine.git
                 </pre>
               </div>
             </div>
@@ -153,19 +110,107 @@ tabs:
           This should start a local development server on `http://127.0.0.1:8000`.
           Click the link that appears and your lab page should open in the browser.
 
+      - title_md: Can I write content in HTML?
+        description_md: |
+          Yes - any file/field that accepts markdown can also accept HTML,
+          for example:
+
+          - `intro.md`
+          - `heading_md` (in section.yml)
+
+          However, be careful about nesting HTML within markdown. Anything inside
+          an HTML element must also be HTML. The following would be invalid:
+
+          <pre class="prettyprint">
+          &lt;p&gt;
+            This is a paragraph with a
+            [broken link](https://example.com).
+          &lt;/p&gt;
+          </pre>
+
+      - title_md: Can I use variables in my content?
+        description_md: |
+          Yes! Using variables is a great way to make a Lab page reuable across
+          Galaxy servers.
+          Variables defined in the `base.yml`/`[server].yml` file can be used anywhere
+          that markdown or HTML content is provided. This includes templates like
+          `intro.md` and also `section.yml` & `*_md` values. Any arbitrary variable
+          that you set in the `base.yml`/`[server].yml` file can be used in the content:
+
+          1. `base.yml` or `[server].yml`:
+            <pre class="prettyprint lang-yaml">
+            myvar: foo
+            </pre>
+
+          2. `intro.md`:
+            <pre class="code">
+            &#35; Analysis methods
+            This is a great place for doing analysis such as &lbrace;&lbrace; myvar &rbrace;&rbrace;.
+            </pre>
+
+          3. `section_1.yml`:
+            <pre class="prettyprint lang-yaml">
+            ...
+            &ndash; title_md: Can I use variables in my YAML and Markdown/HTML content?
+              description_md: |
+                Yes, you can use variables like &lbrace;&lbrace; myvar &rbrace;&rbrace;.
+            </pre>
+
+      - title_md: Can I exclude an item from specific hosts?
+        description_md: |
+          Yes, you can exclude any component in the section schema from specific
+          hosts by listing server names under the
+          [exclude_from directive](/schema#tabitem). The server name is just the
+          base name of the `[server].yml` file.
+          This can be used to exclude items describing server-specific features,
+          such as:
+
+          <pre class="prettyprint lang-yaml">
+          - title_md: How can I increase my storage quota?
+            description_md: >
+              Please submit a quota request if your Galaxy  account reaches its
+              data storage limit. Requests are usually provisioned quickly if you
+              provide a reasonable use case for your request.
+            exclude_from:
+              - usegalaxy.org  # matches the usegalaxy.org.yml content root
+          </pre>
+
+      - title_md: Can I add images into Markdown/HTML?
+        description_md: |
+          Yes, you can use standard Markdown or HTML syntax to include images.
+          When adding the `src` atrribute to an image tag, you can use relative
+          URLs to specify an image located in your content directory, or an
+          absolute URL to an image hosted elsewhere on the web:
+
+          Using Markdown:
+          <pre class="code">
+          ![My image description](./static/images/myimage.png)
+          </pre>
+
+          Using HTML (allows custom styling):
+          <pre class="code">
+          &#60;img src="&period;/static/images/myimage.png" alt="My image description" width="200" height="200"&#62;
+          </pre>
+
+          Or with a full URL (any image available online):
+          <pre class="code">
+          ![My image description](https://example.com/myimage.png)
+          </pre>
+
       - title_md: How do I list contributors to my Galaxy Lab?
         description_md: |
           You can list contributors to your Galaxy Lab by adding a `CONTRIBUTORS`
           file to your content directory. This file should be a plain-text
           list of GitHub usernames - one per line. The Labs engine will fetch
           the user's profile information and display it at the bottom of your
-          Lab Page.
+          Lab Page. If a contributor does not have a GitHub account, you can
+          just add their name.
 
   - id: another_tab
     title: Another tab
     heading_md: |
       Some more content to demonstrate multiple tabs in a section.
-      If you want to have a tab with just Markdown/HTML content and no sections,
-      you can just use the `heading_md` field and set `content: []` like we have
-      done here.
+      If you want to have a tab with just Markdown/HTML content and no
+      expandable items, you can just use the `heading_md` field and set
+      `content: []` like we have done here.
     content: []
