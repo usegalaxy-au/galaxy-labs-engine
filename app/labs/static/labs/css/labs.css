@@ -7,7 +7,7 @@ code {
 }
 #header-logo {
   height: 5rem;
-  width: 4rem;
+  width: auto;
   margin-right: 3rem;
 }
 #workflow-table {
