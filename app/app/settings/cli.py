@@ -26,6 +26,15 @@ STATICFILES_DIRS = [
     ("local", LAB_CONTENT_ROOT),
 ]
 
+STATICFILES_IGNORE_PATTERNS = [
+    # Avoid collecting virtual env in PWD!
+    'venv/*',
+    '.venv/*',
+    '*venv/*',
+    '*/lib/*',
+    '*/site-packages/*',
+]
+
 DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
     f"http://{HOSTNAME}/static/local/{LAB_CONTENT_ENTRYPOINT}")
 
