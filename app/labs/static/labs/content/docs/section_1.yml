@@ -61,16 +61,16 @@ tabs:
             <div class="tab-content" id="installLabsEngineContent">
               <div class="tab-pane fade show active" id="windows" role="tabpanel" aria-labelledby="windows-tab">
                 <pre class="prettyprint">
-                  # Navigate to your content directory
-                  cd %MY_CONTENT_DIR%
-
                   # create a virtual environment
-                  # (you may also wish to use a conda environment for a global environment)
+                  # (alternatively, you may also wish to use conda for a global environment)
                   py -m venv venv
                   venv\Scripts\activate
 
                   # install the Labs Engine
                   pip install git+https://github.com/usegalaxy-au/galaxy-labs-engine.git
+
+                  # Navigate to your content directory
+                  cd %MY_CONTENT_DIR%
 
                   # serve base.yml in the current directory
                   labs-engine serve
@@ -84,15 +84,15 @@ tabs:
               </div>
               <div class="tab-pane fade" id="mac-linux" role="tabpanel" aria-labelledby="mac-linux-tab">
                 <pre class="prettyprint">
-                  # Navigate to your content directory
-                  cd $MY_CONTENT_DIR
-
                   # create a virtual environment
                   python -m venv venv
                   source venv/bin/activate
 
                   # install the Labs Engine
                   pip install git+https://github.com/usegalaxy-au/galaxy-labs-engine.git
+
+                  # Navigate to your content directory
+                  cd $MY_CONTENT_DIR
 
                   # serve base.yml in the current directory
                   labs-engine serve
