@@ -59,8 +59,14 @@ ul.nav-pills {
 ul.nav-pills li.nav-item {
   margin: 0 1rem;
 }
-.nav-link {
+.nav-pills .nav-link {
+  color: var(--bs-gray-600);
+  border: 1px solid var(--bs-gray-600);
+  transition-duration: 0.25s;
+}
+.nav-pills .nav-link:not(.active):hover {
   color: var(--color);
+  border: 1px solid var(--color);
 }
 .nav-pills .nav-link.active,
 .nav-pills .show>.nav-link {
