@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "galaxy-labs-engine"
+dynamic = ["version", "dependencies"]
+requires-python = ">=3.10"
+
+[tool.setuptools]
+packages = ["app"]
+
+[tool.setuptools.package-dir]
+"" = "app"
+
+[project.scripts]
+labs-engine = "app.cli:main"
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+dependencies = {file = "requirements.txt"}
