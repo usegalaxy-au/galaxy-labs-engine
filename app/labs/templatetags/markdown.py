@@ -23,6 +23,8 @@ ICONS = {
 def render_markdown(md):
     if not md:
         return ""
+    # Prevent floating angle-brackets from triggering tag sanitizer:
+    md = re.sub(r'\s+\>', '>', md)
     html = markdown2.markdown(md.strip(), extras={
         "tables": True,
         "code-friendly": True,
