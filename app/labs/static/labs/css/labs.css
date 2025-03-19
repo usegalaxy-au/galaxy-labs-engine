@@ -57,7 +57,7 @@ ul.nav-pills {
   padding: 1rem;
 }
 ul.nav-pills li.nav-item {
-  margin: 0 1rem;
+  margin: 0 1rem .5rem 1rem;
 }
 .nav-pills .nav-link {
   color: var(--bs-gray-600);
