@@ -1,4 +1,10 @@
-"""Analyse Nginx log files to extract user metrics."""
+"""Analyse Nginx log files to extract user metrics.
+
+Expects a filtered access log including only lines matching ALL of:
+    - grep -v 'https://usegalaxy'
+    - grep '/welcome'
+
+"""
 
 import re
 import matplotlib.pyplot as plt

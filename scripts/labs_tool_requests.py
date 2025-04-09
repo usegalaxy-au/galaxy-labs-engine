@@ -1,4 +1,11 @@
-"""Analyse Nginx log files to extract user metrics."""
+"""Analyse Nginx log files to extract user metrics.
+
+Expects a filtered access log including only lines matching ALL of:
+    - grep -v 'https://usegalaxy'
+    - grep '/build'
+    - grep '/api/tools/toolshed.g2.bx.psu.edu'
+
+"""
 
 import re
 import matplotlib.pyplot as plt
