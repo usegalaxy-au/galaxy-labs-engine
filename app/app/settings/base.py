@@ -189,7 +189,9 @@ if not GITHUB_API_TOKEN:
           " which may result in errors (this is used for fetching CONTRIBUTORS"
           " information).\n\033[0m")
 
-CACHE_TIMEOUT = 60 * 60  # 1 hour
+# Cache forever unless requested
+# (automated by GH workflow in galaxyproject/galaxy_codex)
+CACHE_TIMEOUT = None
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
