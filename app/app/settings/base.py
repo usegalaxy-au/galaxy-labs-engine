@@ -8,6 +8,7 @@ from utils.paths import ensure_dir
 
 if os.getenv('DJANGO_SETTINGS_MODULE') != "app.settings.cli":
     from dotenv import load_dotenv
+    HOSTNAME = os.getenv('HOSTNAME')  # HOSTNAME can be set at runtime
     load_dotenv('../.env', override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,10 +21,10 @@ AUTH_USER_MODEL = 'labs.User'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or "secretkey"
 SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
 
-if os.environ.get('HOSTNAME'):
-    HOSTNAME = os.environ.get('HOSTNAME')
-else:
-    raise EnvironmentError('Env variable HOSTNAME not set')
+if not HOSTNAME:
+    HOSTNAME = os.getenv('HOSTNAME')
+    if not HOSTNAME:
+        raise EnvironmentError('Env variable HOSTNAME not set')
 
 # Site paths and URLs
 STATIC_URL = '/static/'

@@ -3,9 +3,6 @@
 Delete cached labs that are not in use.
 """
 
-import requests
-import time
-
 from django.core.cache import cache
 from django.core.management.base import BaseCommand
 from django.test import RequestFactory
@@ -14,6 +11,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from labs.models import CachedLab
+from utils.runserver import Runserver
 
 
 class Command(BaseCommand):
@@ -43,37 +41,28 @@ class Command(BaseCommand):
                     '\nCache update aborted\n'))
                 return
 
-        self.stdout.write(
-            f'Waiting for server at {settings.HOSTNAME} to come online',
-            ending='')
-        while True:
-            try:
-                response = requests.get(f'http://{settings.HOSTNAME}')
-                if response.status_code == 200:
-                    self.stdout.write(self.style.SUCCESS(
-                        f'\nServer at {settings.HOSTNAME} is online.'))
-                    break
-            except requests.ConnectionError:
-                pass
-            self.stdout.write('.', ending='')
-            time.sleep(1)
+        self.stdout.write()
+        with Runserver():
+            self.stdout.write(self.style.SUCCESS('\nServer is online.\n'))
+            self.update_cache()
 
         self.stdout.write(self.style.SUCCESS(
-            '\nClearing cache...'))
+            '\nCache update complete\n'))
+
+    def update_cache(self):
+        """Update the cache for all active cached labs."""
+        self.stdout.write('Clearing cache...')
         cache.clear()
 
-        self.stdout.write(self.style.SUCCESS('Reading CachedLab records...'))
+        self.stdout.write('Reading CachedLab records...')
         cached_labs = CachedLab.objects.all()
-        self.stdout.write(self.style.SUCCESS(
-            f'Found {cached_labs.count()} cached labs'))
-
+        self.stdout.write(f'Found {cached_labs.count()} cached labs')
         active_labs = CachedLab.objects.filter(
             modified__gt=timezone.now() - timezone.timedelta(
                 days=settings.CACHE_UPDATE_RETAIN_DAYS,
             )
         )
-        self.stdout.write(self.style.SUCCESS(
-            f'Found {active_labs.count()} active labs'))
+        self.stdout.write(f'Found {active_labs.count()} active labs\n')
 
         factory = RequestFactory()
         for lab in cached_labs:
@@ -87,18 +76,22 @@ class Command(BaseCommand):
                 view_func, args, kwargs = resolve(request.path_info)
                 response = view_func(request, *args, **kwargs)
                 if response.status_code == 200:
-                    self.stdout.write(self.style.SUCCESS(
-                        f'Lab updated successfully: {lab.url}'))
+                    self.stdout.write(
+                        self.style.SUCCESS('Lab updated for URL: '),
+                        ending='',
+                    )
                 else:
-                    self.stdout.write(self.style.WARNING(
-                        f'HTTP error code updating Lab: {lab.url}'
-                        ' This should have resulted in an error notification.'
-                    ))
+                    self.stdout.write(
+                        self.style.ERROR('HTTP error code updating Lab: '),
+                        ending='',
+                    )
+                self.stdout.write(lab.url)
             else:
-                self.stdout.write(self.style.WARNING(
-                    f'Deleting old cached lab: {lab.url} (last modified'
-                    f' {lab.modified.strftime("%Y-%m-%d %H:%M:%S")})'))
+                self.stdout.write(
+                    self.style.WARNING('Deleting old cached lab '),
+                    ending='')
+                self.stdout.write(
+                    f' (last modified'
+                    f' {lab.modified.strftime("%Y-%m-%d %H:%M:%S")}):'
+                    f' {lab.url}')
                 lab.delete()
-
-        self.stdout.write(self.style.SUCCESS(
-            '\nCache update complete\n'))
