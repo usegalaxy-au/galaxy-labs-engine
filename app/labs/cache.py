@@ -14,6 +14,7 @@ from hashlib import md5
 
 from labs.models import CachedLab
 
+_1_DAY = 60 * 60 * 24
 CACHE_KEY_IGNORE_GET_PARAMS = (
     'cache',
     'nonce',
@@ -101,7 +102,7 @@ class WebCache:
             return data
 
     @classmethod
-    def put(cls, url, data, timeout=3600):
+    def put(cls, url, data, timeout=_1_DAY):
         if NOCACHE:
             return
         cache_key = cls._generate_cache_key(url)
