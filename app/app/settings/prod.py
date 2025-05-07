@@ -50,4 +50,4 @@ if SENTRY_DNS:
         # of transactions for tracing.
         traces_sample_rate=1.0,
     )
-logging.getLogger('sentry_sdk').setLevel(logging.ERROR)
+    logging.getLogger('sentry_sdk').setLevel(logging.ERROR)
