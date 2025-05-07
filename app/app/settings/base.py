@@ -193,6 +193,10 @@ if not GITHUB_API_TOKEN:
 # (automated by GH workflow in galaxyproject/galaxy_codex)
 CACHE_TIMEOUT = None
 
+# Labs that haven't been requested in more than this many days will be deleted
+# from the cache during a cache update.
+CACHE_UPDATE_RETAIN_DAYS = 30
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
