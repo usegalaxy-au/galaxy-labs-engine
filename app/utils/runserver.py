@@ -7,6 +7,8 @@ import time
 import requests
 from django.conf import settings
 
+WAIT_MAX_SECONDS = 10
+
 
 class Runserver:
     """Run Django development server to be queried by ElasticSearch."""
@@ -41,15 +43,24 @@ class Runserver:
         print(
             f'Waiting for server at {server_url} to come online',
             end='', flush=True)
+        tries = 0
         while True:
             try:
                 response = requests.get(server_url)
-                if response.status_code == 200:
+                if response.status_code < 400:
                     break
             except requests.ConnectionError:
                 pass
             print('.', end='', flush=True)
             time.sleep(1)
+            tries += 1
+            if tries > WAIT_MAX_SECONDS:
+                print(f'Server {response.status_code} response:',
+                      response.text,
+                      file=sys.stderr)
+                raise RuntimeError(
+                    'Could not start Django development server'
+                    ' - check for errors above?')
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.server.terminate()
