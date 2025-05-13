@@ -16,8 +16,8 @@ from .log import config
 validate.env()
 
 DEBUG = False
-
 LOGGING = config.configure_logging(LOG_ROOT)
+print('Running with HOSTNAME:', HOSTNAME)
 
 ADMIN_NAME = os.getenv('ADMIN_NAME', 'Admin')
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL',
