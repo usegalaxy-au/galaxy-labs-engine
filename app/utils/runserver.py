@@ -44,20 +44,25 @@ class Runserver:
             f'Waiting for server at {server_url} to come online',
             end='', flush=True)
         tries = 0
+        response = None
         while True:
+            exception = None
             try:
                 response = requests.get(server_url)
                 if response.status_code < 400:
                     break
-            except requests.ConnectionError:
-                pass
+            except requests.ConnectionError as e:
+                exception = e
             print('.', end='', flush=True)
             time.sleep(1)
             tries += 1
             if tries > WAIT_MAX_SECONDS:
-                print(f'Server {response.status_code} response:',
-                      response.text,
-                      file=sys.stderr)
+                if response:
+                    print(f'Server {response.status_code} response:',
+                          response.text,
+                          file=sys.stderr)
+                if exception:
+                    print(f'Connection error: {exception}', file=sys.stderr)
                 raise RuntimeError(
                     'Could not start Django development server'
                     ' - check for errors above?')
