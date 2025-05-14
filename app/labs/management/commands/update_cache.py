@@ -24,13 +24,13 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         """Add arguments to the command."""
         parser.add_argument(
-            '-f', '--force',
+            '-y', '--non-interactive',
             action='store_true',
             help='Do not ask for confirmation',
         )
 
     def handle(self, *args, **kwargs):
-        if not kwargs['force']:
+        if not kwargs['non_interactive']:
             reply = input(
                 '\nThis command will clear the cache and re-render all active'
                 ' cached labs (visited in last'
