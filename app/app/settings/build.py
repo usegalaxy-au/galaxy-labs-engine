@@ -12,7 +12,7 @@ from .log import config
 
 validate.env()
 
-DEBUG = False
+DEBUG = True
 LOGGING = config.configure_logging(LOG_ROOT)
 print('Running with HOSTNAME:', HOSTNAME)
 

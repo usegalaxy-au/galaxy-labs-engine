@@ -76,15 +76,15 @@ class Command(BaseCommand):
                 view_func, args, kwargs = resolve(request.path_info)
                 response = view_func(request, *args, **kwargs)
                 if response.status_code == 200:
+                    length = len(response.content)
                     self.stdout.write(
-                        self.style.SUCCESS('Lab updated for URL: '),
-                        ending='',
-                    )
+                        self.style.SUCCESS(
+                            f'Lab updated for URL [{length} bytes]: '),
+                        ending='')
                 else:
                     self.stdout.write(
                         self.style.ERROR('HTTP error code updating Lab: '),
-                        ending='',
-                    )
+                        ending='')
                 self.stdout.write(lab.url)
             else:
                 self.stdout.write(

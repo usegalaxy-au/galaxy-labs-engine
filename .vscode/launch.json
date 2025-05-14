@@ -53,7 +53,7 @@
           "request": "launch",
           "program": "${workspaceFolder}/app/manage.py",
           "cwd": "${workspaceFolder}/app",
-          "args": ["update_cache", "-f"],
+          "args": ["update_cache", "-y"],
           "django": true,
           "justMyCode": true,
         },
