@@ -18,6 +18,7 @@ from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
 from django.conf import settings
 from markdown2 import Markdown
 from pydantic import BaseModel, ValidationError
+from urllib.parse import urlparse, parse_qs
 
 from types import SimpleNamespace
 from utils.exceptions import LabBuildError
@@ -63,6 +64,7 @@ class ExportLabContext(dict):
         self._fetch_yaml_context()
         self._fetch_sections()
         self._fetch_contributors()
+        self._format_video_url()
 
     def _clean(self):
         """Format params for rendering."""
@@ -303,7 +305,9 @@ class ExportLabContext(dict):
         if settings.BUILD_HOSTNAME and settings.BUILD_HOSTNAME in url:
             # When updating cache with local server on localhost, make sure
             # that image URLs contain the real (public) URL
-            url = url.replace(settings.BUILD_HOSTNAME, settings.PUBLIC_HOSTNAME)
+            url = url.replace(
+                settings.BUILD_HOSTNAME,
+                settings.PUBLIC_HOSTNAME)
         if 'github.com' in url:
             return self._make_raw(url)
         return url
@@ -338,6 +342,25 @@ class ExportLabContext(dict):
                 BeautifulSoup(body, 'html.parser')
         except Exception as exc:
             raise LabBuildError(exc, source='HTML')
+
+    def _format_video_url(self):
+        """Reformat YouTube video URLs to embed format."""
+        if 'youtube.com' in self.get('video_url', ''):
+            url = self['video_url']
+            parsed_url = urlparse(url)
+            params = parse_qs(parsed_url.query)
+            if 'v' in params:
+                video_id = params['v'][0]
+                self['video_url'] = (
+                    'https://www.youtube.com/embed/'
+                    f'{video_id}?rel=0&showinfo=0'
+                )
+            elif 'youtu.be/' in url:
+                video_id = url.split('/')[-1]
+                self['video_url'] = (
+                    'https://www.youtube.com/embed/'
+                    f'{video_id}?rel=0&showinfo=0'
+                )
 
     def render_relative_uris(self, template_str):
         """Render relative URIs in HTML content."""

@@ -19,7 +19,7 @@ CACHE_KEY_IGNORE_GET_PARAMS = (
     'cache',
     'nonce',
 )
-NOCACHE = settings.CLI_DEV  # or settings.DEBUG NOCOMMIT
+NOCACHE = settings.CLI_DEV or settings.DEBUG
 
 logger = logging.getLogger('django.cache')
 
