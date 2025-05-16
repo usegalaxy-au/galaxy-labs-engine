@@ -20,8 +20,11 @@ AUTH_USER_MODEL = 'labs.User'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or "secretkey"
 SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
 
-# BUILD_HOSTNAME overrides HOSTNAME when running update_cache command
-HOSTNAME = os.getenv('BUILD_HOSTNAME') or os.getenv('HOSTNAME')
+# BUILD_HOSTNAME overrides HOSTNAME when running update_cache command,
+# but SERVE_HOSTNAME should still be used for rendering HTML e.g. URLs.
+BUILD_HOSTNAME = os.getenv('BUILD_HOSTNAME')
+SERVE_HOSTNAME = os.getenv('HOSTNAME')
+HOSTNAME = BUILD_HOSTNAME or SERVE_HOSTNAME
 if not HOSTNAME:
     raise EnvironmentError('Env variable HOSTNAME not set')
 
