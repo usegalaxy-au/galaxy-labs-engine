@@ -6,5 +6,5 @@ from django.conf import settings as app_settings
 def settings(request):
     """Include some settings variables."""
     return {
-        'HOSTNAME': app_settings.HOSTNAME,
+        'HOSTNAME': app_settings.PUBLIC_HOSTNAME,
     }
