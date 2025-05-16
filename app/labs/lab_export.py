@@ -300,10 +300,10 @@ class ExportLabContext(dict):
         url = relpath
         if not relpath.startswith('http'):
             url = self.parent_url + relpath.lstrip('./')
-        if settings.BUILD_URL in url:
+        if settings.BUILD_HOSTNAME and settings.BUILD_HOSTNAME in url:
             # When updating cache with local server on localhost, make sure
             # that image URLs contain the real (public) URL
-            url = url.replace(settings.BUILD_URL, settings.SERVE_URL)
+            url = url.replace(settings.BUILD_HOSTNAME, settings.SERVE_HOSTNAME)
         if 'github.com' in url:
             return self._make_raw(url)
         return url
