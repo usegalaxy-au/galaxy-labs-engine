@@ -1,4 +1,11 @@
-<div class="video-container">
+<div
+  class="video-container"
+  {% if video_tooltip %}
+  title="{{ video_tooltip }}"
+  data-bs-toggle="tooltip"
+  data-bs-placement="bottom"
+  {% endif %}
+>
   <iframe
     src="{{ video_url }}"
     frameborder="0"

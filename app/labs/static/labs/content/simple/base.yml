@@ -17,6 +17,8 @@ custom_css: static/custom.css
 intro_md: templates/intro.md
 footer_md: templates/footer.md
 conclusion_md: templates/conclusion.md
+video_url: https://www.youtube.com/watch?v=VNE0pF6Nqgw
+video_tooltip: Introduction to data analysis on Galaxy Australia
 
 # Data to be rendered into sections/tabs/accordion elements:
 sections:

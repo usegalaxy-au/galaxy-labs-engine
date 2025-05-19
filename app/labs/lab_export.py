@@ -345,7 +345,7 @@ class ExportLabContext(dict):
 
     def _format_video_url(self):
         """Reformat YouTube video URLs to embed format."""
-        if 'youtube.com' in self.get('video_url', ''):
+        if self.get('video_url') and 'youtube.com' in self['video_url']:
             url = self['video_url']
             parsed_url = urlparse(url)
             params = parse_qs(parsed_url.query)

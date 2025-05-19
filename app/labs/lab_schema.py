@@ -124,6 +124,8 @@ class LabSchema(BaseModel, extra='allow'):
     intro_md: Optional[FlexibleStr] = None
     conclusion_md: Optional[FlexibleStr] = None
     footer_md: Optional[FlexibleStr] = None
+    video_url: Optional[FlexibleStr] = None
+    video_tooltip: Optional[FlexibleStr] = None
 
 
 def html_tags(value: str) -> str:
