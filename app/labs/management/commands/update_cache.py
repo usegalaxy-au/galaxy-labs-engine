@@ -43,6 +43,7 @@ class Command(BaseCommand):
 
         self.stdout.write()
         with Runserver():
+            # Use runserver so that local static files can still be served
             self.stdout.write(self.style.SUCCESS('\nServer is online.\n'))
             self.update_cache()
 

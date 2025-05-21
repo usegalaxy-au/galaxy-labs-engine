@@ -36,11 +36,12 @@ class LabCache:
         cache_record = cls._get_cached_lab(request)
         if cache_record:
             body = cache.get(cache_record.key)
-            logger.debug(
-                f"Cache HIT for {request.GET.get('content_root', 'root')}")
-            response = HttpResponse(body)
-            response['X-Cache-Status'] = 'HIT'
-            return response
+            if body:
+                logger.debug(
+                    f"Cache HIT for {request.GET.get('content_root', 'root')}")
+                response = HttpResponse(body)
+                response['X-Cache-Status'] = 'HIT'
+                return response
         logger.debug(
             f"Cache MISS for {request.GET.get('content_root', 'root')}")
 
@@ -50,11 +51,13 @@ class LabCache:
             return HttpResponse(body)
         logger.debug(
             f"Cache PUT for {request.GET.get('content_root', 'root')}")
-        cache_record = cls._get_cached_lab(request, create=True)
-        timeout = (settings.CACHE_TIMEOUT
-                   if request.GET.get('content_root')
-                   else None)  # No timeout for default "Docs Lab" page
-        cache.set(cache_record.key, body, timeout=timeout)
+        if body:
+            cache_record = cls._get_cached_lab(request, create=True)
+            timeout = (
+                settings.CACHE_TIMEOUT
+                if request.GET.get('content_root')
+                else None)  # No timeout for default "Docs Lab" page
+            cache.set(cache_record.key, body, timeout=timeout)
         response = HttpResponse(body)
         response['X-Cache-Status'] = 'MISS'
         return response
