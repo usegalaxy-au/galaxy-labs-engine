@@ -19,7 +19,7 @@ CACHE_KEY_IGNORE_GET_PARAMS = (
     'cache',
     'nonce',
 )
-NOCACHE = settings.CLI_DEV or settings.DEBUG
+NOCACHE = settings.CLI_DEV
 
 logger = logging.getLogger('django.cache')
 
@@ -49,18 +49,29 @@ class LabCache:
     def put(cls, request, body):
         if NOCACHE:
             return HttpResponse(body)
-        logger.debug(
-            f"Cache PUT for {request.GET.get('content_root', 'root')}")
-        if body:
+        response = HttpResponse(body)
+        response['X-Cache-Status'] = 'MISS'
+        if body and cls.is_labs_request(request):
+            logger.debug(
+                f"Cache PUT for {request.GET.get('content_root', 'homepage')}")
             cache_record = cls._get_cached_lab(request, create=True)
             timeout = (
                 settings.CACHE_TIMEOUT
                 if request.GET.get('content_root')
                 else None)  # No timeout for default "Docs Lab" page
             cache.set(cache_record.key, body, timeout=timeout)
-        response = HttpResponse(body)
-        response['X-Cache-Status'] = 'MISS'
         return response
+
+    @classmethod
+    def is_labs_request(cls, request):
+        """Check if the request is for a lab page."""
+        return (
+            request.path in ('', '/')
+            and (
+                request.GET.get('content_root')
+                or not request.GET
+            )
+        )
 
     @classmethod
     def _get_cached_lab(cls, request, create=False):
@@ -75,7 +86,10 @@ class LabCache:
                 url=url,
             )
         if lab:
+            logger.debug(f"CachedLab found for key {cache_key} - {url}")
             lab.save()
+        else:
+            logger.debug(f"No CachedLab found for key {cache_key} - {url}")
         return lab
 
     @classmethod

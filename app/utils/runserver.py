@@ -65,7 +65,8 @@ class Runserver:
                     print(f'Connection error: {exception}', file=sys.stderr)
                 raise RuntimeError(
                     'Could not start Django development server'
-                    ' - check for errors above?')
+                    ' - check for errors above, or try visiting the URL if the'
+                    ' server seems to be running.')
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.server.terminate()
