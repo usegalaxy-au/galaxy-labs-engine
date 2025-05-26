@@ -1,0 +1,45 @@
+<div
+  class="video-container"
+  {% if video_tooltip %}
+  title="{{ video_tooltip }}"
+  data-bs-toggle="tooltip"
+  data-bs-placement="bottom"
+  {% endif %}
+>
+  <iframe
+    src="{{ video_url }}"
+    frameborder="0"
+    width="300"
+    height="200"
+  ></iframe>
+  <div class="overlay" onclick="$('#videoModal').modal('show');"></div>
+</div>
+
+<div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="videoModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body m-3">
+        <iframe
+        src="{{ video_url }}"
+        frameborder="0"
+        allowfullscreen
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+        ></iframe>
+        <script>
+          function resetVideo() {
+            const video = $('#videoModal iframe');
+            if (video.length) {
+              const iframe = video[0];
+              iframe.src = iframe.src;
+            }
+          }
+          $('#videoModal').on('hidden.bs.modal', resetVideo);
+        </script>
+      </div>
+    </div>
+  </div>
+</div>

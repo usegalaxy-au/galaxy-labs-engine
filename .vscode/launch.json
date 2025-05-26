@@ -47,6 +47,17 @@
           "justMyCode": true,
         },
         {
+          "name": "Django update cache",
+          "type": "debugpy",
+          "purpose": ["debug-test"],
+          "request": "launch",
+          "program": "${workspaceFolder}/app/manage.py",
+          "cwd": "${workspaceFolder}/app",
+          "args": ["update_cache", "-y"],
+          "django": true,
+          "justMyCode": true,
+        },
+        {
           "name": "Lab serve",
           "type": "debugpy",
           "purpose": ["debug-test"],

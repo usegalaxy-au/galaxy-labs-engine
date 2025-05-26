@@ -8,7 +8,7 @@
 }
 body {
   color: var(--color-dark);
-  padding: 6rem 2rem 1rem 2rem;
+  padding: 3rem 2rem 1rem 2rem;
   min-width: calc(99vw - 2rem);
 }
 h1 {

@@ -35,9 +35,18 @@
     </span>
   </section>
 
-  {% if snippets.intro_md %}
-  {{ snippets.intro_md|safe }}
-  {% endif %}
+  <div class="row">
+    <div class="col">
+      {% if snippets.intro_md %}
+      {{ snippets.intro_md|safe }}
+      {% endif %}
+    </div>
+    {% if video_url %}
+    <div class="col-auto">
+      {% include 'labs/components/embedded-video.html' %}
+    </div>
+    {% endif %}
+  </div>
 
   {% for section in sections %}
     {% include 'labs/components/section.html' with section=section %}

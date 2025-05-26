@@ -20,9 +20,12 @@ AUTH_USER_MODEL = 'labs.User'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or "secretkey"
 SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
 
-if os.environ.get('HOSTNAME'):
-    HOSTNAME = os.environ.get('HOSTNAME')
-else:
+# BUILD_HOSTNAME overrides HOSTNAME when running update_cache command,
+# but PUBLIC_HOSTNAME should still be used for rendering HTML e.g. URLs.
+BUILD_HOSTNAME = os.getenv('BUILD_HOSTNAME')
+PUBLIC_HOSTNAME = os.getenv('HOSTNAME')
+HOSTNAME = BUILD_HOSTNAME or PUBLIC_HOSTNAME
+if not HOSTNAME:
     raise EnvironmentError('Env variable HOSTNAME not set')
 
 # Site paths and URLs
@@ -192,6 +195,10 @@ if not GITHUB_API_TOKEN:
 # Cache forever unless requested
 # (automated by GH workflow in galaxyproject/galaxy_codex)
 CACHE_TIMEOUT = None
+
+# Labs that haven't been requested in more than this many days will be deleted
+# from the cache during a cache update.
+CACHE_UPDATE_RETAIN_DAYS = 30
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

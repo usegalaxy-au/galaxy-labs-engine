@@ -1,4 +1,9 @@
-"""Cache lab pages because rendering is expensive."""
+"""Cache lab pages because rendering is expensive.
+
+Cached Lab pages are tracked with the CachedLab model, which stores the cache
+key, URL and last access time. This information is used when updating the
+cache.
+"""
 
 import logging
 from django.conf import settings
@@ -7,10 +12,14 @@ from django.utils.http import urlencode
 from django.http import HttpResponse
 from hashlib import md5
 
+from labs.models import CachedLab
+
+_1_DAY = 60 * 60 * 24
 CACHE_KEY_IGNORE_GET_PARAMS = (
     'cache',
+    'nonce',
 )
-NOCACHE = settings.CLI_DEV or settings.DEBUG
+NOCACHE = settings.CLI_DEV
 
 logger = logging.getLogger('django.cache')
 
@@ -24,14 +33,15 @@ class LabCache:
         ):
             return
 
-        cache_key = cls._generate_cache_key(request)
-        body = cache.get(cache_key)
-        if body:
-            logger.debug(
-                f"Cache HIT for {request.GET.get('content_root', 'root')}")
-            response = HttpResponse(body)
-            response['X-Cache-Status'] = 'HIT'
-            return response
+        cache_record = cls._get_cached_lab(request)
+        if cache_record:
+            body = cache.get(cache_record.key)
+            if body:
+                logger.debug(
+                    f"Cache HIT for {request.GET.get('content_root', 'root')}")
+                response = HttpResponse(body)
+                response['X-Cache-Status'] = 'HIT'
+                return response
         logger.debug(
             f"Cache MISS for {request.GET.get('content_root', 'root')}")
 
@@ -39,17 +49,48 @@ class LabCache:
     def put(cls, request, body):
         if NOCACHE:
             return HttpResponse(body)
-        logger.debug(
-            f"Cache PUT for {request.GET.get('content_root', 'root')}")
-        cache_key = cls._generate_cache_key(request)
-        timeout = (settings.CACHE_TIMEOUT
-                   if request.GET.get('content_root')
-                   else None)  # No timeout for default "Docs Lab" page
-
-        cache.set(cache_key, body, timeout=timeout)
         response = HttpResponse(body)
         response['X-Cache-Status'] = 'MISS'
+        if body and cls.is_labs_request(request):
+            logger.debug(
+                f"Cache PUT for {request.GET.get('content_root', 'homepage')}")
+            cache_record = cls._get_cached_lab(request, create=True)
+            timeout = (
+                settings.CACHE_TIMEOUT
+                if request.GET.get('content_root')
+                else None)  # No timeout for default "Docs Lab" page
+            cache.set(cache_record.key, body, timeout=timeout)
         return response
+
+    @classmethod
+    def is_labs_request(cls, request):
+        """Check if the request is for a lab page."""
+        return (
+            request.path in ('', '/')
+            and (
+                request.GET.get('content_root')
+                or not request.GET
+            )
+        )
+
+    @classmethod
+    def _get_cached_lab(cls, request, create=False):
+        """Fetch CachedLab object from database.
+        If it doesn't exist, create a new one if `create` is True.
+        """
+        cache_key, url = cls._generate_cache_key(request)
+        lab = CachedLab.objects.filter(key=cache_key).first()
+        if not lab and create:
+            lab = CachedLab(
+                key=cache_key,
+                url=url,
+            )
+        if lab:
+            logger.debug(f"CachedLab found for key {cache_key} - {url}")
+            lab.save()
+        else:
+            logger.debug(f"No CachedLab found for key {cache_key} - {url}")
+        return lab
 
     @classmethod
     def _generate_cache_key(cls, request):
@@ -58,11 +99,11 @@ class LabCache:
             k: v for k, v in request.GET.items()
             if k not in CACHE_KEY_IGNORE_GET_PARAMS
         }
-        key = f"{request.path}?{urlencode(params)}"
-        md5hash = md5(key.encode('utf-8')).hexdigest()
-        logger.debug(f"Cache path: {key}")
-        logger.debug(f"Cache key (hashed): {md5hash}")
-        return md5hash
+        url = f"{request.path}?{urlencode(params)}" if params else request.path
+        md5sum = md5(url.encode('utf-8')).hexdigest()
+        logger.debug(f"Cache path: {url}")
+        logger.debug(f"Cache url (hashed): {md5sum}")
+        return md5sum, url
 
 
 class WebCache:
@@ -78,7 +119,7 @@ class WebCache:
             return data
 
     @classmethod
-    def put(cls, url, data, timeout=3600):
+    def put(cls, url, data, timeout=_1_DAY):
         if NOCACHE:
             return
         cache_key = cls._generate_cache_key(url)

@@ -22,6 +22,21 @@ code {
   width: auto;
   padding-bottom: 1rem;
 }
+.video-container {
+  position: relative;
+}
+.video-container .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  cursor: pointer;
+}
+#videoModal .modal-content {
+  height: 80vh;
+}
 .table-inputs td {
   padding: .5rem 1rem;
 }
