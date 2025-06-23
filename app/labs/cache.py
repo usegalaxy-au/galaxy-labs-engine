@@ -8,6 +8,7 @@ cache.
 import logging
 from django.conf import settings
 from django.core.cache import cache
+from django.db import IntegrityError
 from django.utils.http import urlencode
 from django.http import HttpResponse
 from hashlib import md5
@@ -80,16 +81,25 @@ class LabCache:
         """
         cache_key, url = cls._generate_cache_key(request)
         lab = CachedLab.objects.filter(key=cache_key).first()
-        if not lab and create:
-            lab = CachedLab(
-                key=cache_key,
-                url=url,
-            )
         if lab:
             logger.debug(f"CachedLab found for key {cache_key} - {url}")
             lab.save()
         else:
             logger.debug(f"No CachedLab found for key {cache_key} - {url}")
+
+        if create and not lab:
+            try:
+                lab = CachedLab(
+                    key=cache_key,
+                    url=url,
+                )
+                lab.save()
+            except IntegrityError as exc:
+                lab = CachedLab.objects.filter(key=cache_key).first()
+                if not lab:
+                    raise exc
+            logger.debug(f"Created new CachedLab for key {cache_key} - {url}")
+
         return lab
 
     @classmethod
