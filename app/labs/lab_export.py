@@ -81,6 +81,11 @@ class ExportLabContext(dict):
         validated_sections = []
         for section in self['sections']:
             try:
+                if not isinstance(section, dict):
+                    raise ValidationError(
+                        'Section YAML content must be a dictionary.'
+                        f' Received type {type(section).__name__} instead.',
+                    )
                 validated_sections.append(
                     LabSectionSchema(**section).model_dump()
                 )
@@ -194,12 +199,22 @@ class ExportLabContext(dict):
         """Fetch webpage sections content from remote YAML file."""
         sections = self.get('sections')
         if isinstance(sections, str):
-            self['sections'] = self._fetch_yaml_content(self.get('sections'))
+            self['sections'] = [
+                self._fetch_yaml_content(self.get('sections'))
+            ]
         elif isinstance(sections, list):
             self['sections'] = [
                 self._fetch_yaml_content(s)
                 for s in sections
             ]
+        else:
+            raise LabBuildError(
+                'The "sections" field must be a string or list of strings,'
+                ' each defining the path to a YAML file, relative to base.yml'
+                f' (recevied type: {type(sections).__name__})',
+                source='YAML',
+                url=self.content_root,
+            )
         return sections
 
     def _filter_sections(self):
