@@ -56,11 +56,14 @@ class LabCache:
             logger.debug(
                 f"Cache PUT for {request.GET.get('content_root', 'homepage')}")
             cache_record = cls._get_cached_lab(request, create=True)
-            timeout = (
-                settings.CACHE_TIMEOUT
-                if request.GET.get('content_root')
-                else None)  # No timeout for default "Docs Lab" page
-            cache.set(cache_record.key, body, timeout=timeout)
+            # If there was an IntegrityError creating the CachedLab, will
+            # return None - we won't cache anything
+            if cache_record:
+                timeout = (
+                    settings.CACHE_TIMEOUT
+                    if request.GET.get('content_root')
+                    else None)  # No timeout for default "Docs Lab" page
+                cache.set(cache_record.key, body, timeout=timeout)
         return response
 
     @classmethod
@@ -83,7 +86,13 @@ class LabCache:
         lab = CachedLab.objects.filter(key=cache_key).first()
         if lab:
             logger.debug(f"CachedLab found for key {cache_key} - {url}")
-            lab.save()
+            try:
+                lab.save()
+            except IntegrityError as exc:
+                if 'NOT NULL constraint failed' in str(exc):
+                    logger.warning('IntegrityError: ' + str(exc))
+                    return None
+                raise exc
         else:
             logger.debug(f"No CachedLab found for key {cache_key} - {url}")
 
@@ -95,9 +104,10 @@ class LabCache:
                 )
                 lab.save()
             except IntegrityError as exc:
-                lab = CachedLab.objects.filter(key=cache_key).first()
-                if not lab:
-                    raise exc
+                if 'UNIQUE constraint failed' in str(exc):
+                    logger.warning('IntegrityError: ' + str(exc))
+                    return None
+                raise exc
             logger.debug(f"Created new CachedLab for key {cache_key} - {url}")
 
         return lab
