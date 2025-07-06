@@ -8,6 +8,7 @@ cache.
 import logging
 from django.conf import settings
 from django.core.cache import cache
+from django.db import IntegrityError
 from django.utils.http import urlencode
 from django.http import HttpResponse
 from hashlib import md5
@@ -55,11 +56,14 @@ class LabCache:
             logger.debug(
                 f"Cache PUT for {request.GET.get('content_root', 'homepage')}")
             cache_record = cls._get_cached_lab(request, create=True)
-            timeout = (
-                settings.CACHE_TIMEOUT
-                if request.GET.get('content_root')
-                else None)  # No timeout for default "Docs Lab" page
-            cache.set(cache_record.key, body, timeout=timeout)
+            # If there was an IntegrityError creating the CachedLab, will
+            # return None - we won't cache anything
+            if cache_record:
+                timeout = (
+                    settings.CACHE_TIMEOUT
+                    if request.GET.get('content_root')
+                    else None)  # No timeout for default "Docs Lab" page
+                cache.set(cache_record.key, body, timeout=timeout)
         return response
 
     @classmethod
@@ -80,16 +84,32 @@ class LabCache:
         """
         cache_key, url = cls._generate_cache_key(request)
         lab = CachedLab.objects.filter(key=cache_key).first()
-        if not lab and create:
-            lab = CachedLab(
-                key=cache_key,
-                url=url,
-            )
         if lab:
             logger.debug(f"CachedLab found for key {cache_key} - {url}")
-            lab.save()
+            try:
+                lab.save()
+            except IntegrityError as exc:
+                if 'NOT NULL constraint failed' in str(exc):
+                    logger.warning('IntegrityError: ' + str(exc))
+                    return None
+                raise exc
         else:
             logger.debug(f"No CachedLab found for key {cache_key} - {url}")
+
+        if create and not lab:
+            try:
+                lab = CachedLab(
+                    key=cache_key,
+                    url=url,
+                )
+                lab.save()
+            except IntegrityError as exc:
+                if 'UNIQUE constraint failed' in str(exc):
+                    logger.warning('IntegrityError: ' + str(exc))
+                    return None
+                raise exc
+            logger.debug(f"Created new CachedLab for key {cache_key} - {url}")
+
         return lab
 
     @classmethod
