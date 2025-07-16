@@ -132,12 +132,12 @@ tabs:
         description_md: |
           Yes! Using variables is a great way to make a Lab page reuable across
           Galaxy servers.
-          Variables defined in the `base.yml`/`<server>.yml` file can be used anywhere
+          Variables defined in the `base.yml`/<code>&lt;server&gt;.yml</code> file can be used anywhere
           that markdown or HTML content is provided. This includes templates like
           `intro.md` and also `section.yml` & `*_md` values. Any arbitrary variable
-          that you set in the `base.yml`/`<server>.yml` file can be used in the content:
+          that you set in the `base.yml`/<code>&lt;server&gt;.yml</code> file can be used in the content:
 
-          1. `base.yml` or `<server>.yml`:
+          1. `base.yml` or <code>&lt;server&gt;.yml</code>:
             <pre class="prettyprint lang-yaml">
             myvar: foo
             </pre>
@@ -158,7 +158,7 @@ tabs:
 
       - title_md: How to add links to tools/workflows?
         description_md: |
-          To add Galaxy server links (e.g. any link to a usegalaxy.* site), you can use the `<server>.yml` variable `galaxy_base_url` to build a URL that always points to the Galaxy server that the Lab is being viewed on.
+          To add Galaxy server links (e.g. any link to a usegalaxy.* site), you can use the <code>&lt;server&gt;.yml</code> variable `galaxy_base_url` to build a URL that always points to the Galaxy server that the Lab is being viewed on.
 
           ##### Linking to tools
 
@@ -187,7 +187,7 @@ tabs:
           Yes, you can exclude any component in the section schema from specific
           hosts by listing server names under the
           [exclude_from directive](/schema#tabitem). The server name is just the
-          base name of the `<server>.yml` file.
+          base name of the <code>&lt;server&gt;.yml</code> file.
           This can be used to exclude items describing server-specific features,
           such as:
 
