@@ -41,7 +41,11 @@ class LabExportTestCase(TestCase):
                              text=r['response'],
                              status_code=r.get('status_code', 200))
         response = self.client.get(TEST_LAB_URL)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.status_code,
+            200,
+            f"Unexpected HTTP status from request to {TEST_LAB_URL}",
+        )
         self.assertContains(response, TEST_LAB_NAME)
         self.assertContains(response, TEST_LAB_LAB_NAME)
         self.assertContains(response, TEST_LAB_GALAXY_BASE_URL)

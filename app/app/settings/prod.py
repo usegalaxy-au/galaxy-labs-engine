@@ -16,6 +16,7 @@ from .log import config
 validate.env()
 
 DEBUG = False
+CLI_DEV = False
 LOGGING = config.configure_logging(LOG_ROOT)
 print('Running with HOSTNAME:', HOSTNAME)
 
