@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-CLI_DEV = True  # Don't cache anything
+CLI_DEV = False  # Don't cache anything
 AUTH_USER_MODEL = 'labs.User'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or "secretkey"
 SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
