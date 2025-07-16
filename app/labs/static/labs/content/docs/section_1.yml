@@ -132,12 +132,12 @@ tabs:
         description_md: |
           Yes! Using variables is a great way to make a Lab page reuable across
           Galaxy servers.
-          Variables defined in the `base.yml`/`[server].yml` file can be used anywhere
+          Variables defined in the `base.yml`/`<server>.yml` file can be used anywhere
           that markdown or HTML content is provided. This includes templates like
           `intro.md` and also `section.yml` & `*_md` values. Any arbitrary variable
-          that you set in the `base.yml`/`[server].yml` file can be used in the content:
+          that you set in the `base.yml`/`<server>.yml` file can be used in the content:
 
-          1. `base.yml` or `[server].yml`:
+          1. `base.yml` or `<server>.yml`:
             <pre class="prettyprint lang-yaml">
             myvar: foo
             </pre>
@@ -156,12 +156,38 @@ tabs:
                 Yes, you can use variables like &lbrace;&lbrace; myvar &rbrace;&rbrace;.
             </pre>
 
+      - title_md: How to add links to tools/workflows?
+        description_md: |
+          To add Galaxy server links (e.g. any link to a usegalaxy.* site), you can use the `<server>.yml` variable `galaxy_base_url` to build a URL that always points to the Galaxy server that the Lab is being viewed on.
+
+          ##### Linking to tools
+
+          For creating tool URLs in either markdown, HTML or YAML, just copy the URL while you have the tool open in Galaxy, and replace the base URL with `galaxy_base_url` like so:
+
+          <pre class="prettyprint">
+          # Either of these work fine:
+          &lbrace;&lbrace; galaxy_base_url }}/?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/fastqc/fastqc
+          &lbrace;&lbrace; galaxy_base_url }}/?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fdevteam%2Ffastqc%2Ffastqc
+          </pre>
+
+          <p class="alert alert-warning">
+            Make sure you remove the version from the end of the URL! This ensures that the user is always directed to the latest version of the tool.
+          </p>
+
+          ##### Linking to workflows
+
+          For linking to a workflow, it's best to link to a TRS import from either WorkflowHub.eu or DockStore.org to ensure availability between Galaxy instances. You should be able to obtain the TRS ID from the workflow page on either of these sites:
+
+          <pre class="prettyprint">
+          &lbrace;&lbrace; galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=220
+          </pre>
+
       - title_md: Can I exclude an item from specific hosts?
         description_md: |
           Yes, you can exclude any component in the section schema from specific
           hosts by listing server names under the
           [exclude_from directive](/schema#tabitem). The server name is just the
-          base name of the `[server].yml` file.
+          base name of the `<server>.yml` file.
           This can be used to exclude items describing server-specific features,
           such as:
 
