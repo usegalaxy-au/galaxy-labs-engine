@@ -53,15 +53,15 @@ class TabContentEnum(str, Enum):
 
 class TabItemButton(BaseModel):
     """Validate Galaxy Lab section tab item buttons."""
-    label_md: FlexibleStr
     link: FlexibleStr
+    label_md: Optional[FlexibleStr] = None
     tip: Optional[FlexibleStr] = None
     icon: Optional[IconEnum] = None
 
     @model_validator(mode='after')
-    def must_have_tip_or_icon(cls, model):
-        if not (model.tip or model.icon):
-            raise ValueError('either `tip` or `icon` must be provided')
+    def must_have_label_or_icon(cls, model):
+        if not (model.label_md or model.icon):
+            raise ValueError('either `label_md` or `icon` must be provided')
         return model
 
 
