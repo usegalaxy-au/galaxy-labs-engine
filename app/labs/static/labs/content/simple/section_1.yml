@@ -9,7 +9,8 @@ tabs:
         description_md: Standard upload of data to Galaxy, from your computer or
           from the web.
         buttons:
-          - link: "{{ galaxy_base_url }}/tool_runner?tool_id=upload1"
+          - icon: run
+            link: "{{ galaxy_base_url }}/tool_runner?tool_id=upload1"
             tip: Upload data to Galaxy
       - title_md: <code>FastQC</code> - sequence quality reports
         description_md: >
