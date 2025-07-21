@@ -13,6 +13,17 @@ from pydantic import (
 from pydantic.types import Annotated
 from typing import Any, Optional, Union
 
+DEPRECATED_PROPS = (
+    'button_link',
+    'button_tip',
+    'button_md',
+    'button_icon',
+    'view_link',
+    'view_tip',
+    'view_md',
+    'view_icon',
+)
+
 
 def soft_coerce_str(v: Any) -> str:
     if isinstance(v, (int, float, bool)):
@@ -61,7 +72,9 @@ class TabItemButton(BaseModel):
     @model_validator(mode='after')
     def must_have_label_or_icon(cls, model):
         if not (model.label_md or model.icon):
-            raise ValueError('either `label_md` or `icon` must be provided')
+            raise ValueError(
+                'either `label_md` or `icon` properties must be provided for'
+                ' button items')
         return model
 
 

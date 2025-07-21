@@ -197,15 +197,14 @@ tabs:
               description_md: >
                 Standard upload of data to Galaxy, from your computer or from the web.
               buttons:
-              - link: "{{ galaxy_base_url }}/tool_runner?tool_id=upload1"
-                label_md: Upload data
-                tip: Upload data to Galaxy
-              - link: "https://galaxyproject.org"
-                label_md: Galaxy Project
-                tip: Learn more about Galaxy
+                - icon: run
+                  tip: Upload data to Galaxy
+                  link: "&lbrace;&lbrace; galaxy_base_url }}/tool_runner?tool_id=upload1"
+                - label_md: About
+                  link: "https://galaxyproject.org/"
           </pre>
 
-          See the full description of `buttons` [here](/schema#tabitembutton). Try not to go overboard - one or two buttons is usually enough!
+          See the full definition of `buttons` [here](/schema#tabitembutton). Try not to go overboard - one or two buttons is usually enough!
 
       - title_md: Can I exclude an item from specific hosts?
         description_md: |
