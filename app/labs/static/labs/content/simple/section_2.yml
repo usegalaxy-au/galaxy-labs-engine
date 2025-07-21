@@ -29,16 +29,21 @@ tabs:
             #     - datatypes:  # tool input 2 - one accepted datatype
             #       - <str>
             #       label: <str optional>
-            #   button_link: <str optional>
-            #   button_md: <str optional>
-            #   button_tip: <str optional>
-            #   view_link: <str optional>
-            #   view_md: <str optional>
-            #   view_tip: <str optional>
+            #   buttons:
+            #     - link: <str>  # URL
+            #       icon: <str optional>  # [run, tutorial, social, help, view]
+            #       tip: <str optional>  # tooltip to show on mouse hover
+            #       label_md: <str optional>  # button text to show if icon is not provided
+            #     - link: <str>
+            #       icon: <str optional>
+            #       tip: <str optional>
+            #       label_md: <str optional>provided
 
           - title_md: "`Hifiasm` - assembly with PacBio HiFi data"
-            button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fbgruening%2Fhifiasm%2Fhifiasm"
             description_md: A haplotype-resolved assembler for PacBio HiFi reads.
+            buttons:
+              - icon: run
+                link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fbgruening%2Fhifiasm%2Fhifiasm"
             inputs:
               - label: PacBio reads
                 datatypes:
@@ -49,11 +54,13 @@ tabs:
           title: Another subsection
           content:
             - title_md: "`Flye` - assembly with PacBio or Nanopore data"
-              button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fbgruening%2Fflye%2Fflye"
               description_md: >
                 *de novo* assembly of single-molecule sequencing reads, designed
                 for a wide range of datasets, from small bacterial projects to
                 large mammalian-scale assemblies.
+              buttons:
+                - icon: run
+                  link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fbgruening%2Fflye%2Fflye"
               inputs:
               - label: Single-molecule sequencing reads
                 datatypes:
@@ -78,17 +85,20 @@ tabs:
                 will describe the steps required to assemble your genome on the Galaxy Australia platform,
                 using multiple workflows.
               title_md: About these workflows
-            - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=220"
-              button_tip: Import to Galaxy Australia
-              description_md: >
+            - description_md: >
                 Convert a BAM file to FASTQ format to perform QC analysis (required if your data is in BAM format).
+              title_md: BAM to FASTQ + QC v1.0
+              buttons:
+                - icon: run
+                  link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=220"
+                  tip: Import to Galaxy Australia
+                - icon: view
+                  link: https://workflowhub.eu/workflows/220
+                  tip: View in WorkflowHub
               inputs:
                 - label: PacBio `subreads.bam`
                   datatypes:
                     - bam
-              title_md: BAM to FASTQ + QC v1.0
-              view_link: https://workflowhub.eu/workflows/220
-              view_tip: View in WorkflowHub
         - id: nanopore
           title: Assembly with Nanopore data and polishing with Illumina data
           content:
@@ -97,23 +107,25 @@ tabs:
                 [tutorial](https://training.galaxyproject.org/training-material/topics/assembly/tutorials/largegenome/tutorial.html)
                 describes the steps required to assemble a genome on Galaxy with Nanopore and Illumina data.
               title_md: About these workflows
-            - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=225"
-              button_tip: Import to Galaxy Australia
-              description_md: >
+            - description_md: >
                 Assemble Nanopore long reads. This workflow can be run alone or as part of a combined workflow for large genome assembly.
+              title_md: Flye assembly with Nanopore data
+              buttons:
+                - icon: run
+                  link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=225"
+                  tip: Import to Galaxy Australia
+                - icon: view
+                  link: https://workflowhub.eu/workflows/225
+                  tip: View in WorkflowHub
               inputs:
                 - label: Long reads (may be raw, filtered and/or corrected)
                   datatypes:
                   - fastqsanger
-              title_md: Flye assembly with Nanopore data
-              view_link: https://workflowhub.eu/workflows/225
-              view_tip: View in WorkflowHub
 
   - id: help
     title: Help
     content:
-      - button_md: Request support
-        button_link: /request
+      - title_md: Can I use Galaxy Australia to assemble a large genome?
         description_md: >
           Yes. Galaxy Australia has assembly tools for small prokaryote genomes as well as larger eukaryote genomes.
           We are continually adding new tools and optimising them for large genome assemblies - this means adding enough computer processing power to run data-intensive tools, as well as configuring
@@ -124,7 +136,9 @@ tabs:
           - you need to increase your data storage limit
           - there is a tool you wish to request
           - a tool appears to be broken or running slowly
-        title_md: Can I use Galaxy Australia to assemble a large genome?
+        buttons:
+          - link: /request
+            label_md: Request support
       - description_md: >
           - See the tutorials in this Help section. They cover different approaches to genome assembly
           - Read the methods in scientific papers about genome assembly, particularly those about genomes with similar characteristics to those in your project
