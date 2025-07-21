@@ -182,6 +182,31 @@ tabs:
           &lbrace;&lbrace; galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=220
           </pre>
 
+      - title_md: How to add buttons to my content?
+        description_md: |
+
+          You may have seen Labs with button links:
+
+          <img alt="screenshot of content item with buttons" src="https://github.com/usegalaxy-au/galaxy-labs-engine/blob/dev/app/labs/static/labs/content/docs/static/tab-item-buttons.png?raw=true" class="shadow img-fluid" />
+
+          We can create the above by providing a list of buttons in the content item YAML:
+
+          <pre class="prettyprint lang-yaml">
+          content:
+            - title_md: Import data to Galaxy
+              description_md: >
+                Standard upload of data to Galaxy, from your computer or from the web.
+              buttons:
+              - link: "{{ galaxy_base_url }}/tool_runner?tool_id=upload1"
+                label_md: Upload data
+                tip: Upload data to Galaxy
+              - link: "https://galaxyproject.org"
+                label_md: Galaxy Project
+                tip: Learn more about Galaxy
+          </pre>
+
+          See the full description of `buttons` [here](/schema#tabitembutton). Try not to go overboard - one or two buttons is usually enough!
+
       - title_md: Can I exclude an item from specific hosts?
         description_md: |
           Yes, you can exclude any component in the section schema from specific

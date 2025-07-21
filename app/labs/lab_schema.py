@@ -7,6 +7,7 @@ from pydantic import (
     BeforeValidator,
     Field,
     field_validator,
+    model_validator,
     StrictStr,
 )
 from pydantic.types import Annotated
@@ -50,6 +51,20 @@ class TabContentEnum(str, Enum):
     subsections = 'subsections'
 
 
+class TabItemButton(BaseModel):
+    """Validate Galaxy Lab section tab item buttons."""
+    label_md: FlexibleStr
+    link: FlexibleStr
+    tip: Optional[FlexibleStr] = None
+    icon: Optional[IconEnum] = None
+
+    @model_validator(mode='after')
+    def must_have_tip_or_icon(cls, model):
+        if not (model.tip or model.icon):
+            raise ValueError('either `tip` or `icon` must be provided')
+        return model
+
+
 class TabItem(BaseModel):
     """Validate Galaxy Lab section tab item.
 
@@ -57,6 +72,7 @@ class TabItem(BaseModel):
     """
     title_md: MarkdownStr
     description_md: MarkdownStr
+    buttons: Optional[list[TabItemButton]] = []
     button_link: Optional[FlexibleStr] = None
     button_tip: Optional[FlexibleStr] = None
     button_md: Optional[MarkdownStr] = None

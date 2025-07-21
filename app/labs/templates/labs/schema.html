@@ -34,7 +34,9 @@
         title: Tools
         heading_md: Common tools are listed here, or search for more in the full tool panel to the left.
         content:
-          - button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fdevteam%2Ffastqc%2Ffastqc"
+          - buttons:
+              - icon: run
+                link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fdevteam%2Ffastqc%2Ffastqc"
             title_md: `FastQC` - sequence quality reports
             description_md: |
               Before using your sequencing data, it&rsquo;s important to ensure that
@@ -56,11 +58,7 @@
             Learn more
           &lt;/a&gt;.
         content:
-          - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=222"
-            button_tip: Import to Galaxy AU
-            title_md: Data QC
-            view_link: https://workflowhub.eu/workflows/222
-            view_tip: View in WorkflowHub
+          - title_md: Data QC
             description_md: |
               Report statistics from sequencing reads.
 
@@ -68,7 +66,14 @@
 
               - `nanoplot`
               - `fastqc`
-              - `multiqc`</pre>
+              - `multiqc`
+            buttons:
+              - icon: run
+                link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=222"
+                tip: Import to Galaxy AU
+              - icon: view
+                link: https://workflowhub.eu/workflows/222
+                tip: View in WorkflowHub</pre>
   {% endverbatim %}
 
   <p>The above YAML results in the following element being rendered:</p>
@@ -87,11 +92,12 @@
     <li><a href="#tabsubsection">Tab Subsection</a></li>
     <li><a href="#tabitem">Content Item</a></li>
     <li><a href="#inputitem">Input Item</a></li>
+    <li><a href="#tabitembutton">Button</a></li>
     <li><a href="#iconenum">Button Icons</a></li>
   </ol>
 
   <p>
-    The YAML schema expects items 1-5 to be lists, so these elements can be
+    The YAML schema expects each of items 1-6 to be a list of items, so these elements can be
     repeated to provide as many Tabs, Content Items etc. as you like.
   </p>
 
@@ -311,8 +317,8 @@
 
   <p>
     A content item, which is typically a Galaxy tool, workflow or tutorial.
-    In the UI, this will be rendered as an "accordion" item. If button/view
-    links are not specified, no buttons will be displayed. For tools and
+    In the UI, this will be rendered as an "accordion" item. If buttons are not
+    specified, no buttons will be displayed. For tools and
     workflows, <code>inputs</code> can be used to describe the essential inputs.
   </p>
 
@@ -343,7 +349,7 @@
     </li>
     <li>
       <p>
-        <strong><code>button_link</code></strong>
+        <strong class="text-danger"><code>button_link</code> (deprecated if favour of <code>buttons</code>)</strong>
         <em>(string or null, optional)</em><br />
         URL for the button link - this is typically used as a "run" button
         for tools or workflows, but can be customized by setting the other
@@ -352,7 +358,7 @@
     </li>
     <li>
       <p>
-        <strong><code>button_tip</code></strong>
+        <strong class="text-danger"><code>button_tip</code> (deprecated if favour of <code>buttons</code>)</strong>
         <em>(string or null, optional)</em><br />
         Tooltip text for the button - this will be shown when the user's mouse
         passes over the item.
@@ -360,14 +366,14 @@
     </li>
     <li>
       <p>
-        <strong><code>button_md</code></strong>
+        <strong class="text-danger"><code>button_md</code> (deprecated if favour of <code>buttons</code>)</strong>
         <em>(string or null, optional)</em><br />
         Markdown or HTML formatted string to display inside the "button" button.
       </p>
     </li>
     <li>
       <p>
-        <strong><code>button_icon</code></strong>
+        <strong class="text-danger"><code>button_icon</code> (deprecated if favour of <code>buttons</code>)</strong>
         <em>(<a href="#iconenum">ButtonIcon</a> or null, optional)</em><br />
         Icon for the button - must be one of the accepted
         <a href="#iconenum">ButtonIcon</a>
@@ -376,7 +382,7 @@
     </li>
     <li>
       <p>
-        <strong><code>view_link</code></strong>
+        <strong class="text-danger"><code>view_link</code> (deprecated if favour of <code>buttons</code>)</strong>
         <em>(string or null, optional)</em><br />
         URL for the "view" link - this is typically a link to view more
         information about the item e.g. a workflow in WorkFlowHub.
@@ -384,7 +390,7 @@
     </li>
     <li>
       <p>
-        <strong><code>view_tip</code></strong>
+        <strong class="text-danger"><code>view_tip</code> (deprecated if favour of <code>buttons</code>)</strong>
         <em>(string or null, optional)</em><br />
         Tooltip text for the view - this will be shown when the user's mouse
         passes over the item.
@@ -392,18 +398,26 @@
     </li>
     <li>
       <p>
-        <strong><code>view_md</code></strong> <em>(string or null, optional)</em
+        <strong class="text-danger"><code>view_md</code> (deprecated if favour of <code>buttons</code>)</strong>
+        <em>(string or null, optional)</em
         ><br />
         Markdown or HTML formatted string to display inside the "view" button.
       </p>
     </li>
     <li>
       <p>
-        <strong><code>view_icon</code></strong>
+        <strong class="text-danger"><code>view_icon</code> (deprecated if favour of <code>buttons</code>)</strong>
         <em>(<a href="#iconenum">ButtonIcon</a> or null, optional)</em><br />
         Icon for the "view" button - must be one of the accepted
         <a href="#iconenum">ButtonIcon</a>
         strings.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>buttons</code></strong>
+        <em>(array of <a href="#tabitembutton">Button</a> items or null, optional)</em><br />
+        A list of buttons to display for this item.
       </p>
     </li>
     <li>
@@ -421,11 +435,13 @@
 
   {% verbatim %}
   <pre class="prettyprint lang-yaml">
-    - button_link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fdevteam%2Ffastqc%2Ffastqc"
-      title_md: `FastQC` - sequence quality reports
+    - title_md: `FastQC` - sequence quality reports
       description_md: |
           Before using your sequencing data, it&rsquo;s important to ensure that
           the data quality is sufficient for your analysis.
+      buttons:
+        - icon: run
+          link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fdevteam%2Ffastqc%2Ffastqc"
       inputs:
         - &lt;ItemInput&gt;
         - &lt;ItemInput&gt;</pre>
@@ -443,11 +459,7 @@
 
   {% verbatim %}
   <pre class="prettyprint lang-yaml">
-    - button_link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=222"
-      button_tip: Import to Galaxy Australia
-      title_md: Data QC on Galaxy AU
-      view_link: https://workflowhub.eu/workflows/222
-      view_tip: View in WorkflowHub
+    - title_md: Data QC on Galaxy AU
       description_md: |
           Report statistics from sequencing reads.
 
@@ -456,6 +468,13 @@
           - `nanoplot`
           - `fastqc`
           - `multiqc`
+      buttons:
+        - icon: run
+          link: "{{ galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=222"
+          tip: Import to Galaxy Australia
+        - icon: view
+          link: https://workflowhub.eu/workflows/222
+          tip: View in WorkflowHub
       exclude_from:
         - usegalaxy.org
         - usegalaxy.eu</pre>
@@ -517,6 +536,47 @@
     datatypes:
       - fasta
       - fastqsanger</pre>
+
+  <hr />
+
+  <h2 id="tabitembutton">Button</h2>
+
+  <h3>Description</h3>
+
+  <p>
+    A button to be displayed with a link, containing either an icon or markdown.
+    Can optionally have a tooltip that will be shown when the user's mouse
+    passes over the button.
+  </p>
+
+  <h3>Properties</h3>
+
+  <ul>
+    <li>
+      <p>
+        <strong><code>link</code></strong> <em>(string, required)</em><br />
+        The URL that the button will navigate to when clicked.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>label_md</code></strong> <em>(string or null, optional)</em><br />
+        Markdown or HTML formatted label to display inside the button. If omitted, only the icon will be shown.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>icon</code></strong> <em>(<a href="#iconenum">ButtonIcon</a> or null, optional)</em><br />
+        Icon to display in the button. Must be one of the accepted <a href="#iconenum">ButtonIcon</a> values. If provided, this will be shown instead of the label.
+      </p>
+    </li>
+    <li>
+      <p>
+        <strong><code>tip</code></strong> <em>(string or null, optional)</em><br />
+        Tooltip text to display when the user hovers over the button.
+      </p>
+    </li>
+  </ul>
 
   <hr />
 
