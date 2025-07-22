@@ -37,7 +37,7 @@ tabs:
             #     - link: <str>
             #       icon: <str optional>
             #       tip: <str optional>
-            #       label_md: <str optional>provided
+            #       label_md: <str optional>
 
           - title_md: "`Hifiasm` - assembly with PacBio HiFi data"
             description_md: A haplotype-resolved assembler for PacBio HiFi reads.
