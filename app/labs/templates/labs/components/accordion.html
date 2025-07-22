@@ -68,6 +68,26 @@
               </a>
             </div>
             {% endif %}
+
+            {% for btn in item.buttons %}
+            <div class="my-1">
+              <a
+                href="{{ btn.link }}"
+                class="btn btn-galaxy"
+                {% if btn.tip %}
+                title="{{ btn.tip }}"
+                data-bs-toggle="tooltip"
+                data-bs-placement="left"
+                {% endif %}
+              >
+                {% if btn.icon %}
+                <span class="material-icons">{{ btn.icon|iconkey }}</span>
+                {% else %}
+                {{ btn.label_md|inline_markdown|default:'<span class="material-icons">play_arrow</span>' }}
+                {% endif %}
+              </a>
+            </div>
+            {% endfor %}
           </div>
         </div>
       </div>

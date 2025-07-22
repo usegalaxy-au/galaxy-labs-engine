@@ -19,6 +19,7 @@ from utils.exceptions import LabBuildError
 from .cache import LabCache
 from .forms import LabBootstrapForm
 from .lab_export import ExportLabContext
+from .lab_schema import DEPRECATED_PROPS
 
 logger = logging.getLogger('django')
 
@@ -50,6 +51,7 @@ def export_lab(request):
         logger.warning(f"Error building lab: {traceback.format_exc()}")
         return render(request, 'labs/export-error.html', {
             'exc': exc,
+            'deprecated_props': DEPRECATED_PROPS,
         }, status=400)
 
     # Multiple rounds of templating to render recursive template tags from
