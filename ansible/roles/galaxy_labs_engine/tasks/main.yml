@@ -171,4 +171,6 @@
     name: labs_engine
     enabled: yes
     state: restarted
+  async: 600
+  poll: 5
   tags: always

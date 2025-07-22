@@ -6,6 +6,11 @@
     - group_vars/VAULT
     - group_vars/webservers.yml
     - host_vars/labs.usegalaxy.org.au.yml
+  pre_tasks:
+    - name: Drop the duplicate Docker repo (no signed-by)
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list
+        state: absent
   roles:
     - role: geerlingguy.docker
       tags: init
