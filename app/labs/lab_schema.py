@@ -7,10 +7,22 @@ from pydantic import (
     BeforeValidator,
     Field,
     field_validator,
+    model_validator,
     StrictStr,
 )
 from pydantic.types import Annotated
 from typing import Any, Optional, Union
+
+DEPRECATED_PROPS = (
+    'button_link',
+    'button_tip',
+    'button_md',
+    'button_icon',
+    'view_link',
+    'view_tip',
+    'view_md',
+    'view_icon',
+)
 
 
 def soft_coerce_str(v: Any) -> str:
@@ -50,6 +62,22 @@ class TabContentEnum(str, Enum):
     subsections = 'subsections'
 
 
+class TabItemButton(BaseModel):
+    """Validate Galaxy Lab section tab item buttons."""
+    link: FlexibleStr
+    label_md: Optional[FlexibleStr] = None
+    tip: Optional[FlexibleStr] = None
+    icon: Optional[IconEnum] = None
+
+    @model_validator(mode='after')
+    def must_have_label_or_icon(cls, model):
+        if not (model.label_md or model.icon):
+            raise ValueError(
+                'either `label_md` or `icon` properties must be provided for'
+                ' button items')
+        return model
+
+
 class TabItem(BaseModel):
     """Validate Galaxy Lab section tab item.
 
@@ -57,6 +85,7 @@ class TabItem(BaseModel):
     """
     title_md: MarkdownStr
     description_md: MarkdownStr
+    buttons: Optional[list[TabItemButton]] = []
     button_link: Optional[FlexibleStr] = None
     button_tip: Optional[FlexibleStr] = None
     button_md: Optional[MarkdownStr] = None

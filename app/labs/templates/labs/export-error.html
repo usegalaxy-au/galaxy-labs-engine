@@ -52,7 +52,12 @@
                 </thead>
                 {% for id, field in error.help.schema.items %}
                 <tr>
-                  <td>{{ id }}</td>
+                  <td>
+                    {{ id }}
+                    {% if id in deprecated_props %}
+                    <span class="badge bg-danger mx-2">Deprecated</span>
+                    {% endif %}
+                  </td>
                   <td>
                     {% if field.type %}
                       {{ field.type }}

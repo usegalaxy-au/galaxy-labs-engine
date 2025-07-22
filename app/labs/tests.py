@@ -10,7 +10,7 @@ from app.test import TestCase
 
 TEST_DATA_DIR = Path(__file__).parent / 'test/data'
 TEST_LAB_NAME = 'Lab Docs'
-TEST_LAB_LAB_NAME = 'Galaxy Lab Pages'.upper()
+TEST_LAB_LAB_NAME = 'Galaxy labs engine'.upper()
 TEST_LAB_NATIONALITY = 'Antarctican'
 TEST_LAB_GALAXY_BASE_URL = 'https://galaxy-antarctica.org'
 TEST_LAB_SECTION_TEXT = 'Example section'
