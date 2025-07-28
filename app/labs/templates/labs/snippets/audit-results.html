@@ -1,0 +1,70 @@
+{% comment %}
+  Tool Audit Results Modal
+  Displays the results of backend tool availability checking
+{% endcomment %}
+
+<div id="auditModal" class="modal fade show" tabindex="-1" style="display: block;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tool Audit Results</h5>
+      </div>
+      <div class="modal-body">
+        
+        {% if audit_error %}
+          <!-- Show error if audit failed -->
+          <div class="alert alert-danger">
+            <strong>Audit Error:</strong> {{ audit_error }}
+          </div>
+        {% else %}
+          <!-- Show audit summary -->
+          <div class="alert {% if audit_summary.broken_tools == 0 %}alert-success{% else %}alert-warning{% endif %}">
+            <strong>Tool Audit Complete:</strong> 
+            {{ audit_summary.working_tools }} of {{ audit_summary.total_tools }} Galaxy tools are available.
+            {% if audit_summary.broken_tools > 0 %}
+              {{ audit_summary.broken_tools }} tools are unavailable.
+            {% endif %}
+          </div>
+
+          {% if audit_summary.total_tools == 0 %}
+            <!-- No tools found -->
+            <p class="text-info">No Galaxy tool links found on this page.</p>
+            
+          {% elif audit_summary.broken_tools == 0 %}
+            <!-- All tools working -->
+            <p class="text-success">✓ All tools are available on the Galaxy server!</p>
+            
+          {% else %}
+            <!-- Show broken tools -->
+            <h6>Unavailable Tools:</h6>
+            <ul class="list-group">
+              {% for tool_id, tool in audit_results.items %}
+                {% if not tool.exists %}
+                  <li class="list-group-item list-group-item-danger">
+                    <strong>Tool:</strong> {{ tool.link_text }}<br>
+                    <strong>Tool ID:</strong> <code>{{ tool.tool_id }}</code><br>
+                    <strong>URL:</strong> <code>{{ tool.url }}</code><br>
+                    <small class="text-muted">Error: {{ tool.error }}</small>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endif %}
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeAuditModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function closeAuditModal() {
+  const modal = document.getElementById('auditModal');
+  const backdrop = document.querySelector('.modal-backdrop');
+  if (modal) modal.remove();
+  if (backdrop) backdrop.remove();
+}
+</script>

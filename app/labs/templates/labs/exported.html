@@ -72,6 +72,10 @@
 {{ snippets.footer_md|markdown }}
 {% endif %}
 
+{% if audit %}
+{% include 'labs/snippets/audit-results.html' %}
+{% endif %}
+
 {% endblock %}
 
 

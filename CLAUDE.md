@@ -106,6 +106,14 @@ def parse_bold_xlsx(
     return results
 ```
 
+### Line-wrapping of long strings
+
+```py
+TEST_VALID_TOOL_URL = (
+    f'{TEST_GALAXY_SERVER_URL}/?'
+    'tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fgalaxyp%2Fdiann%2Fdiann')
+```
+
 ### Example of poor line-wrapping
 
 ```python
@@ -124,4 +132,6 @@ Make sure that no trailing whitespace remains, including lines which contain not
 Where appropriate, declare string, int and float values as constants at the top of the script, below imports. This should only be done where it improves the readability of code. Paths, URLs and "magic numbers" should always be declared in this way, but not dictionary keys.
 
 ## Enforcement
+
 Claude will automatically ensure all code follows these guidelines before writing or modifying any Python files.
+After writing python code, run flake8 linter to ensure compliance. If flake8 is not installed, add it to the project's requirements.txt and pip-install it.
