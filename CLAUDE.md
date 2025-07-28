@@ -72,6 +72,7 @@ result = (
 - Run linting before committing code
 
 ### Example of Well-Formatted Code
+
 ```python
 def parse_bold_xlsx(
     self,
@@ -104,6 +105,19 @@ def parse_bold_xlsx(
         
     return results
 ```
+
+### Example of poor line-wrapping
+
+```python
+# This is ugly
+def parse_bold_xlsx(self, path: Path,
+                    results: dict = None) -> dict[str, list]:
+```
+
+
+### Whitespace
+
+Make sure that no trailing whitespace remains, including lines which contain nothing but whitespace.
 
 ### Use of constants
 
