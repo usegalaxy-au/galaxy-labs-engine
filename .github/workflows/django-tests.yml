@@ -58,3 +58,35 @@ jobs:
       if: success()
       run: |
         cd app && python manage.py test
+
+    - name: Create diff for deployment check
+      if: success() && github.event_name == 'push'
+      run: |
+        # Get the previous commit to compare against
+        PREV_COMMIT=$(git rev-parse HEAD~1)
+        echo "Creating diff between $PREV_COMMIT and HEAD"
+        
+        # Create diff of changed files
+        git diff --name-only $PREV_COMMIT HEAD > changed_files.txt
+        
+        # Check specifically for Dockerfile or requirements.txt changes
+        if git diff --name-only $PREV_COMMIT HEAD | grep -q -e 'Dockerfile' -e 'requirements.txt'; then
+          echo "true" > dockerfile_or_requirements_changed.txt
+        else
+          echo "false" > dockerfile_or_requirements_changed.txt
+        fi
+        
+        echo "Changed files:"
+        cat changed_files.txt
+        echo "Dockerfile/requirements changed:"
+        cat dockerfile_or_requirements_changed.txt
+
+    - name: Upload diff artifacts
+      if: success() && github.event_name == 'push'
+      uses: actions/upload-artifact@v3
+      with:
+        name: deployment-diff-${{ github.sha }}
+        path: |
+          changed_files.txt
+          dockerfile_or_requirements_changed.txt
+        retention-days: 1
