@@ -56,6 +56,8 @@ def export_lab(request):
             'deprecated_props': DEPRECATED_PROPS,
         }, status=400)
 
+    context['audit'] = 'audit' in request.GET
+
     # Multiple rounds of templating to render recursive template tags from
     # remote data with embedded template tags
     try:

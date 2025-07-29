@@ -9,11 +9,111 @@ from typing import List, Dict, Tuple
 from bioblend.galaxy import GalaxyInstance
 
 from django.conf import settings
-from django.template.loader import render_to_string
+from django.template import (
+    RequestContext,
+    Template,
+)
 
 from labs.cache import WebCache
 
 logger = logging.getLogger('django')
+
+
+def perform_template_audit(
+    template_str: str,
+    context: Dict,
+    request=None
+) -> Tuple[str, Dict]:
+    """Perform tool audit on template and return updated template and context.
+
+    Args:
+        template_str: The rendered HTML template string
+        context: Template context dictionary
+        request: Django request object (optional)
+
+    Returns:
+        Tuple of (updated_template_str, updated_context)
+    """
+    # Check if audit is requested
+    if not request or 'audit' not in request.GET:
+        return template_str, context
+
+    # Add audit flag to context
+    context['audit'] = True
+
+    # Extract tool links from the template
+    tool_links = extract_tool_links(template_str)
+
+    if tool_links:
+        galaxy_url = context.get('galaxy_base_url')
+        if galaxy_url:
+            try:
+                # Perform the audit
+                audit_results = audit_tools_concurrent(
+                    galaxy_url, tool_links
+                )
+
+                # Add audit results to context
+                context['audit'] = True
+                context['audit_results'] = audit_results
+                context['audit_summary'] = {
+                    'total_tools': len(tool_links),
+                    'working_tools': sum(
+                        1 for r in audit_results.values() if r['exists']
+                    ),
+                    'broken_tools': sum(
+                        1 for r in audit_results.values() if not r['exists']
+                    ),
+                }
+
+            except Exception as e:
+                logger.error(f"Error during tool auditing: {e}")
+                # Continue with audit error
+                context['audit'] = True
+                context['audit_error'] = str(e)
+        else:
+            logger.warning("No galaxy_base_url found for tool auditing")
+            # Still show audit interface with warning
+            context['audit'] = True
+            context['audit_error'] = "No Galaxy server URL found"
+    else:
+        # No tool links found, still show audit interface
+        context['audit'] = True
+        context['audit_results'] = {}
+        context['audit_summary'] = {
+            'total_tools': 0,
+            'working_tools': 0,
+            'broken_tools': 0,
+        }
+
+    template_str = add_audit_template_tags(template_str)
+    t = Template(template_str)
+    template_str = t.render(RequestContext(request, context))
+
+    return template_str, context
+
+
+def add_audit_template_tags(template_str: str) -> str:
+    """Add audit-specific template tags to the template string.
+
+    Insert audit_tags after the first </section>
+
+    Args:
+        template_str: The rendered HTML template string
+    """
+    audit_tags = """
+    {% if audit %}
+    {% include 'labs/snippets/audit.html' %}
+    {% endif %}
+    """
+    index = template_str.find("</section>")
+    if index != -1:
+        template_str = (
+            template_str[: index + len("</section>")]
+            + audit_tags
+            + template_str[index + len("</section>") :]
+        )
+    return template_str
 
 
 def extract_tool_links(html_content: str) -> List[Dict[str, str]]:
@@ -169,95 +269,3 @@ def audit_tools_concurrent(
                 }
 
     return results
-
-
-def perform_template_audit(
-    template_str: str,
-    context: Dict,
-    request=None
-) -> Tuple[str, Dict]:
-    """Perform tool audit on template and return updated template and context.
-
-    Args:
-        template_str: The rendered HTML template string
-        context: Template context dictionary
-        request: Django request object (optional)
-
-    Returns:
-        Tuple of (updated_template_str, updated_context)
-    """
-    # Check if audit is requested
-    if not request or 'audit' not in request.GET:
-        return template_str, context
-
-    # Add audit flag to context
-    context['audit'] = True
-
-    # Extract tool links from the template
-    tool_links = extract_tool_links(template_str)
-
-    if tool_links:
-        galaxy_url = context.get('galaxy_base_url')
-        if galaxy_url:
-            try:
-                # Perform the audit
-                audit_results = audit_tools_concurrent(
-                    galaxy_url, tool_links
-                )
-
-                # Add audit results to context
-                context['audit'] = True
-                context['audit_results'] = audit_results
-                context['audit_summary'] = {
-                    'total_tools': len(tool_links),
-                    'working_tools': sum(
-                        1 for r in audit_results.values() if r['exists']
-                    ),
-                    'broken_tools': sum(
-                        1 for r in audit_results.values() if not r['exists']
-                    ),
-                }
-
-                # Re-render template with audit results
-                template_str = render_to_string(
-                    'labs/exported.html',
-                    context,
-                    request
-                )
-
-            except Exception as e:
-                logger.error(f"Error during tool auditing: {e}")
-                # Continue with audit error
-                context['audit'] = True
-                context['audit_error'] = str(e)
-                template_str = render_to_string(
-                    'labs/exported.html',
-                    context,
-                    request
-                )
-        else:
-            logger.warning("No galaxy_base_url found for tool auditing")
-            # Still show audit interface with warning
-            context['audit'] = True
-            context['audit_error'] = "No Galaxy server URL found"
-            template_str = render_to_string(
-                'labs/exported.html',
-                context,
-                request
-            )
-    else:
-        # No tool links found, still show audit interface
-        context['audit'] = True
-        context['audit_results'] = {}
-        context['audit_summary'] = {
-            'total_tools': 0,
-            'working_tools': 0,
-            'broken_tools': 0,
-        }
-        template_str = render_to_string(
-            'labs/exported.html',
-            context,
-            request
-        )
-
-    return template_str, context
