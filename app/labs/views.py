@@ -20,6 +20,7 @@ from .cache import LabCache
 from .forms import LabBootstrapForm
 from .lab_export import ExportLabContext
 from .lab_schema import DEPRECATED_PROPS
+from .audit import perform_template_audit
 
 logger = logging.getLogger('django')
 
@@ -47,12 +48,15 @@ def export_lab(request):
                 'EXAMPLE_LABS': settings.EXAMPLE_LABS,
             })
         context.validate()
+
     except LabBuildError as exc:
         logger.warning(f"Error building lab: {traceback.format_exc()}")
         return render(request, 'labs/export-error.html', {
             'exc': exc,
             'deprecated_props': DEPRECATED_PROPS,
         }, status=400)
+
+    context['audit'] = 'audit' in request.GET
 
     # Multiple rounds of templating to render recursive template tags from
     # remote data with embedded template tags
@@ -70,12 +74,21 @@ def export_lab(request):
             i += 1
     except Exception as exc:
         logger.error(
-            f"Error rendering template for"
-            f" content_root={request.GET.get('content_root')}:"
-            f"\n{traceback.format_exc()}")
+            f"Error rendering template for "
+            f"content_root={request.GET.get('content_root')}: "
+            f"\n{traceback.format_exc()}"
+        )
         return report_exception_response(request, exc)
 
     template_str = context.render_relative_uris(template_str)
+
+    # Perform tool auditing (function checks if audit is requested)
+    template_str, context = perform_template_audit(
+        template_str,
+        context,
+        request
+    )
+
     response = LabCache.put(request, template_str)
 
     return response
@@ -124,7 +137,9 @@ class BootstrapLab(View):
             return response
 
         url = settings.INTERNAL_URL + str(relpath).strip('/')
-        logger.debug('Serving file via Nginx X-Accel-Redirect: %s' % relpath)
+        logger.debug(
+            'Serving file via Nginx X-Accel-Redirect: %s' % relpath
+        )
         response = HttpResponse()
         response['Content-Type'] = ''
         response['Content-Disposition'] = "attachment; filename=lab.zip"

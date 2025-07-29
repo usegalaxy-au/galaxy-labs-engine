@@ -16,7 +16,7 @@ from .log import config
 validate.env()
 
 DEBUG = False
-CLI_DEV = False
+NOCACHE = False
 LOGGING = config.configure_logging(LOG_ROOT)
 print('Running with HOSTNAME:', HOSTNAME)
 
@@ -41,6 +41,9 @@ STORAGES = {
                     '.ManifestStaticFilesStorage'),
     },
 }
+
+# Bioblend API response cache timeout (15 minutes in production)
+BIOBLEND_CACHE_TTL = 60 * 15
 
 SENTRY_DNS = os.getenv('SENTRY_DNS')
 if SENTRY_DNS:
