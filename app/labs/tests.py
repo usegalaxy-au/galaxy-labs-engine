@@ -8,6 +8,7 @@ from .audit import (
     check_tool_exists,
     audit_tools_concurrent,
     perform_template_audit,
+    add_audit_template_tags,
 )
 from .test.data import (
     MOCK_REQUESTS,
@@ -195,9 +196,13 @@ class AuditTestCase(TestCase):
         tool_links = extract_tool_links('')
         self.assertEqual(len(tool_links), 0)
 
+    @patch('labs.audit.WebCache')
     @patch('labs.audit.GalaxyInstance')
-    def test_check_tool_exists_with_valid_tool(self, mock_galaxy_instance):
+    def test_check_tool_exists_with_valid_tool(self, mock_galaxy_instance, mock_cache):
         """Test check_tool_exists with a valid tool."""
+        # Mock cache miss
+        mock_cache.get.return_value = None
+        
         mock_gi = Mock()
         mock_galaxy_instance.return_value = mock_gi
         mock_gi.tools.show_tool.return_value = {'id': TEST_VALID_TOOL_ID}
@@ -211,6 +216,7 @@ class AuditTestCase(TestCase):
         self.assertTrue(exists)
         self.assertEqual(error, '')
         mock_gi.tools.show_tool.assert_called_once_with(TEST_VALID_TOOL_ID)
+        mock_cache.put.assert_called_once()
 
     @patch('labs.audit.GalaxyInstance')
     def test_check_tool_exists_with_invalid_tool(self, mock_galaxy_instance):
@@ -295,8 +301,7 @@ class AuditTestCase(TestCase):
         results = audit_tools_concurrent(TEST_GALAXY_SERVER_URL, [])
         self.assertEqual(results, {})
 
-    @patch('labs.audit.render_to_string')
-    def test_perform_template_audit_without_audit_param(self, mock_render):
+    def test_perform_template_audit_without_audit_param(self):
         """Test perform_template_audit when audit param is not present."""
         request = Mock()
         request.GET = {}
@@ -312,20 +317,17 @@ class AuditTestCase(TestCase):
         # Should return unchanged template and context
         self.assertEqual(result_template, template_str)
         self.assertEqual(result_context, context)
-        mock_render.assert_not_called()
 
-    @patch('labs.audit.render_to_string')
     @patch('labs.audit.audit_tools_concurrent')
     def test_perform_template_audit_with_audit_param(
         self,
-        mock_audit_tools,
-        mock_render
+        mock_audit_tools
     ):
         """Test perform_template_audit when audit param is present."""
         request = Mock()
         request.GET = {'audit': '1'}
         context = {'galaxy_base_url': TEST_GALAXY_SERVER_URL}
-        template_str = self.html_with_tools
+        template_str = '<section>Header</section>' + self.html_with_tools
 
         # Mock audit results for all 3 tools in html_with_tools
         mock_audit_results = {
@@ -346,7 +348,6 @@ class AuditTestCase(TestCase):
             }
         }
         mock_audit_tools.return_value = mock_audit_results
-        mock_render.return_value = 'rendered_template'
 
         result_template, result_context = perform_template_audit(
             template_str,
@@ -370,19 +371,16 @@ class AuditTestCase(TestCase):
         }
         self.assertEqual(result_context['audit_summary'], expected_summary)
 
-        # Check that template is re-rendered
-        self.assertEqual(result_template, 'rendered_template')
-        mock_render.assert_called_once()
+        # Check that template is rendered (contains HTML from audit.html)
+        self.assertIn('auditModal', result_template)
+        self.assertIn('Show Audit Results', result_template)
 
-    @patch('labs.audit.render_to_string')
-    def test_perform_template_audit_with_no_galaxy_url(self, mock_render):
+    def test_perform_template_audit_with_no_galaxy_url(self):
         """Test perform_template_audit when galaxy_base_url is missing."""
         request = Mock()
         request.GET = {'audit': '1'}
         context = {}  # No galaxy_base_url
-        template_str = self.html_with_tools
-
-        mock_render.return_value = 'rendered_template'
+        template_str = '<section>Header</section>' + self.html_with_tools
 
         result_template, result_context = perform_template_audit(
             template_str,
@@ -396,4 +394,31 @@ class AuditTestCase(TestCase):
             result_context['audit_error'],
             'No Galaxy server URL found'
         )
-        self.assertEqual(result_template, 'rendered_template')
+        # Check that template is rendered (contains HTML from audit.html)
+        self.assertIn('auditModal', result_template)
+        self.assertIn('Audit Error:', result_template)
+
+    def test_add_audit_template_tags(self):
+        """Test add_audit_template_tags function."""
+        template_str = '<section>Header content</section><div>Body content</div>'
+        
+        result = add_audit_template_tags(template_str)
+        
+        # Check that audit tags are inserted after the first </section>
+        self.assertIn('{% if audit %}', result)
+        self.assertIn('{% include \'labs/snippets/audit.html\' %}', result)
+        self.assertIn('</section>', result)
+        
+        # Verify the tags are after the first </section>
+        section_end = result.find('</section>') + len('</section>')
+        audit_start = result.find('{% if audit %}')
+        self.assertGreater(audit_start, section_end)
+
+    def test_add_audit_template_tags_no_section(self):
+        """Test add_audit_template_tags when no section tag exists."""
+        template_str = '<div>Content without section</div>'
+        
+        result = add_audit_template_tags(template_str)
+        
+        # Should return unchanged template when no </section> found
+        self.assertEqual(result, template_str)
