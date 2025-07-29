@@ -29,12 +29,14 @@ jobs:
 
       - name: Debug github refs
         run: |
+          echo "github.ref_name = ${{ github.ref_name }}"
           echo "github.event.workflow_run.head_branch = ${{ github.event.workflow_run.head_branch }}"
+          echo "github.event.workflow_run.base_branch = ${{ github.event.workflow_run.base_branch }}"
 
       - name: Check if Dockerfile or requirements.txt was changed
         id: check_dependencies
         run: |
-          if git diff --name-only "${{ github.event.workflow_run.head_branch }}" | grep -q -e 'Dockerfile' -e 'requirements.txt'; then
+          if git diff --name-only "${{ github.ref }}" | grep -q -e 'Dockerfile' -e 'requirements.txt'; then
             echo "Dockerfile or requirements.txt changed"
             echo echo "updated=true" >> $GITHUB_OUTPUT
           else
