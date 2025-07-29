@@ -105,7 +105,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: deployment-diff-${{ github.sha }}
-        path: |
-          changed_files.txt
-          dockerfile_or_requirements_changed.txt
+        path: dockerfile_or_requirements_changed.txt
         retention-days: 1
