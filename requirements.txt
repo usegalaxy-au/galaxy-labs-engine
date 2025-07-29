@@ -1,16 +1,15 @@
 # python==3.12
+beautifulsoup4
+bioblend==1.*
+crispy-bootstrap5==2024.*
 django==5.*
-pyyaml==6.*
-pydantic==2.*
-# psycopg2-binary>=2.9.9,<3.0
+django-crispy-forms==2.*
+django_light
 gunicorn==22.*
 markdown2==2.*
+pydantic==2.*
 python-dotenv==0.*
-beautifulsoup4
-django_light
+pyyaml==6.*
 requests==2.*
 requests_mock==1.*
 sentry-sdk==2.*
-django-crispy-forms==2.*
-crispy-bootstrap5==2024.*
-bioblend==1.*
