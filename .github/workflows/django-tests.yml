@@ -83,7 +83,7 @@ jobs:
 
     - name: Upload diff artifacts
       if: success() && github.event_name == 'push'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: deployment-diff-${{ github.sha }}
         path: |
