@@ -33,7 +33,7 @@
         {% if audit_error %}
           <!-- Show error if audit failed -->
           <div class="alert alert-danger">
-            <strong>Audit Error:</strong> {{ audit_error }}
+            <strong>Audit Error:</strong> {{ audit_error|safe }}
           </div>
         {% else %}
           <!-- Show audit summary -->
@@ -77,6 +77,10 @@
                       <tr>
                         <td><strong class="text-nowrap">URL</strong></td>
                         <td><code>{{ tool.url }}</code></td>
+                      </tr>
+                      <tr>
+                        <td><strong class="text-nowrap">Error</strong></td>
+                        <td><code>{{ tool.error }}</code></td>
                       </tr>
                     </table>
                   </li>

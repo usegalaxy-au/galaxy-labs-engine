@@ -41,6 +41,17 @@ def perform_template_audit(
     # Add audit flag to context
     context['audit'] = True
 
+    if request.GET.get('content_root', '').endswith('base.yml'):
+        context['audit_error'] = (
+            "Audit cannot be performed on <code>base.yml</code> file. Please"
+            " change the URL to point to a <code>&lt;hostname&gt;</code>.yml"
+            " file to audit this lab against that Galaxy server."
+        )
+        template_str = add_audit_template_tags(template_str)
+        t = Template(template_str)
+        template_str = t.render(RequestContext(request, context))
+        return template_str, context
+
     # Extract tool links from the template
     tool_links = extract_tool_links(template_str)
 
@@ -54,7 +65,6 @@ def perform_template_audit(
                 )
 
                 # Add audit results to context
-                context['audit'] = True
                 context['audit_results'] = audit_results
                 context['audit_summary'] = {
                     'total_tools': len(tool_links),
@@ -69,16 +79,13 @@ def perform_template_audit(
             except Exception as e:
                 logger.error(f"Error during tool auditing: {e}")
                 # Continue with audit error
-                context['audit'] = True
                 context['audit_error'] = str(e)
         else:
             logger.warning("No galaxy_base_url found for tool auditing")
             # Still show audit interface with warning
-            context['audit'] = True
             context['audit_error'] = "No Galaxy server URL found"
     else:
         # No tool links found, still show audit interface
-        context['audit'] = True
         context['audit_results'] = {}
         context['audit_summary'] = {
             'total_tools': 0,
@@ -111,7 +118,7 @@ def add_audit_template_tags(template_str: str) -> str:
         template_str = (
             template_str[: index + len("</section>")]
             + audit_tags
-            + template_str[index + len("</section>") :]
+            + template_str[index + len("</section>"):]
         )
     return template_str
 
