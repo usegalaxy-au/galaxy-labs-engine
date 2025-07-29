@@ -3,11 +3,12 @@
   Displays the results of backend tool availability checking
 {% endcomment %}
 
-<div id="auditModal" class="modal fade show" tabindex="-1" style="display: block;">
+<div id="auditModal" class="modal fade" tabindex="-1" aria-labelledby="auditModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Tool Audit Results</h5>
+        <h5 class="modal-title" id="auditModalLabel">Tool Audit Results</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         
@@ -20,7 +21,7 @@
           <!-- Show audit summary -->
           <div class="alert {% if audit_summary.broken_tools == 0 %}alert-success{% else %}alert-warning{% endif %}">
             <strong>Tool Audit Complete:</strong> 
-            {{ audit_summary.working_tools }} of {{ audit_summary.total_tools }} Galaxy tools are available.
+            {{ audit_summary.working_tools }} of {{ audit_summary.total_tools }} linked Galaxy tools are available.
             {% if audit_summary.broken_tools > 0 %}
               {{ audit_summary.broken_tools }} tools are unavailable.
             {% endif %}
@@ -36,15 +37,25 @@
             
           {% else %}
             <!-- Show broken tools -->
-            <h6>Unavailable Tools:</h6>
+            <p class="lead">
+              The following tools could not be fetched. After checking that these tool IDs are correct, you may wish to request installation of these tools on the target Galaxy server, or
+              <a href="/#section_1-faq-7-accordion">exclude them</a>
+              from this galaxy Lab.
+            </p>
             <ul class="list-group">
               {% for tool_id, tool in audit_results.items %}
                 {% if not tool.exists %}
                   <li class="list-group-item list-group-item-danger">
-                    <strong>Tool:</strong> {{ tool.link_text }}<br>
-                    <strong>Tool ID:</strong> <code>{{ tool.tool_id }}</code><br>
-                    <strong>URL:</strong> <code>{{ tool.url }}</code><br>
-                    <small class="text-muted">Error: {{ tool.error }}</small>
+                    <table class="table">
+                      <tr>
+                        <td><strong class="text-nowrap">Tool ID</strong></td>
+                        <td><code>{{ tool.tool_id }}</code></td>
+                      </tr>
+                      <tr>
+                        <td><strong class="text-nowrap">URL</strong></td>
+                        <td><code>{{ tool.url }}</code></td>
+                      </tr>
+                    </table>
                   </li>
                 {% endif %}
               {% endfor %}
@@ -54,17 +65,14 @@
         
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeAuditModal()">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-function closeAuditModal() {
-  const modal = document.getElementById('auditModal');
-  const backdrop = document.querySelector('.modal-backdrop');
-  if (modal) modal.remove();
-  if (backdrop) backdrop.remove();
-}
+$(document).ready(function() {
+  $('#auditModal').modal('show');
+});
 </script>
