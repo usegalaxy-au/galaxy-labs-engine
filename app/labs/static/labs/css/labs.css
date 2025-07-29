@@ -87,6 +87,9 @@ ul.nav-pills li.nav-item {
 .nav-pills .show>.nav-link {
   background-color: var(--color);
 }
+.nav-pills .nav-link.nav-link-danger {
+  background-color: var(--bs-danger);
+}
 .accordion-button.static::after {
   content: none;
 }

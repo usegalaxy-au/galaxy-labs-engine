@@ -71,8 +71,21 @@
   </div>
 </div>
 
+{% load static %}
+
 <script>
-$(document).ready(function() {
-  $('#auditModal').modal('show');
-});
+// Set broken tool URLs for the external audit.js script
+{% if audit_results %}
+window.auditBrokenToolUrls = [
+  {% for tool_id, tool in audit_results.items %}
+    {% if not tool.exists %}
+      "{{ tool.url|escapejs }}",
+    {% endif %}
+  {% endfor %}
+];
+{% else %}
+window.auditBrokenToolUrls = [];
+{% endif %}
 </script>
+
+<script src="{% static 'labs/js/audit.js' %}"></script>
