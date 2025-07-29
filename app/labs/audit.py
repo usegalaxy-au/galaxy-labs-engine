@@ -18,6 +18,10 @@ from labs.cache import WebCache
 
 logger = logging.getLogger('django')
 
+# Disable bioblend logging to prevent error logs
+bioblend_logger = logging.getLogger('bioblend')
+bioblend_logger.setLevel(logging.CRITICAL)
+
 
 def perform_template_audit(
     template_str: str,
