@@ -200,6 +200,9 @@ CACHE_TIMEOUT = None
 # from the cache during a cache update.
 CACHE_UPDATE_RETAIN_DAYS = 30
 
+# Bioblend API response cache timeout (24 hours in development)
+BIOBLEND_CACHE_TTL = 60 * 60 * 24
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 

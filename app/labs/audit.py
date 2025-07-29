@@ -8,7 +8,10 @@ from typing import List, Dict, Tuple
 
 from bioblend.galaxy import GalaxyInstance
 
+from django.conf import settings
 from django.template.loader import render_to_string
+
+from labs.cache import WebCache
 
 logger = logging.getLogger('django')
 
@@ -65,6 +68,16 @@ def check_tool_exists(
     Returns:
         Tuple of (tool_id, exists, error_message)
     """
+    # Create cache key for this tool check
+    cache_key = f"{galaxy_url}?tool_id={tool_id}"
+
+    # Try to get cached result
+    cached_result = WebCache.get(cache_key)
+    if cached_result is not None:
+        logger.debug(f"Cache HIT for tool check: {tool_id}")
+        return cached_result
+
+    logger.debug(f"Cache MISS for tool check: {tool_id}")
     try:
         # Create Galaxy instance
         gi = GalaxyInstance(galaxy_url, key=api_key)
@@ -72,21 +85,26 @@ def check_tool_exists(
         # Try to get tool information
         try:
             gi.tools.show_tool(tool_id)
-            return (tool_id, True, "")
+            result = (tool_id, True, "")
         except Exception as e:
             # Tool doesn't exist or is not accessible
             error_msg = str(e)
             if "404" in error_msg or "not found" in error_msg.lower():
-                return (tool_id, False, "Tool not found")
+                result = (tool_id, False, "Tool not found")
             else:
-                return (
+                result = (
                     tool_id,
                     False,
                     f"Error checking tool: {error_msg}"
                 )
 
     except Exception as e:
-        return (tool_id, False, f"Connection error: {str(e)}")
+        result = (tool_id, False, f"Connection error: {str(e)}")
+
+    # Cache the result
+    WebCache.put(cache_key, result, timeout=settings.BIOBLEND_CACHE_TTL)
+
+    return result
 
 
 def audit_tools_concurrent(
@@ -168,7 +186,6 @@ def perform_template_audit(
     Returns:
         Tuple of (updated_template_str, updated_context)
     """
-
     # Check if audit is requested
     if not request or 'audit' not in request.GET:
         return template_str, context

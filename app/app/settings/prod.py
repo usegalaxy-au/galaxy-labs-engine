@@ -42,6 +42,9 @@ STORAGES = {
     },
 }
 
+# Bioblend API response cache timeout (15 minutes in production)
+BIOBLEND_CACHE_TTL = 60 * 15
+
 SENTRY_DNS = os.getenv('SENTRY_DNS')
 if SENTRY_DNS:
     sentry_sdk.init(
