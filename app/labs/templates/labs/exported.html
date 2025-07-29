@@ -38,6 +38,10 @@
     </span>
   </section>
 
+  {% if audit %}
+  {% include 'labs/snippets/audit.html' %}
+  {% endif %}
+
   <div class="row align-items-center">
     <div class="col">
       {% if snippets.intro_md %}
@@ -66,6 +70,7 @@
 </main>
 
 
+
 {% if feedback_email %}
 {% include 'labs/components/feedback-modal.html' %}
 {% endif %}
@@ -73,10 +78,6 @@
 
 {% if snippets.footer_md %}
 {{ snippets.footer_md|markdown }}
-{% endif %}
-
-{% if audit %}
-{% include 'labs/snippets/audit.html' %}
 {% endif %}
 
 {% endblock %}

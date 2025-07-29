@@ -3,11 +3,29 @@
   Displays the results of backend tool availability checking
 {% endcomment %}
 
+<div class="text-center mt-5 mb-3">
+  <button
+    type="button"
+    class="btn {% if audit_summary.broken_tools == 0 %}btn-success{% else %}btn-danger{% endif %} btn-lg shadow"
+    data-bs-toggle="modal"
+    data-bs-target="#auditModal"
+    title="Show Audit Results"
+  >
+    {% if audit_summary.broken_tools == 0 %}
+      <i class="fas fa-check-circle me-2"></i>
+      Audit success
+    {% else %}
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      Audit issues
+    {% endif %}
+  </button>
+</div>
+
 <div id="auditModal" class="modal fade" tabindex="-1" aria-labelledby="auditModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="auditModalLabel">Tool Audit Results</h5>
+        <h5 class="modal-title" id="auditModalLabel">Audit Results</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -20,7 +38,7 @@
         {% else %}
           <!-- Show audit summary -->
           <div class="alert {% if audit_summary.broken_tools == 0 %}alert-success{% else %}alert-warning{% endif %}">
-            <strong>Tool Audit Complete:</strong> 
+            <strong>Audit Complete:</strong>
             {{ audit_summary.working_tools }} of {{ audit_summary.total_tools }} linked Galaxy tools are available.
             {% if audit_summary.broken_tools > 0 %}
               {{ audit_summary.broken_tools }} tools are unavailable.
@@ -40,8 +58,13 @@
             <p class="lead">
               The following tools could not be fetched. After checking that these tool IDs are correct, you may wish to request installation of these tools on the target Galaxy server, or
               <a href="/#section_1-faq-7-accordion">exclude them</a>
-              from this galaxy Lab.
+              from this Galaxy Lab.
             </p>
+
+            <p>
+              Tabs and content items which contain a broken tool link have been highlighted in red in the main page.
+            </p>
+
             <ul class="list-group">
               {% for tool_id, tool in audit_results.items %}
                 {% if not tool.exists %}

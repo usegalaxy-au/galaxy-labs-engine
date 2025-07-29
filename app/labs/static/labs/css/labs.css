@@ -104,6 +104,16 @@ ul.nav-pills li.nav-item {
   background-color: inherit;
   box-shadow: none;
 }
+.list-group-item-danger .table {
+  color: #842029;
+  margin: 0;
+}
+.list-group-item-danger code {
+  background: transparent;
+  color: #842029;
+  margin: 0;
+  padding: 0;
+}
 
 @media screen and (max-width: 850px) {
   .lab-header {
