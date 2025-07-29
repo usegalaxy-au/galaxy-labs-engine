@@ -88,7 +88,20 @@ ul.nav-pills li.nav-item {
   background-color: var(--color);
 }
 .nav-pills .nav-link.nav-link-danger {
+  color: var(--bs-danger);
+  border: 1px solid var(--bs-danger);
+}
+.nav-pills .nav-link.nav-link-danger .fas  {
+  color: var(--bs-danger);
+}
+.nav-pills .nav-link.active.nav-link-danger,
+.nav-pills .show>.nav-link-danger {
+  color: white;
   background-color: var(--bs-danger);
+}
+.nav-pills .nav-link.active.nav-link-danger .fas,
+.nav-pills .show>.nav-link-danger .fas {
+  color: white;
 }
 .accordion-button.static::after {
   content: none;

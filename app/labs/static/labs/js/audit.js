@@ -72,7 +72,6 @@ function highlightBrokenToolContainers() {
           if (!tabButton.querySelector('.fa-exclamation-triangle')) {
             const icon = document.createElement('i');
             icon.className = 'fas fa-exclamation-triangle me-2';
-            icon.style.color = 'white';
             tabButton.insertBefore(icon, tabButton.firstChild);
           }
           
