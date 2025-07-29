@@ -32,6 +32,9 @@
     {% endif %}
     <span id="labName">
       {{ lab_name|upper }}
+      {% if audit %}
+      <span class="text-danger"> - AUDIT</span>
+      {% endif %}
     </span>
   </section>
 
