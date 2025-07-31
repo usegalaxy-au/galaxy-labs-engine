@@ -3,7 +3,7 @@
 # You can test with: /?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-labs-engine/dev/app/labs/content/docs/base.yml
 
 site_name: Lab Docs
-lab_name: Galaxy Lab Pages
+lab_name: Galaxy Labs Engine
 nationality: Antarctican
 galaxy_base_url: https://galaxy-antarctica.org
 subdomain: antarctica

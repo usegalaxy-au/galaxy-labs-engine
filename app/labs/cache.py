@@ -6,6 +6,7 @@ cache.
 """
 
 import logging
+import os
 from django.conf import settings
 from django.core.cache import cache
 from django.db import IntegrityError
@@ -20,7 +21,8 @@ CACHE_KEY_IGNORE_GET_PARAMS = (
     'cache',
     'nonce',
 )
-NOCACHE = settings.CLI_DEV
+NOCACHE = settings.NOCACHE
+NO_WEB_CACHE = os.getenv('NO_WEB_CACHE', False)  # Development only
 
 logger = logging.getLogger('django.cache')
 
@@ -131,7 +133,7 @@ class WebCache:
 
     @classmethod
     def get(cls, url):
-        if NOCACHE:
+        if NO_WEB_CACHE:
             return
         cache_key = cls._generate_cache_key(url)
         data = cache.get(cache_key)
@@ -140,7 +142,7 @@ class WebCache:
 
     @classmethod
     def put(cls, url, data, timeout=_1_DAY):
-        if NOCACHE:
+        if NO_WEB_CACHE:
             return
         cache_key = cls._generate_cache_key(url)
         cache.set(cache_key, data, timeout=timeout)

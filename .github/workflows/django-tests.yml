@@ -20,14 +20,12 @@ env:
   RECAPTCHA_SECRET_KEY: ""
 
 jobs:
-  build:
+  run-tests:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
         python-version: ["3.11", "3.12"]
-    outputs:
-      branch: ${{ github.ref_name }}
 
     steps:
     - uses: actions/checkout@v3
@@ -58,3 +56,54 @@ jobs:
       if: success()
       run: |
         cd app && python manage.py test
+
+  create-deployment-diff:
+    runs-on: ubuntu-latest
+    needs: run-tests
+    if: github.event_name == 'push'
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+        fetch-depth: 2
+
+    - name: Create diff for deployment check
+      run: |
+        # Get the previous commit to compare against
+        if git rev-parse HEAD~1 >/dev/null 2>&1; then
+          PREV_COMMIT=$(git rev-parse HEAD~1)
+          echo "Creating diff between $PREV_COMMIT and HEAD"
+          
+          # Create diff of changed files
+          git diff --name-only $PREV_COMMIT HEAD > changed_files.txt
+          
+          # Check specifically for Dockerfile or requirements.txt changes
+          if git diff --name-only $PREV_COMMIT HEAD | grep -q -e 'Dockerfile' -e 'requirements.txt'; then
+            echo "true" > dockerfile_or_requirements_changed.txt
+          else
+            echo "false" > dockerfile_or_requirements_changed.txt
+          fi
+        else
+          echo "No previous commit found, assuming all files changed"
+          git ls-files > changed_files.txt
+          
+          # Check if Dockerfile or requirements.txt exist
+          if ls Dockerfile requirements.txt >/dev/null 2>&1; then
+            echo "true" > dockerfile_or_requirements_changed.txt
+          else
+            echo "false" > dockerfile_or_requirements_changed.txt
+          fi
+        fi
+        
+        echo "Changed files:"
+        cat changed_files.txt
+        echo "Dockerfile/requirements changed:"
+        cat dockerfile_or_requirements_changed.txt
+
+    - name: Upload diff artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: deployment-diff-${{ github.sha }}
+        path: dockerfile_or_requirements_changed.txt
+        retention-days: 1
