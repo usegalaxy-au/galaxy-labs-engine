@@ -1,0 +1,809 @@
+{% extends 'labs/header.html' %}
+
+{% load static %}
+
+{% block head %}
+<style>
+  .builder-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .builder-section {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .builder-section h3 {
+    margin-top: 0;
+    color: #495057;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #495057;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .btn-success {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+  }
+  
+  .btn:hover {
+    opacity: 0.85;
+  }
+  
+  .section-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .tab-item {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+  }
+  
+  .accordion-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+  
+  .button-item {
+    background: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 5px;
+  }
+  
+  .validation-error {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
+  .validation-success {
+    color: #28a745;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
+  .export-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .export-modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+  }
+  
+  .yaml-output {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    margin-bottom: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .collapsible {
+    background-color: #f1f1f1;
+    cursor: pointer;
+    padding: 10px;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 14px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    width: 100%;
+  }
+  
+  .collapsible:hover {
+    background-color: #ddd;
+  }
+  
+  .collapsible-content {
+    padding: 0 10px;
+    display: none;
+    overflow: hidden;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  
+  .preview-section {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    background: #fafafa;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="builder-container">
+  <h1 class="lab-header">GALAXY LAB BUILDER</h1>
+  
+  <p>Create and edit Galaxy Lab content visually. This tool helps you build YAML configuration files for your Lab sections.</p>
+  
+  <!-- Lab Configuration Section -->
+  <div class="builder-section">
+    <h3>Lab Configuration</h3>
+    <div class="form-group">
+      <label for="site_name">Site Name</label>
+      <input type="text" id="site_name" class="form-control" placeholder="e.g., Archaeology">
+    </div>
+    <div class="form-group">
+      <label for="lab_name">Lab Name</label>
+      <input type="text" id="lab_name" class="form-control" placeholder="e.g., Archaeology Lab">
+    </div>
+    <div class="form-group">
+      <label for="nationality">Nationality</label>
+      <input type="text" id="nationality" class="form-control" placeholder="e.g., Egyptian">
+    </div>
+    <div class="form-group">
+      <label for="galaxy_base_url">Galaxy Base URL</label>
+      <input type="text" id="galaxy_base_url" class="form-control" placeholder="https://galaxy-archaeology.org">
+    </div>
+    <div class="form-group">
+      <label for="subdomain">Subdomain</label>
+      <input type="text" id="subdomain" class="form-control" placeholder="archaeology">
+    </div>
+    <div class="form-group">
+      <label for="root_domain">Root Domain</label>
+      <input type="text" id="root_domain" class="form-control" placeholder="galaxy-archaeology.org">
+    </div>
+  </div>
+  
+  <!-- Sections Management -->
+  <div class="builder-section">
+    <h3>Lab Sections</h3>
+    <button class="btn btn-primary" onclick="addSection()">Add Section</button>
+    <div id="sections-container"></div>
+  </div>
+  
+  <!-- GitHub Import -->
+  <div class="builder-section">
+    <h3>Import from GitHub</h3>
+    <p>Import existing Lab content from a GitHub repository. Provide a link to the folder containing base.yml or directly to base.yml.</p>
+    <div class="form-group">
+      <label for="github_url">GitHub URL</label>
+      <input type="url" id="github_url" class="form-control" placeholder="https://github.com/user/repo/tree/main/lab-folder">
+    </div>
+    <button class="btn btn-primary" onclick="importFromGitHub()">Import from GitHub</button>
+    <div id="import-result"></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="builder-section">
+    <h3>Actions</h3>
+    <button class="btn btn-success" onclick="validateLab()">Validate Lab</button>
+    <button class="btn btn-primary" onclick="exportYAML()">Export YAML</button>
+    <button class="btn btn-primary" onclick="createPR()">Create PR Instructions</button>
+    <button class="btn btn-secondary" onclick="loadExample()">Load Example</button>
+    <div id="validation-result"></div>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div id="export-modal" class="export-modal">
+  <div class="export-modal-content">
+    <h3>Exported YAML Files</h3>
+    <div id="yaml-files-container"></div>
+    <button class="btn btn-secondary" onclick="closeExportModal()">Close</button>
+  </div>
+</div>
+
+<script>
+let sectionCounter = 0;
+let tabCounter = 0;
+let itemCounter = 0;
+
+// Section management
+function addSection() {
+  sectionCounter++;
+  const sectionsContainer = document.getElementById('sections-container');
+  const sectionDiv = document.createElement('div');
+  sectionDiv.className = 'section-item';
+  sectionDiv.id = `section-${sectionCounter}`;
+  
+  sectionDiv.innerHTML = `
+    <h4>Section ${sectionCounter}</h4>
+    <div class="form-group">
+      <label>Section ID</label>
+      <input type="text" class="form-control section-id" placeholder="section_${sectionCounter}">
+    </div>
+    <div class="form-group">
+      <label>Section Title</label>
+      <input type="text" class="form-control section-title" placeholder="Example Section">
+    </div>
+    <div class="tabs-container">
+      <h5>Tabs</h5>
+      <button class="btn btn-primary" onclick="addTab(${sectionCounter})">Add Tab</button>
+      <div class="tabs-list" id="tabs-${sectionCounter}"></div>
+    </div>
+    <button class="btn btn-danger" onclick="removeSection(${sectionCounter})">Remove Section</button>
+  `;
+  
+  sectionsContainer.appendChild(sectionDiv);
+}
+
+function removeSection(sectionId) {
+  const section = document.getElementById(`section-${sectionId}`);
+  section.remove();
+}
+
+function addTab(sectionId) {
+  tabCounter++;
+  const tabsContainer = document.getElementById(`tabs-${sectionId}`);
+  const tabDiv = document.createElement('div');
+  tabDiv.className = 'tab-item';
+  tabDiv.id = `tab-${tabCounter}`;
+  
+  tabDiv.innerHTML = `
+    <h6>Tab ${tabCounter}</h6>
+    <div class="form-group">
+      <label>Tab ID</label>
+      <input type="text" class="form-control tab-id" placeholder="tab_${tabCounter}">
+    </div>
+    <div class="form-group">
+      <label>Tab Title</label>
+      <input type="text" class="form-control tab-title" placeholder="Tab Title">
+    </div>
+    <div class="form-group">
+      <label>Heading Markdown</label>
+      <textarea class="form-control tab-heading" rows="2" placeholder="Optional heading text..."></textarea>
+    </div>
+    <div class="content-container">
+      <h6>Content Items</h6>
+      <button class="btn btn-primary" onclick="addTabItem(${tabCounter})">Add Content Item</button>
+      <div class="content-items" id="content-${tabCounter}"></div>
+    </div>
+    <button class="btn btn-danger" onclick="removeTab(${tabCounter})">Remove Tab</button>
+  `;
+  
+  tabsContainer.appendChild(tabDiv);
+}
+
+function removeTab(tabId) {
+  const tab = document.getElementById(`tab-${tabId}`);
+  tab.remove();
+}
+
+function addTabItem(tabId) {
+  itemCounter++;
+  const contentContainer = document.getElementById(`content-${tabId}`);
+  const itemDiv = document.createElement('div');
+  itemDiv.className = 'accordion-item';
+  itemDiv.id = `item-${itemCounter}`;
+  
+  itemDiv.innerHTML = `
+    <h6>Content Item ${itemCounter}</h6>
+    <div class="form-group">
+      <label>Title (Markdown)</label>
+      <input type="text" class="form-control item-title" placeholder="Item title">
+    </div>
+    <div class="form-group">
+      <label>Description (Markdown)</label>
+      <textarea class="form-control item-description" rows="3" placeholder="Item description..."></textarea>
+    </div>
+    <div class="buttons-container">
+      <h6>Buttons</h6>
+      <button class="btn btn-primary" onclick="addButton(${itemCounter})">Add Button</button>
+      <div class="buttons-list" id="buttons-${itemCounter}"></div>
+    </div>
+    <button class="btn btn-danger" onclick="removeItem(${itemCounter})">Remove Item</button>
+  `;
+  
+  contentContainer.appendChild(itemDiv);
+}
+
+function removeItem(itemId) {
+  const item = document.getElementById(`item-${itemId}`);
+  item.remove();
+}
+
+function addButton(itemId) {
+  const buttonsContainer = document.getElementById(`buttons-${itemId}`);
+  const buttonDiv = document.createElement('div');
+  buttonDiv.className = 'button-item';
+  
+  buttonDiv.innerHTML = `
+    <div class="form-group">
+      <label>Button Link</label>
+      <input type="url" class="form-control button-link" placeholder="https://example.com">
+    </div>
+    <div class="form-group">
+      <label>Button Label (optional)</label>
+      <input type="text" class="form-control button-label" placeholder="Click here">
+    </div>
+    <div class="form-group">
+      <label>Button Icon (optional)</label>
+      <select class="form-control button-icon">
+        <option value="">No icon</option>
+        <option value="run">Run</option>
+        <option value="view">View</option>
+        <option value="tutorial">Tutorial</option>
+        <option value="help">Help</option>
+        <option value="social">Social</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Button Tip (optional)</label>
+      <input type="text" class="form-control button-tip" placeholder="Tooltip text">
+    </div>
+    <button class="btn btn-danger" onclick="removeButton(this)">Remove Button</button>
+  `;
+  
+  buttonsContainer.appendChild(buttonDiv);
+}
+
+function removeButton(button) {
+  button.parentElement.remove();
+}
+
+// Data collection and validation
+function collectLabData() {
+  const labData = {
+    site_name: document.getElementById('site_name').value,
+    lab_name: document.getElementById('lab_name').value,
+    nationality: document.getElementById('nationality').value,
+    galaxy_base_url: document.getElementById('galaxy_base_url').value,
+    subdomain: document.getElementById('subdomain').value,
+    root_domain: document.getElementById('root_domain').value,
+    sections: [],
+    sections_data: []
+  };
+  
+  // Collect sections
+  const sections = document.querySelectorAll('.section-item');
+  sections.forEach((section, index) => {
+    const sectionId = section.querySelector('.section-id').value || `section_${index + 1}`;
+    labData.sections.push(`${sectionId}.yml`);
+    
+    const sectionData = {
+      id: sectionId,
+      title: section.querySelector('.section-title').value || 'Untitled Section',
+      tabs: []
+    };
+    
+    // Collect tabs
+    const tabs = section.querySelectorAll('.tab-item');
+    tabs.forEach((tab, tabIndex) => {
+      const tabData = {
+        id: tab.querySelector('.tab-id').value || `tab_${tabIndex + 1}`,
+        title: tab.querySelector('.tab-title').value || 'Untitled Tab',
+        content: []
+      };
+      
+      const heading = tab.querySelector('.tab-heading').value;
+      if (heading) {
+        tabData.heading_md = heading;
+      }
+      
+      // Collect content items
+      const items = tab.querySelectorAll('.accordion-item');
+      items.forEach(item => {
+        const itemData = {
+          title_md: item.querySelector('.item-title').value || 'Untitled Item',
+          description_md: item.querySelector('.item-description').value || '',
+          buttons: []
+        };
+        
+        // Collect buttons
+        const buttons = item.querySelectorAll('.button-item');
+        buttons.forEach(button => {
+          const buttonData = {
+            link: button.querySelector('.button-link').value
+          };
+          
+          const label = button.querySelector('.button-label').value;
+          const icon = button.querySelector('.button-icon').value;
+          const tip = button.querySelector('.button-tip').value;
+          
+          if (label) buttonData.label_md = label;
+          if (icon) buttonData.icon = icon;
+          if (tip) buttonData.tip = tip;
+          
+          if (buttonData.link) {
+            itemData.buttons.push(buttonData);
+          }
+        });
+        
+        tabData.content.push(itemData);
+      });
+      
+      sectionData.tabs.push(tabData);
+    });
+    
+    labData.sections_data.push(sectionData);
+  });
+  
+  return labData;
+}
+
+function validateLab() {
+  const labData = collectLabData();
+  const resultDiv = document.getElementById('validation-result');
+  
+  fetch('/builder/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'validate_lab',
+      lab_data: labData
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.valid) {
+      resultDiv.innerHTML = '<div class="validation-success">✓ Lab configuration is valid!</div>';
+    } else {
+      resultDiv.innerHTML = `<div class="validation-error">✗ Validation errors:<br>${data.errors.join('<br>')}</div>`;
+    }
+  })
+  .catch(error => {
+    resultDiv.innerHTML = `<div class="validation-error">✗ Error: ${error.message}</div>`;
+  });
+}
+
+function exportYAML() {
+  const labData = collectLabData();
+  
+  fetch('/builder/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'export_yaml',
+      lab_data: labData
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      displayYAMLFiles(data.files);
+    } else {
+      alert('Export failed: ' + data.error);
+    }
+  })
+  .catch(error => {
+    alert('Export failed: ' + error.message);
+  });
+}
+
+function createPR() {
+  const labData = collectLabData();
+  
+  // First export the YAML to get the files
+  fetch('/builder/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'export_yaml',
+      lab_data: labData
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Now create PR instructions
+      return fetch('/builder/api', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'create_pr',
+          pr_data: {
+            files: data.files,
+            repo_info: {
+              // Could be populated from the GitHub import URL
+              repo_url: document.getElementById('github_url').value || ''
+            }
+          }
+        })
+      });
+    } else {
+      throw new Error(data.error);
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      displayPRInstructions(data.instructions, data.files);
+    } else {
+      alert('PR creation failed: ' + data.error);
+    }
+  })
+  .catch(error => {
+    alert('PR creation failed: ' + error.message);
+  });
+}
+
+function displayYAMLFiles(files) {
+  const container = document.getElementById('yaml-files-container');
+  container.innerHTML = '';
+  
+  Object.entries(files).forEach(([filename, content]) => {
+    const fileDiv = document.createElement('div');
+    fileDiv.innerHTML = `
+      <h4>${filename}</h4>
+      <div class="yaml-output">${content}</div>
+      <button class="btn btn-secondary" onclick="downloadFile('${filename}', \`${content.replace(/`/g, '\\`')}\`)">Download ${filename}</button>
+    `;
+    container.appendChild(fileDiv);
+  });
+  
+  document.getElementById('export-modal').style.display = 'block';
+}
+
+function displayPRInstructions(instructions, files) {
+  const container = document.getElementById('yaml-files-container');
+  container.innerHTML = '';
+  
+  // Display instructions
+  const instructionsDiv = document.createElement('div');
+  instructionsDiv.innerHTML = `
+    <h4>Pull Request Creation Instructions</h4>
+    <div class="yaml-output">${instructions.join('\n')}</div>
+  `;
+  container.appendChild(instructionsDiv);
+  
+  // Display files for download
+  const filesDiv = document.createElement('div');
+  filesDiv.innerHTML = '<h4>Files to Include in PR</h4>';
+  container.appendChild(filesDiv);
+  
+  Object.entries(files).forEach(([filename, content]) => {
+    const fileDiv = document.createElement('div');
+    fileDiv.innerHTML = `
+      <h5>${filename}</h5>
+      <div class="yaml-output">${content}</div>
+      <button class="btn btn-secondary" onclick="downloadFile('${filename}', \`${content.replace(/`/g, '\\`')}\`)">Download ${filename}</button>
+    `;
+    container.appendChild(fileDiv);
+  });
+  
+  document.getElementById('export-modal').style.display = 'block';
+}
+
+function closeExportModal() {
+  document.getElementById('export-modal').style.display = 'none';
+}
+
+function downloadFile(filename, content) {
+  const element = document.createElement('a');
+  element.setAttribute('href', 'data:text/yaml;charset=utf-8,' + encodeURIComponent(content));
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+}
+
+function importFromGitHub() {
+  const githubUrl = document.getElementById('github_url').value;
+  const resultDiv = document.getElementById('import-result');
+  
+  if (!githubUrl) {
+    resultDiv.innerHTML = '<div class="validation-error">Please enter a GitHub URL</div>';
+    return;
+  }
+  
+  resultDiv.innerHTML = '<div>Importing from GitHub...</div>';
+  
+  fetch('/builder/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'import_github',
+      github_url: githubUrl
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      loadLabData(data.lab_data);
+      resultDiv.innerHTML = '<div class="validation-success">✓ Successfully imported from GitHub!</div>';
+    } else {
+      resultDiv.innerHTML = `<div class="validation-error">✗ Import failed: ${data.error}</div>`;
+    }
+  })
+  .catch(error => {
+    resultDiv.innerHTML = `<div class="validation-error">✗ Import failed: ${error.message}</div>`;
+  });
+}
+
+function loadLabData(labData) {
+  // Load basic lab configuration
+  document.getElementById('site_name').value = labData.site_name || '';
+  document.getElementById('lab_name').value = labData.lab_name || '';
+  document.getElementById('nationality').value = labData.nationality || '';
+  document.getElementById('galaxy_base_url').value = labData.galaxy_base_url || '';
+  document.getElementById('subdomain').value = labData.subdomain || '';
+  document.getElementById('root_domain').value = labData.root_domain || '';
+  
+  // Clear existing sections
+  document.getElementById('sections-container').innerHTML = '';
+  sectionCounter = 0;
+  tabCounter = 0;
+  itemCounter = 0;
+  
+  // Load sections
+  if (labData.sections_data && labData.sections_data.length > 0) {
+    labData.sections_data.forEach(sectionData => {
+      addSection();
+      const section = document.querySelector('.section-item:last-child');
+      section.querySelector('.section-id').value = sectionData.id || '';
+      section.querySelector('.section-title').value = sectionData.title || '';
+      
+      // Load tabs
+      if (sectionData.tabs && sectionData.tabs.length > 0) {
+        sectionData.tabs.forEach(tabData => {
+          addTab(sectionCounter);
+          const tab = document.querySelector('.tab-item:last-child');
+          tab.querySelector('.tab-id').value = tabData.id || '';
+          tab.querySelector('.tab-title').value = tabData.title || '';
+          tab.querySelector('.tab-heading').value = tabData.heading_md || '';
+          
+          // Load content items
+          if (tabData.content && tabData.content.length > 0) {
+            tabData.content.forEach(itemData => {
+              addTabItem(tabCounter);
+              const item = document.querySelector('.accordion-item:last-child');
+              item.querySelector('.item-title').value = itemData.title_md || '';
+              item.querySelector('.item-description').value = itemData.description_md || '';
+              
+              // Load buttons
+              if (itemData.buttons && itemData.buttons.length > 0) {
+                itemData.buttons.forEach(buttonData => {
+                  addButton(itemCounter);
+                  const button = document.querySelector('.button-item:last-child');
+                  button.querySelector('.button-link').value = buttonData.link || '';
+                  button.querySelector('.button-label').value = buttonData.label_md || '';
+                  button.querySelector('.button-icon').value = buttonData.icon || '';
+                  button.querySelector('.button-tip').value = buttonData.tip || '';
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+}
+
+function loadExample() {
+  // Load the simple example
+  document.getElementById('site_name').value = 'Archaeology';
+  document.getElementById('lab_name').value = 'Archaeology Lab';
+  document.getElementById('nationality').value = 'Egyptian';
+  document.getElementById('galaxy_base_url').value = 'https://galaxy-archaeology.org';
+  document.getElementById('subdomain').value = 'archaeology';
+  document.getElementById('root_domain').value = 'galaxy-archaeology.org';
+  
+  // Clear existing sections
+  document.getElementById('sections-container').innerHTML = '';
+  sectionCounter = 0;
+  tabCounter = 0;
+  itemCounter = 0;
+  
+  // Add example section
+  addSection();
+  const section = document.querySelector('.section-item');
+  section.querySelector('.section-id').value = 'section_1';
+  section.querySelector('.section-title').value = 'Example section';
+  
+  // Add example tab
+  addTab(1);
+  const tab = document.querySelector('.tab-item');
+  tab.querySelector('.tab-id').value = 'tools';
+  tab.querySelector('.tab-title').value = 'Tools';
+  tab.querySelector('.tab-heading').value = 'Common tools are listed here, or search for more in the full tool panel to the left.';
+  
+  // Add example content item
+  addTabItem(1);
+  const item = document.querySelector('.accordion-item');
+  item.querySelector('.item-title').value = 'Import data to Galaxy';
+  item.querySelector('.item-description').value = 'Standard upload of data to Galaxy, from your computer or from the web.';
+  
+  // Add example button
+  addButton(1);
+  const button = document.querySelector('.button-item');
+  button.querySelector('.button-link').value = '{{ galaxy_base_url }}/tool_runner?tool_id=upload1';
+  button.querySelector('.button-icon').value = 'run';
+  button.querySelector('.button-tip').value = 'Upload data to Galaxy';
+}
+
+// Initialize with one section
+window.onload = function() {
+  loadExample();
+};
+</script>
+{% endblock %}
