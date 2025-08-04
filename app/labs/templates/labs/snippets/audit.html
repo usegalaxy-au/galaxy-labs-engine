@@ -16,7 +16,7 @@
       Audit success
     {% else %}
       <i class="fas fa-exclamation-triangle me-2"></i>
-      Audit issues
+      {{ audit_summary.broken_tools }} issues
     {% endif %}
   </button>
 </div>
@@ -37,13 +37,69 @@
           </div>
         {% else %}
           <!-- Show audit summary -->
-          <div class="alert {% if audit_summary.broken_tools == 0 %}alert-success{% else %}alert-warning{% endif %}">
-            <strong>Audit Complete:</strong>
-            {{ audit_summary.working_tools }} of {{ audit_summary.total_tools }} linked Galaxy tools are available.
-            {% if audit_summary.broken_tools > 0 %}
+          {% if audit_results %}
+            <div class="accordion my-3" id="allToolsAccordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="allToolsHeading">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#allToolsCollapse" aria-expanded="false" aria-controls="allToolsCollapse">
+                    <i class="fas fa-list me-2"></i>
+                    <strong>Audit Complete:</strong>
+                    {{ audit_summary.working_tools }} of {{ audit_summary.total_tools }} linked Galaxy tools are available.
+                    {% if audit_summary.broken_tools > 0 %}
+                    {{ audit_summary.broken_tools }} tools are unavailable.
+                    {% endif %}
+                  </button>
+                </h2>
+                <div id="allToolsCollapse" class="accordion-collapse collapse" aria-labelledby="allToolsHeading" data-bs-parent="#allToolsAccordion">
+                  <div class="accordion-body">
+                    <div class="list-group">
+                      {% for tool_id, tool in audit_results.items %}
+                        <div class="list-group-item {% if not tool.exists %}list-group-item-danger{% else %}list-group-item-success{% endif %}">
+                          <div class="d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                              <div class="fw-bold">
+                                {% if tool.exists %}
+                                  <i class="fas fa-check-circle text-success me-2"></i>
+                                {% else %}
+                                  <i class="fas fa-times-circle text-danger me-2"></i>
+                                {% endif %}
+                                {{ tool.link_text }}
+                              </div>
+                              <div class="mt-2">
+                                <small class="text-muted"><strong>Tool ID:</strong></small>
+                                <code class="ms-1">{{ tool.tool_id }}</code>
+                              </div>
+                              <div class="mt-1">
+                                <small class="text-muted"><strong>URL:</strong></small>
+                                <code class="ms-1">{{ tool.url }}</code>
+                              </div>
+                              {% if tool.error %}
+                                <div class="mt-1">
+                                  <small class="text-muted"><strong>Error:</strong></small>
+                                  <code class="ms-1 text-danger">{{ tool.error }}</code>
+                                </div>
+                              {% endif %}
+                            </div>
+                            <span class="badge {% if tool.exists %}bg-success{% else %}bg-danger{% endif %} rounded-pill">
+                              {% if tool.exists %}Available{% else %}Unavailable{% endif %}
+                            </span>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <div class="alert {% if audit_summary.broken_tools == 0 %}alert-success{% else %}alert-warning{% endif %}">
+              <strong>Audit Complete:</strong>
+              {{ audit_summary.working_tools }} of {{ audit_summary.total_tools }} linked Galaxy tools are available.
+              {% if audit_summary.broken_tools > 0 %}
               {{ audit_summary.broken_tools }} tools are unavailable.
-            {% endif %}
-          </div>
+              {% endif %}
+            </div>
+          {% endif %}
 
           {% if audit_summary.total_tools == 0 %}
             <!-- No tools found -->
@@ -54,15 +110,16 @@
             <p class="text-success">✓ All tools are available on the Galaxy server!</p>
             
           {% else %}
-            <!-- Show broken tools -->
             <p class="lead">
               The following tools could not be fetched. After checking that these tool IDs are correct, you may wish to request installation of these tools on the target Galaxy server, or
               <a href="/#section_1-faq-7-accordion">exclude them</a>
               from this Galaxy Lab.
             </p>
 
-            <p>
-              Tabs and content items which contain a broken tool link have been highlighted in red in the main page.
+            <p class="alert alert-info">
+              Tabs and content items which contain a broken tool link have been highlighted in
+              <span class="font-danger">red</span>
+              in the Lab webpage.
             </p>
 
             <ul class="list-group">
@@ -88,6 +145,7 @@
               {% endfor %}
             </ul>
           {% endif %}
+
         {% endif %}
         
       </div>
