@@ -65,6 +65,7 @@ class ExportLabContext(dict):
         self._fetch_sections()
         self._fetch_contributors()
         self._format_video_url()
+        self['title'] = self['lab_name']
 
     def _clean(self):
         """Format params for rendering."""

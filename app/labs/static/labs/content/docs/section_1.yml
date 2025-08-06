@@ -265,10 +265,10 @@ tabs:
 
           ##### Using the audit feature
 
-          Add the `audit=true` parameter to any Lab page URL to audit that page. The URL must point to a <code>&lt;server&gt;.yml</code> file (not `base.yml`) so that it knows which server to check against. For example:
+          Add the `audit` parameter to any Lab page URL to audit that page. The URL must point to a <code>&lt;server&gt;.yml</code> file (not `base.yml`) so that it knows which server to check against. For example:
 
           <pre class="prettyprint">
-          https://{{ HOSTNAME }}/?content_root=https://github.com/myuser/myrepo/blob/main/content/usegalaxy.org.yml&cache=false&audit=true
+          https://{{ HOSTNAME }}/?content_root=https://github.com/myuser/myrepo/blob/main/content/usegalaxy.org.yml&cache=false&audit
           </pre>
 
           ##### What to expect

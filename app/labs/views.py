@@ -56,10 +56,14 @@ def export_lab(request):
             'deprecated_props': DEPRECATED_PROPS,
         }, status=400)
 
-    context['audit'] = 'audit' in request.GET
+    context['audit'] = False
+    if 'audit' in request.GET:
+        context['audit'] = True
+        context['title'] = 'AUDIT | ' + context.get(
+            'title', 'Galaxy Labs Engine')
 
     # Multiple rounds of templating to render recursive template tags from
-    # remote data with embedded template tags
+    # remote templates with embedded template tags
     try:
         i = 0
         prev_template_str = ''
@@ -82,12 +86,12 @@ def export_lab(request):
 
     template_str = context.render_relative_uris(template_str)
 
-    # Perform tool auditing (function checks if audit is requested)
-    template_str, context = perform_template_audit(
-        template_str,
-        context,
-        request
-    )
+    if 'audit' in request.GET:
+        template_str, context = perform_template_audit(
+            template_str,
+            context,
+            request
+        )
 
     response = LabCache.put(request, template_str)
 
