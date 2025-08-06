@@ -11,6 +11,7 @@ from .base import *
 
 DEBUG = True
 CLI_DEV = True
+NOCACHE = True
 LAB_CONTENT_ROOT = os.environ.get('LAB_CONTENT_ROOT')
 if not LAB_CONTENT_ROOT:
     raise EnvironmentError('Env variable LAB_CONTENT_ROOT not set')

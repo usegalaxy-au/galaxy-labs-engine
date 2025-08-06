@@ -15,7 +15,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-CLI_DEV = True  # Don't cache anything
+CLI_DEV = False
+NOCACHE = True
 AUTH_USER_MODEL = 'labs.User'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or "secretkey"
 SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
@@ -199,6 +200,9 @@ CACHE_TIMEOUT = None
 # Labs that haven't been requested in more than this many days will be deleted
 # from the cache during a cache update.
 CACHE_UPDATE_RETAIN_DAYS = 30
+
+# Bioblend API response cache timeout (24 hours in development)
+BIOBLEND_CACHE_TTL = 60 * 60 * 24
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

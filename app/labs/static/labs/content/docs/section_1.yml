@@ -167,7 +167,7 @@ tabs:
           <pre class="prettyprint">
           # Either of these work fine:
           &lbrace;&lbrace; galaxy_base_url }}/?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/fastqc/fastqc
-          &lbrace;&lbrace; galaxy_base_url }}/?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fdevteam%2Ffastqc%2Ffastqc
+          &lbrace;&lbrace; galaxy_base_url }}/?tool_id=toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc
           </pre>
 
           <p class="alert alert-warning">
@@ -176,7 +176,7 @@ tabs:
 
           ##### Linking to workflows
 
-          For linking to a workflow, it's best to link to a TRS import from either WorkflowHub.eu or DockStore.org to ensure availability between Galaxy instances. You should be able to obtain the TRS ID from the workflow page on either of these sites:
+          For linking to a workflow, it's best to link to a TRS import from either WorkflowHub.eu or DockStore.org to ensure availability between Galaxy instances. You should be able to obtain the TRS ID from the workflow page on either of these sites. The following link will take the user to a TRS import form on their Galaxy server - they just have to click "Import":
 
           <pre class="prettyprint">
           &lbrace;&lbrace; galaxy_base_url }}/workflows/trs_import?trs_server=workflowhub.eu&run_form=true&trs_id=220
@@ -255,6 +255,46 @@ tabs:
           the user's profile information and display it at the bottom of your
           Lab Page. If a contributor does not have a GitHub account, you can
           just add their name.
+
+      - title_md: Is there a way to check that all Galaxy tool links are working?
+        description_md: |
+          Yes - please use the built-in **audit feature** to automatically check
+          whether all Galaxy tool links in your Lab page are accessible on the
+          target Galaxy server. This helps ensure your Lab content stays
+          up-to-date and functional.
+
+          ##### Using the audit feature
+
+          Add the `audit` parameter to any Lab page URL to audit that page. The URL must point to a <code>&lt;server&gt;.yml</code> file (not `base.yml`) so that it knows which server to check against. For example:
+
+          <pre class="prettyprint">
+          https://{{ HOSTNAME }}/?content_root=https://github.com/myuser/myrepo/blob/main/content/usegalaxy.org.yml&cache=false&audit
+          </pre>
+
+          ##### What to expect
+
+          - A popup will list linked tools that are not installed on the target server
+          - Tabs and accordion sections containing broken tool links will be highlighted in red
+          - The page title will include "- AUDIT" to indicate **audit mode** is active
+
+          ##### What gets checked
+
+          The audit feature automatically:
+
+          - Extracts all Galaxy tool links from your Lab page content
+          - Uses the Galaxy API to verify each tool exists on the target server
+          - Caches Galaxy API results for 30 minutes to avoid repeated checks
+          - Shows detailed error messages for unavailable tools
+
+          ##### Interpreting audit results
+
+          - **Green "Audit success" button**: All linked tools are available
+          - **Red "Audit issues" button**: Some tools are unavailable
+          - **Highlighted sections/tabs**: Contain links to unavailable tools
+
+          <p class="alert alert-info">
+            A broken tool link doesn't always indicate that a tool is missing from the server - sometimes it's just a typo!
+          </p>
 
   - id: another_tab
     title: Another tab

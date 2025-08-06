@@ -87,6 +87,22 @@ ul.nav-pills li.nav-item {
 .nav-pills .show>.nav-link {
   background-color: var(--color);
 }
+.nav-pills .nav-link.nav-link-danger {
+  color: var(--bs-danger);
+  border: 1px solid var(--bs-danger);
+}
+.nav-pills .nav-link.nav-link-danger .fas  {
+  color: var(--bs-danger);
+}
+.nav-pills .nav-link.active.nav-link-danger,
+.nav-pills .show>.nav-link-danger {
+  color: white;
+  background-color: var(--bs-danger);
+}
+.nav-pills .nav-link.active.nav-link-danger .fas,
+.nav-pills .show>.nav-link-danger .fas {
+  color: white;
+}
 .accordion-button.static::after {
   content: none;
 }
@@ -100,6 +116,16 @@ ul.nav-pills li.nav-item {
   color: inherit;
   background-color: inherit;
   box-shadow: none;
+}
+.list-group-item-danger .table {
+  color: #842029;
+  margin: 0;
+}
+.list-group-item-danger code {
+  background: transparent;
+  color: #842029;
+  margin: 0;
+  padding: 0;
 }
 
 @media screen and (max-width: 850px) {
