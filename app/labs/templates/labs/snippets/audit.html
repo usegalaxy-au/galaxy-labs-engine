@@ -41,11 +41,11 @@
             <div class="accordion my-3" id="allToolsAccordion">
               <div class="accordion-item">
                 <h2 class="accordion-header" id="allToolsHeading">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#allToolsCollapse" aria-expanded="false" aria-controls="allToolsCollapse">
+                  <button class="accordion-button collapsed alert-{% if audit_summary.broken_tools %}danger{% else %}success{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#allToolsCollapse" aria-expanded="false" aria-controls="allToolsCollapse">
                     <i class="fas fa-list me-2"></i>
-                    <strong>Audit Complete:</strong>
+                    <strong class="mx-2">Audit Complete:</strong>
                     {{ audit_summary.working_tools }} of {{ audit_summary.total_tools }} linked Galaxy tools are available.
-                    {% if audit_summary.broken_tools > 0 %}
+                    {% if audit_summary.broken_tools %}
                     {{ audit_summary.broken_tools }} tools are unavailable.
                     {% endif %}
                   </button>
@@ -110,19 +110,17 @@
             <p class="text-success">✓ All tools are available on the Galaxy server!</p>
             
           {% else %}
-            <p class="lead">
-              The following tools could not be fetched. After checking that these tool IDs are correct, you may wish to request installation of these tools on the target Galaxy server, or
+            <p class="lead my-3">
+              The following tools could not be fetched. After checking that these tool IDs are correct, you may wish to
+              <a href="/tool-install">
+                request installation of these tools
+              </a>
+              on the target Galaxy server, or
               <a href="/#section_1-faq-7-accordion">exclude them</a>
               from this Galaxy Lab.
             </p>
 
-            <p class="alert alert-info">
-              Tabs and content items which contain a broken tool link have been highlighted in
-              <span class="font-danger">red</span>
-              in the Lab webpage.
-            </p>
-
-            <ul class="list-group">
+            <ul class="list-group my-3">
               {% for tool_id, tool in audit_results.items %}
                 {% if not tool.exists %}
                   <li class="list-group-item list-group-item-danger">
@@ -144,6 +142,12 @@
                 {% endif %}
               {% endfor %}
             </ul>
+
+            <p class="alert alert-info my-3">
+              Tabs and content items which contain a broken tool link have been
+              <span class="text-danger" style="border: 1px solid red; border-radius: .23rem; padding: .1rem .25rem;">highlighted in red</span>
+              in the Lab webpage.
+            </p>
           {% endif %}
 
         {% endif %}
