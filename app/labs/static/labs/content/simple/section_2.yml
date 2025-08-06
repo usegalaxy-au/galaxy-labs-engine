@@ -43,7 +43,7 @@ tabs:
             description_md: A haplotype-resolved assembler for PacBio HiFi reads.
             buttons:
               - icon: run
-                link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fbgruening%2Fhifiasm%2Fhifiasm"
+                link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm"
             inputs:
               - label: PacBio reads
                 datatypes:
@@ -60,7 +60,7 @@ tabs:
                 large mammalian-scale assemblies.
               buttons:
                 - icon: run
-                  link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fbgruening%2Fflye%2Fflye"
+                  link: "{{ galaxy_base_url }}/tool_runner?tool_id=toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye"
               inputs:
               - label: Single-molecule sequencing reads
                 datatypes:

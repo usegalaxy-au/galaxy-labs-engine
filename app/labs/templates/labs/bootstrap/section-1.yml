@@ -12,7 +12,7 @@ tabs:
               - fastqsanger
             label: Input data  # A label for this input
         # Get this link by selecting "Copy link" in the tool form on Galaxy. Make sure to strip version number(s) from the end:
-        button_link: "{% verbatim %}{{ galaxy_base_url }}{% endverbatim %}/?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fdevteam%2Ffastqc%2Ffastqc"
+        button_link: "{% verbatim %}{{ galaxy_base_url }}{% endverbatim %}/?tool_id=toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc"
   - id: learning
     title: Learning
     heading_md: "Here are some resources for you to learn more."
