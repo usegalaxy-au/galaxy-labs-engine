@@ -5,7 +5,7 @@
 
   <head>
     {% include 'labs/snippets/head.html' %}
-    <title> {% if title %}{{ title }}{% else %}Galaxy - data analysis for everyone{% endif %} </title>
+    <title> {% if title %}{{ title }}{% else %}Galaxy Labs Engine{% endif %} </title>
 
     {% include 'labs/snippets/imports.html' %}
 
@@ -25,7 +25,7 @@
   <body>
 
     {% if request.path != '/' %}
-    <div class="container text-center" style="margin: -50px auto 50px auto;">
+    <div class="container text-center" style="margin: 0 auto 50px auto;">
       <a class="ga-btn" href="/">Home</a>
     </div>
     {% endif %}
