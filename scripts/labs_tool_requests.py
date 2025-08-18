@@ -15,9 +15,15 @@ from datetime import datetime
 from pathlib import Path
 
 
-DATA_DIR = Path('~/Downloads/nginx_logs').expanduser()
-tools_path = DATA_DIR / 'labs-tools.access.log'
+DATA_DIR = Path('~/Downloads/labs_nginx_logs').expanduser()
+tools_path = DATA_DIR / 'labs_tool_access_20250415-20250817.log'
 csv_tools = DATA_DIR / 'lab_tools.csv'
+LABS_TO_PLOT = [
+    'https://genome.usegalaxy.org.au',
+    'https://proteomics.usegalaxy.org.au',
+    'https://singlecell.usegalaxy.org.au',
+    'https://microbiology.usegalaxy.org.au',
+]
 
 
 def count_lab_tool_usage():
@@ -85,16 +91,9 @@ def main():
                 for date, count in dt.items():
                     f.write(f'{lab},{tool_id},{date},{count}\n')
 
-    genome_tool_requests = tool_requests[
-        'https://genome.usegalaxy.org.au']
-    proteomics_tool_requests = tool_requests[
-        'https://proteomics.usegalaxy.org.au']
-    singlecell_tool_requests = tool_requests[
-        'https://singlecell.usegalaxy.org.au']
-    plot_tool_requests(genome_tool_requests, 'genome')
-    plot_tool_requests(proteomics_tool_requests, 'proteomics')
-    plot_tool_requests(singlecell_tool_requests, 'singlecell')
-    return
+    for url in LABS_TO_PLOT:
+        subdomain = url.split('//')[1].split('.')[0]
+        plot_tool_requests(tool_requests[url], subdomain)
 
 
 if __name__ == '__main__':
