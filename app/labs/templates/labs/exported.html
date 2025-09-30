@@ -51,6 +51,11 @@
     {% endif %}
   </div>
 
+
+  {% if toc %}
+  {% include 'labs/components/toc.html' %}
+  {% endif %}
+
   {% for section in sections %}
     {% include 'labs/components/section.html' with section=section %}
   {% endfor %}

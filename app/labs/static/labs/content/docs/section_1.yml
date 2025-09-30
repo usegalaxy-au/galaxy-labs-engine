@@ -296,6 +296,13 @@ tabs:
             A broken tool link doesn't always indicate that a tool is missing from the server - sometimes it's just a typo!
           </p>
 
+      - title_md: Can I add a table of contents for long Lab pages?
+        description_md: |
+          To add a floating navigation button, simply add `toc: true` to your `base.yml` or <code>&lt;server&gt;.yml</code> file. This will result in a menu button that floats in the top-right corner of the page.
+
+          If you want something more like a conventional TOC, you can also set `toc_bar: true` to include a fixed navigation bar above the sections.
+
+
   - id: another_tab
     title: Another tab
     heading_md: |

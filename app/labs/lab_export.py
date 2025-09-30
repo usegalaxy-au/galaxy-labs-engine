@@ -36,6 +36,12 @@ CONTENT_TYPES = SimpleNamespace(
     TEXT='text',
 )
 
+if not settings.GITHUB_API_TOKEN:
+    print("\n\033[33mWarning: env variable GITHUB_API_TOKEN not set. Requests"
+          " to api.github.com will be rate-limited at 60 requests per hour"
+          " which may result in errors (this is used for fetching CONTRIBUTORS"
+          " information).\n\033[0m")
+
 
 class ExportLabContext(dict):
     """Build and validate render context for exported lab landing page.
