@@ -155,6 +155,8 @@ class LabSchema(BaseModel, extra='allow'):
     footer_md: Optional[FlexibleStr] = None
     video_url: Optional[FlexibleStr] = None
     video_tooltip: Optional[FlexibleStr] = None
+    toc: bool = True
+    toc_bar: bool = False
 
 
 def html_tags(value: str) -> str:

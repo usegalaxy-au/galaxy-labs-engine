@@ -4,6 +4,7 @@
 
 import os
 from pathlib import Path
+
 from utils.paths import ensure_dir
 
 if os.getenv('DJANGO_SETTINGS_MODULE') != "app.settings.cli":
@@ -141,10 +142,11 @@ DATABASES = {
     }
 }
 
+CACHE_TABLE_NAME = 'django_cache'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'django_cache',
+        'LOCATION': CACHE_TABLE_NAME,
     }
 }
 
@@ -187,11 +189,6 @@ RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '')
 RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '')
 
 GITHUB_API_TOKEN = os.getenv('GITHUB_API_TOKEN')
-if not GITHUB_API_TOKEN:
-    print("\n\033[33mWarning: env variable GITHUB_API_TOKEN not set. Requests"
-          " to api.github.com will be rate-limited at 60 requests per hour"
-          " which may result in errors (this is used for fetching CONTRIBUTORS"
-          " information).\n\033[0m")
 
 # Cache forever unless requested
 # (automated by GH workflow in galaxyproject/galaxy_codex)

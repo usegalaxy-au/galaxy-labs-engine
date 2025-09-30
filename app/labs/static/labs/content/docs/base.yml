@@ -8,6 +8,7 @@ nationality: Antarctican
 galaxy_base_url: https://galaxy-antarctica.org
 subdomain: antarctica
 root_domain: galaxy-antarctica.org
+toc: true
 
 # These files need to be accessible on the internet, relative to the content_root URL!
 # -----------------------------------------------------------------------------

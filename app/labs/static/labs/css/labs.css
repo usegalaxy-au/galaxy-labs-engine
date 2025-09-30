@@ -65,6 +65,27 @@ code {
   cursor: default;
   color: var(--bs-gray-800);
 }
+#tocMenu {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+}
+#tocMenuDropdown::after {
+  content: unset;
+}
+.menu-btn {
+  color: #aaa;
+  padding: 0 .35rem;
+  border-right: 1px solid #aaa;
+  transition-duration: .25s;
+  text-decoration: none;
+}
+.menu-btn:last-child {
+  border-right: none;
+}
+.menu-btn:hover {
+  color: black;
+}
 
 /* BS override */
 ul.nav-pills {
