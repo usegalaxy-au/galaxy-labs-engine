@@ -69,6 +69,7 @@ code {
   position: fixed;
   top: 2rem;
   right: 2rem;
+  z-index: 3;
 }
 #tocMenuDropdown::after {
   content: unset;
