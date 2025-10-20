@@ -8,7 +8,7 @@ dynamic = ["version", "dependencies"]
 requires-python = ">=3.10"
 
 [tool.setuptools]
-packages = ["app"]
+packages = {find = {where = ["app"]}}
 
 [tool.setuptools.package-dir]
 "" = "app"
