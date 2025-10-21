@@ -6,6 +6,8 @@ To be used when pip-installed and running as `labs-engine serve`.
 # flake8: noqa
 
 import os
+import sys
+from pathlib import Path
 
 from .base import *
 
@@ -41,10 +43,12 @@ DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
 
 INSTALLED_APPS.remove('django_light')
 
+TEMP_DB_DIR = Path('/tmp/galaxy-labs-engine')
+TEMP_DB_DIR.mkdir(parents=True, exist_ok=True)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'NAME': f'{TEMP_DB_DIR}/db.sqlite3',
     }
 }
 

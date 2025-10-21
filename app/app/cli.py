@@ -10,8 +10,17 @@ from pathlib import Path
 
 def main():
     """CLI entry point for running the development server."""
+
+    if len(sys.argv) == 1:
+        print(
+            "Please choose from one of the available subcommands:\n\n"
+            "  serve    Serve local Lab content as a web page\n"
+        )
+        sys.exit(1)
+
     try:
-        from django.core.management import execute_from_command_line
+        import django
+        from django.core.management import call_command
     except ImportError as exc:
         raise ImportError(
             "Couldn't import Django. Make sure it's installed and "
@@ -20,6 +29,7 @@ def main():
 
     os.environ["DJANGO_SETTINGS_MODULE"] = "app.settings.cli"
     set_required_env_vars()
+    django.setup()
 
     if sys.argv[1] == "serve":
         BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,8 +37,11 @@ def main():
         sys.path.insert(0, str(BASE_DIR))
         if len(sys.argv) > 2:
             os.environ["LAB_CONTENT_ENTRYPOINT"] = sys.argv[2]
-        execute_from_command_line(["manage.py", "collectstatic", "--noinput"])
-        execute_from_command_line(["manage.py", "runserver"])
+        call_command("createcachetable", verbosity=0)
+        call_command(
+            "migrate", interactive=False, run_syncdb=True, verbosity=0)
+        call_command("collectstatic", interactive=False, verbosity=0)
+        call_command("runserver", "127.0.0.1:8000", verbosity=0)
     else:
         print(f"Unknown command: {sys.argv[1]}")
 

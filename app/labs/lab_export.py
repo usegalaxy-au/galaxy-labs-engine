@@ -22,6 +22,7 @@ from urllib.parse import urlparse, parse_qs
 
 from types import SimpleNamespace
 from utils.exceptions import LabBuildError
+from utils.terminal import ANSI_GREEN, ANSI_RESET, ANSI_YELLOW
 from .lab_schema import LabSchema, LabSectionSchema
 from .cache import WebCache
 
@@ -37,10 +38,16 @@ CONTENT_TYPES = SimpleNamespace(
 )
 
 if not settings.GITHUB_API_TOKEN:
-    print("\n\033[33mWarning: env variable GITHUB_API_TOKEN not set. Requests"
-          " to api.github.com will be rate-limited at 60 requests per hour"
-          " which may result in errors (this is used for fetching CONTRIBUTORS"
-          " information).\n\033[0m")
+    print(
+        f"\n{ANSI_YELLOW}"
+        "Warning: env variable GITHUB_API_TOKEN not set. Requests"
+        " to api.github.com will be rate-limited at 60 requests per hour"
+        " which may result in errors (this is used for fetching CONTRIBUTORS"
+        f" information).{ANSI_RESET}")
+if settings.CLI_DEV:
+    print(
+        f"\n{ANSI_GREEN} Serving your Lab page at"
+        f" http://localhost:8000/{ANSI_RESET}\n")
 
 
 class ExportLabContext(dict):
