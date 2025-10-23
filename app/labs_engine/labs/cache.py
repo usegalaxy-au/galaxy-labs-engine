@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from django.utils.http import urlencode
 from hashlib import md5
 
-from labs.models import CachedLab
+from labs_engine.labs.models import CachedLab
 
 _1_DAY = 60 * 60 * 24
 CACHE_KEY_IGNORE_GET_PARAMS = (
@@ -27,7 +27,7 @@ NO_WEB_CACHE = os.getenv('NO_WEB_CACHE', False)  # Development only
 logger = logging.getLogger('django.cache')
 
 if settings.CACHE_TABLE_NAME not in connection.introspection.table_names():
-    if not os.getenv('DJANGO_SETTINGS_MODULE') == 'app.settings.test':
+    if not os.getenv('DJANGO_SETTINGS_MODULE') == 'labs_engine.app.settings.test':
         raise EnvironmentError(
             f'Table "{settings.CACHE_TABLE_NAME}" does not exist. Please run'
             ' `python manage.py createcachetable` to create this table.')

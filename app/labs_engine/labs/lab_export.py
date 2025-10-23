@@ -21,8 +21,8 @@ from pydantic import BaseModel, ValidationError
 from urllib.parse import urlparse, parse_qs
 
 from types import SimpleNamespace
-from utils.exceptions import LabBuildError
-from utils.terminal import ANSI_GREEN, ANSI_RESET, ANSI_YELLOW
+from labs_engine.utils.exceptions import LabBuildError
+from labs_engine.utils.terminal import ANSI_GREEN, ANSI_RESET, ANSI_YELLOW
 from .lab_schema import LabSchema, LabSectionSchema
 from .cache import WebCache
 

@@ -14,7 +14,7 @@ packages = {find = {where = ["app"]}}
 "" = "app"
 
 [project.scripts]
-labs-engine = "app.cli:main"
+labs-engine = "labs_engine.cli:main"
 
 [tool.setuptools.dynamic]
 version = {file = "VERSION"}

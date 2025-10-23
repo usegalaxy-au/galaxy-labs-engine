@@ -2,7 +2,7 @@
 
 import logging
 from pprint import pformat
-from labs.lab_schema import (
+from labs_engine.labs.lab_schema import (
     TabItem,
     TabSubsection,
     SectionTab,

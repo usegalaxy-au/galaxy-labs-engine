@@ -10,8 +10,8 @@ from django.urls import resolve
 from django.conf import settings
 from django.utils import timezone
 
-from labs.models import CachedLab
-from utils.runserver import Runserver
+from labs_engine.labs.models import CachedLab
+from labs_engine.utils.runserver import Runserver
 
 
 class Command(BaseCommand):

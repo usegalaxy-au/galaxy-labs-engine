@@ -15,7 +15,7 @@ from django.utils.text import slugify
 from django.views import View
 from pathlib import Path
 
-from utils.exceptions import LabBuildError
+from labs_engine.utils.exceptions import LabBuildError
 from .cache import LabCache
 from .forms import LabBootstrapForm
 from .lab_export import ExportLabContext

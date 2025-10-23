@@ -9,11 +9,11 @@ def main():
     """Run administrative tasks."""
     command_str = ' '.join(sys.argv)
     if 'manage.py test' in command_str:
-        os.environ['DJANGO_SETTINGS_MODULE'] = 'app.settings.test'
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'labs_engine.app.settings.test'
     elif 'manage.py update_cache' in command_str:
         os.environ['BUILD_HOSTNAME'] = 'localhost:8001'
-        os.environ['DJANGO_SETTINGS_MODULE'] = 'app.settings.dev'
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings.dev')
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'labs_engine.app.settings.dev'
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'labs_engine.app.settings.dev')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

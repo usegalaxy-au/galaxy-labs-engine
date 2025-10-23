@@ -7,8 +7,8 @@ from django import forms
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import FileExtensionValidator
-from utils.mail import retry_send_mail
-from utils.webforms import SpamFilterFormMixin
+from labs_engine.utils.mail import retry_send_mail
+from labs_engine.utils.webforms import SpamFilterFormMixin
 
 from . import bootstrap, validators
 

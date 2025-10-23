@@ -14,7 +14,7 @@ from .test.data import (
     MOCK_REQUESTS,
     MOCK_LAB_BASE_URL,
 )
-from app.test import TestCase
+from labs_engine.app.test import TestCase
 
 TEST_DATA_DIR = Path(__file__).parent / 'test/data'
 TEST_LAB_NAME = 'Lab Docs'
@@ -196,8 +196,8 @@ class AuditTestCase(TestCase):
         tool_links = extract_tool_links('')
         self.assertEqual(len(tool_links), 0)
 
-    @patch('labs.audit.WebCache')
-    @patch('labs.audit.GalaxyInstance')
+    @patch('labs_engine.labs.audit.WebCache')
+    @patch('labs_engine.labs.audit.GalaxyInstance')
     def test_check_tool_exists_with_valid_tool(self, mock_galaxy_instance, mock_cache):
         """Test check_tool_exists with a valid tool."""
         # Mock cache miss
@@ -218,7 +218,7 @@ class AuditTestCase(TestCase):
         mock_gi.tools.show_tool.assert_called_once_with(TEST_VALID_TOOL_ID)
         mock_cache.put.assert_called_once()
 
-    @patch('labs.audit.GalaxyInstance')
+    @patch('labs_engine.labs.audit.GalaxyInstance')
     def test_check_tool_exists_with_invalid_tool(self, mock_galaxy_instance):
         """Test check_tool_exists with an invalid tool."""
         mock_gi = Mock()
@@ -236,7 +236,7 @@ class AuditTestCase(TestCase):
         self.assertFalse(exists)
         self.assertEqual(error, 'Tool not found')
 
-    @patch('labs.audit.GalaxyInstance')
+    @patch('labs_engine.labs.audit.GalaxyInstance')
     def test_check_tool_exists_with_connection_error(
         self, mock_galaxy_instance
     ):
@@ -252,7 +252,7 @@ class AuditTestCase(TestCase):
         self.assertFalse(exists)
         self.assertIn('Connection error', error)
 
-    @patch('labs.audit.check_tool_exists')
+    @patch('labs_engine.labs.audit.check_tool_exists')
     def test_audit_tools_concurrent_with_mixed_results(
         self, mock_check_tool
     ):
@@ -318,7 +318,7 @@ class AuditTestCase(TestCase):
         self.assertEqual(result_template, template_str)
         self.assertEqual(result_context, context)
 
-    @patch('labs.audit.audit_tools_concurrent')
+    @patch('labs_engine.labs.audit.audit_tools_concurrent')
     def test_perform_template_audit_with_audit_param(
         self,
         mock_audit_tools
