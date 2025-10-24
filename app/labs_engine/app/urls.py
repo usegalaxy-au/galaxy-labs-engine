@@ -21,7 +21,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('labs.urls')),
+    path('', include('labs_engine.labs.urls')),
 ]
 
 if settings.CLI_DEV:
@@ -30,4 +30,4 @@ if settings.CLI_DEV:
         document_root=settings.STATIC_ROOT,
     )
 
-handler400 = 'labs.views.custom_400'
+handler400 = 'labs_engine.labs.views.custom_400'

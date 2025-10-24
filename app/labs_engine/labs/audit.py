@@ -14,7 +14,7 @@ from django.template import (
     Template,
 )
 
-from labs.cache import WebCache
+from labs_engine.labs.cache import WebCache
 
 logger = logging.getLogger('django')
 

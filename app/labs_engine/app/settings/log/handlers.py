@@ -2,7 +2,7 @@
 
 import os
 from logging import StreamHandler
-from utils import slack
+from labs_engine.utils import slack
 
 REQUIRED_KEYS = ('SLACK_API_KEY', 'SLACK_CHANNEL_ID')
 

@@ -5,9 +5,9 @@
 import os
 from pathlib import Path
 
-from utils.paths import ensure_dir
+from labs_engine.utils.paths import ensure_dir
 
-if os.getenv('DJANGO_SETTINGS_MODULE') != "app.settings.cli":
+if os.getenv('DJANGO_SETTINGS_MODULE') != "labs_engine.app.settings.cli":
     from dotenv import load_dotenv
     load_dotenv('../.env', override=True)
 
@@ -93,7 +93,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'labs',
+    'labs_engine.labs',
     'crispy_forms',
     "crispy_bootstrap5",
 ]
@@ -111,7 +111,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'app.urls'
+ROOT_URLCONF = 'labs_engine.app.urls'
 
 TEMPLATES = [
     {
@@ -124,13 +124,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'labs.context_processors.settings'
+                'labs_engine.labs.context_processors.settings'
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'app.wsgi.application'
+WSGI_APPLICATION = 'labs_engine.app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
