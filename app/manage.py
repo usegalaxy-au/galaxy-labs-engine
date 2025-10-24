@@ -13,7 +13,8 @@ def main():
     elif 'manage.py update_cache' in command_str:
         os.environ['BUILD_HOSTNAME'] = 'localhost:8001'
         os.environ['DJANGO_SETTINGS_MODULE'] = 'labs_engine.app.settings.dev'
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'labs_engine.app.settings.dev')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE',
+                          'labs_engine.app.settings.dev')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

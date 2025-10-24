@@ -187,7 +187,7 @@ tabs:
 
           You may have seen Labs with button links:
 
-          <img alt="screenshot of content item with buttons" src="https://github.com/usegalaxy-au/galaxy-labs-engine/blob/dev/app/labs/static/labs/content/docs/static/tab-item-buttons.png?raw=true" class="shadow img-fluid" />
+          <img alt="screenshot of content item with buttons" src="https://github.com/usegalaxy-au/galaxy-labs-engine/blob/dev/app/labs_engine/labs/static/labs/content/docs/static/tab-item-buttons.png?raw=true" class="shadow img-fluid" />
 
           We can create the above by providing a list of buttons in the content item YAML:
 

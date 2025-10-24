@@ -1,6 +1,6 @@
 # Default spec for an exported lab landing page
 
-# You can test with: /?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-labs-engine/dev/app/labs/content/docs/base.yml
+# You can test with: /?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-labs-engine/dev/app/labs_engine/labs/content/docs/base.yml
 
 site_name: Lab Docs
 lab_name: Galaxy Labs Engine

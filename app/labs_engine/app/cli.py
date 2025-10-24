@@ -27,7 +27,7 @@ def main():
             "available on your PYTHONPATH environment variable."
         ) from exc
 
-    os.environ["DJANGO_SETTINGS_MODULE"] = "app.settings.cli"
+    os.environ["DJANGO_SETTINGS_MODULE"] = "labs_engine.app.settings.cli"
     set_required_env_vars()
     django.setup()
 

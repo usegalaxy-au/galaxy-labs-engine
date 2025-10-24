@@ -27,7 +27,9 @@ NO_WEB_CACHE = os.getenv('NO_WEB_CACHE', False)  # Development only
 logger = logging.getLogger('django.cache')
 
 if settings.CACHE_TABLE_NAME not in connection.introspection.table_names():
-    if not os.getenv('DJANGO_SETTINGS_MODULE') == 'labs_engine.app.settings.test':
+    if not (
+        os.getenv('DJANGO_SETTINGS_MODULE') == 'labs_engine.app.settings.test'
+    ):
         raise EnvironmentError(
             f'Table "{settings.CACHE_TABLE_NAME}" does not exist. Please run'
             ' `python manage.py createcachetable` to create this table.')

@@ -8,7 +8,7 @@ The site is fully documented at
 [https://labs.usegalaxy.org.au](https://labs.usegalaxy.org.au).
 
 Create a lab content directory like
-[this](./app/labs/content/simple/):
+[this](./app/labs_engine/labs/content/simple/):
 
 ```
 .
@@ -29,4 +29,4 @@ And then request your page anywhere like this:
 https://labs.usegalaxy.org.au/?content_root=https://raw.githubusercontent.com/my-username/my-labs-repo/my-lab/base.yml
 
 To get a webpage like
-[this](https://labs.usegalaxy.org.au/?content_root=https://github.com/usegalaxy-au/galaxy-labs-engine/blob/dev/app/labs/static/labs/content/simple/base.yml).
+[this](https://labs.usegalaxy.org.au/?content_root=https://github.com/usegalaxy-au/galaxy-labs-engine/blob/dev/app/labs_engine/labs/static/labs/content/simple/base.yml).
