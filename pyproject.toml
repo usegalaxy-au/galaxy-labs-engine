@@ -8,7 +8,8 @@ dynamic = ["version", "dependencies"]
 requires-python = ">=3.10"
 
 [tool.setuptools]
-packages = {find = {where = ["app"]}}
+packages = {find = {where = ["app"], include = ["labs_engine*"]}}
+include-package-data = true
 
 [tool.setuptools.package-dir]
 "" = "app"
