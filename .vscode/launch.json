@@ -62,7 +62,7 @@
           "type": "debugpy",
           "purpose": ["debug-test"],
           "request": "launch",
-          "program": "${workspaceFolder}/app/app/cli.py",
+          "program": "${workspaceFolder}/app/labs_engine/app/cli.py",
           "cwd": "/home/cameron/dev/galaxy/galaxy_codex/communities/genome/lab",
           "env": {
             "GITHUB_API_TOKEN": "",

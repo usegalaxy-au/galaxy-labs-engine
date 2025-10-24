@@ -58,20 +58,20 @@ EXAMPLE_LABS = {
     'DOCS': {
         'RAW_URL': (
             f'https://raw.githubusercontent.com/{LABS_ENGINE_GITHUB_REPO}/refs'
-            '/heads/main/app/labs/static/labs/content/docs/base.yml'),
+            '/heads/main/app/labs_engine/labs/static/labs/content/docs/base.yml'),
         'WEB_DIR_URL': (
-            f'{LABS_ENGINE_GITHUB_URL}/tree/dev/app/labs/static/labs/content'
+            f'{LABS_ENGINE_GITHUB_URL}/tree/dev/app/labs_engine/labs/static/labs/content'
             '/docs'),
         'WEB_DIR_ROOT': (
-            f'{LABS_ENGINE_GITHUB_URL}/blob/dev/app/labs/static/labs/content'
+            f'{LABS_ENGINE_GITHUB_URL}/blob/dev/app/labs_engine/labs/static/labs/content'
             '/docs'),
     },
     'SIMPLE': {
         'RAW_URL': (
             f'https://raw.githubusercontent.com/{LABS_ENGINE_GITHUB_REPO}'
-            '/refs/heads/main/app/labs/static/labs/content/simple/base.yml'),
+            '/refs/heads/main/app/labs_engine/labs/static/labs/content/simple/base.yml'),
         'WEB_DIR_URL': (
-            f'{LABS_ENGINE_GITHUB_URL}/blob/dev/app/labs/static/labs/content'
+            f'{LABS_ENGINE_GITHUB_URL}/blob/dev/app/labs_engine/labs/static/labs/content'
             '/simple'),
     },
 }

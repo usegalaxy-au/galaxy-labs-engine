@@ -83,8 +83,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./app/app/static:/var/www/static:ro
-      - ./app/app/media:/var/www/media:ro
+      - ./app/labs_engine/app/static:/var/www/static:ro
+      - ./app/labs_engine/app/media:/var/www/media:ro
       - ./server/nginx/ssl:/etc/nginx/ssl:ro
       - /srv/config/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - /var/log/nginx:/var/log/nginx:rw

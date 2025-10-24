@@ -1,5 +1,5 @@
 
-##### This is an example of a simple Galaxy Lab page, you can check out the [code on GitHub](https://github.com/usegalaxy-au/galaxy-labs-engine/tree/dev/app/labs/content/simple)
+##### This is an example of a simple Galaxy Lab page, you can check out the [code on GitHub](https://github.com/usegalaxy-au/galaxy-labs-engine/tree/dev/app/labs_engine/labs/content/simple)
 <br>
 
 Welcome to **Galaxy {{ site_name }}**!

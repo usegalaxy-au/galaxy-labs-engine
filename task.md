@@ -83,4 +83,4 @@ Check .vscode/launch.json to see how unit tests should be run. Run them, and fix
 In a disposable venv:
 
 - Check `pip install --force .` runs ok
-- Check that `labs-engine serve` runs without error - you should run this in /home/cameron/dev/galaxy/galaxy-labs-engine/app/labs/example_labs/simple which contains example content that can be served.
+- Check that `labs-engine serve` runs without error - you should run this in /home/cameron/dev/galaxy/galaxy-labs-engine/app/labs_engine/labs/example_labs/simple which contains example content that can be served.

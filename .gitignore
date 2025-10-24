@@ -1,7 +1,7 @@
 # Project paths
 *.sqlite3
-app/app/static/
-app/app/media/
+app/labs_engine/app/static/
+app/labs_engine/app/media/
 temp/
 
 # Byte-compiled / optimized / DLL files

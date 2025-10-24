@@ -4,7 +4,7 @@ Example with local YAML:
 http://127.0.0.1:8000/?content_root=http://127.0.0.1:8000/static/labs/content/simple/base.yml
 
 Example URL with remote YAML:
-http://127.0.0.1:8000/?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-labs-engine/blob/main/app/labs/content/simple/base.yml
+http://127.0.0.1:8000/?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-labs-engine/blob/main/app/labs_engine/labs/content/simple/base.yml
 
 """
 
