@@ -12,9 +12,9 @@ class TestCase(DjangoTestCase):
     def setUp(self):
         logging.getLogger('django').setLevel(logging.ERROR)
         settings_module = os.environ.get('DJANGO_SETTINGS_MODULE')
-        if settings_module != 'app.settings.test':
+        if settings_module != 'labs_engine.app.settings.test':
             raise RuntimeError(
-                'Do not run tests without using app.settings.test!'
+                'Do not run tests without using labs_engine.app.settings.test!'
                 f' (Using {settings_module})')
 
     def tearDown(self) -> None:

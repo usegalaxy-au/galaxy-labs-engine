@@ -107,12 +107,12 @@ def configure_logging(log_root):
             },
             'error_slack': {
                 'level': 'ERROR',
-                'class': 'app.settings.log.handlers.SlackHandler',
+                'class': 'labs_engine.app.settings.log.handlers.SlackHandler',
                 'filters': ['filter_exc_by_pattern'],
             },
             'debug_slack': {  # For debugging logging only
                 'level': 'DEBUG',
-                'class': 'app.settings.log.handlers.SlackHandler',
+                'class': 'labs_engine.app.settings.log.handlers.SlackHandler',
                 'filters': ['filter_exc_by_pattern'],
             },
             'console': {

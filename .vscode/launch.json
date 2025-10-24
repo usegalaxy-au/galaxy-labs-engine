@@ -13,7 +13,7 @@
           "cwd": "${workspaceFolder}/app",
           "args": ["runserver"],
           "env": {
-            "DJANGO_SETTINGS_MODULE": "app.settings.base",
+            "DJANGO_SETTINGS_MODULE": "labs_engine.app.settings.base",
           },
           "django": true,
           "justMyCode": true
@@ -27,7 +27,7 @@
           "cwd": "${workspaceFolder}/app",
           "args": ["shell"],
           "env": {
-            "DJANGO_SETTINGS_MODULE": "app.settings.base",
+            "DJANGO_SETTINGS_MODULE": "labs_engine.app.settings.base",
           },
           "django": true,
           "justMyCode": true
@@ -41,7 +41,7 @@
           "cwd": "${workspaceFolder}/app",
           "args": ["test"],
           "env": {
-            "DJANGO_SETTINGS_MODULE": "app.settings.test",
+            "DJANGO_SETTINGS_MODULE": "labs_engine.app.settings.test",
           },
           "django": true,
           "justMyCode": true,
