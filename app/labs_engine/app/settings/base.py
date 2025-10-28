@@ -1,0 +1,218 @@
+"""Django settings for Labs Engine project."""
+
+# flake8: noqa
+
+import os
+from pathlib import Path
+
+from labs_engine.utils.paths import ensure_dir
+
+if os.getenv('DJANGO_SETTINGS_MODULE') != "labs_engine.app.settings.cli":
+    from dotenv import load_dotenv
+    load_dotenv('../.env', override=True)
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parents[3]
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+CLI_DEV = False
+NOCACHE = True
+AUTH_USER_MODEL = 'labs.User'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or "secretkey"
+SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
+
+# BUILD_HOSTNAME overrides HOSTNAME when running update_cache command,
+# but PUBLIC_HOSTNAME should still be used for rendering HTML e.g. URLs.
+BUILD_HOSTNAME = os.getenv('BUILD_HOSTNAME')
+PUBLIC_HOSTNAME = os.getenv('HOSTNAME')
+HOSTNAME = BUILD_HOSTNAME or PUBLIC_HOSTNAME
+if not HOSTNAME:
+    raise EnvironmentError('Env variable HOSTNAME not set')
+
+# Site paths and URLs
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+INTERNAL_URL = '/internal/'
+STATIC_ROOT = BASE_DIR / 'app/static'
+MEDIA_ROOT = BASE_DIR / 'app/media'
+LOG_ROOT = ensure_dir(BASE_DIR / 'app/logs')
+TEMP_DIR = ensure_dir(os.getenv('TMP_DIR', '/tmp/labs_engine/'))
+INTERNAL_ROOT = TEMP_DIR / 'internal'
+DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
+    f'http://{HOSTNAME}/static/labs/content/docs/base.yml')
+
+CODEX_REPO = 'galaxyproject/galaxy_codex'
+CODEX_GITHUB_URL = f'https://github.com/{CODEX_REPO}'
+LABS_ENGINE_GITHUB_REPO = 'usegalaxy-au/galaxy-labs-engine'
+LABS_ENGINE_GITHUB_URL = f'https://github.com/{LABS_ENGINE_GITHUB_REPO}'
+EXAMPLE_LABS = {
+    'FULL': {
+        'RAW_URL': (
+            f'https://raw.githubusercontent.com/{CODEX_REPO}/refs/heads/main'
+            '/communities/genome/lab/base.yml'),
+        'WEB_DIR_URL': (
+            f'{CODEX_GITHUB_URL}/blob/main'
+            '/communities/genome/lab'),
+    },
+    'DOCS': {
+        'RAW_URL': (
+            f'https://raw.githubusercontent.com/{LABS_ENGINE_GITHUB_REPO}/refs'
+            '/heads/main/app/labs_engine/labs/static/labs/content/docs/base.yml'),
+        'WEB_DIR_URL': (
+            f'{LABS_ENGINE_GITHUB_URL}/tree/dev/app/labs_engine/labs/static/labs/content'
+            '/docs'),
+        'WEB_DIR_ROOT': (
+            f'{LABS_ENGINE_GITHUB_URL}/blob/dev/app/labs_engine/labs/static/labs/content'
+            '/docs'),
+    },
+    'SIMPLE': {
+        'RAW_URL': (
+            f'https://raw.githubusercontent.com/{LABS_ENGINE_GITHUB_REPO}'
+            '/refs/heads/main/app/labs_engine/labs/static/labs/content/simple/base.yml'),
+        'WEB_DIR_URL': (
+            f'{LABS_ENGINE_GITHUB_URL}/blob/dev/app/labs_engine/labs/static/labs/content'
+            '/simple'),
+    },
+}
+
+# Hostnames
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    HOSTNAME,
+]
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django_light',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'labs_engine.labs',
+    'crispy_forms',
+    "crispy_bootstrap5",
+]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+ROOT_URLCONF = 'labs_engine.app.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'labs_engine.labs.context_processors.settings'
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'labs_engine.app.wsgi.application'
+
+# Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+CACHE_TABLE_NAME = 'django_cache'
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': CACHE_TABLE_NAME,
+    }
+}
+
+# Password validation
+# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation'
+                '.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation'
+                '.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation'
+                '.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation'
+                '.NumericPasswordValidator',
+    },
+]
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ['MAIL_HOSTNAME']
+EMAIL_PORT = os.environ['MAIL_SMTP_PORT']
+EMAIL_HOST_USER = os.getenv('MAIL_SMTP_USERNAME')
+EMAIL_HOST_PASSWORD = os.getenv('MAIL_SMTP_PASSWORD')
+EMAIL_USE_TLS = os.getenv('MAIL_USE_TLS', '').lower() in ('1', 'true')
+EMAIL_FROM_ADDRESS = os.environ['MAIL_FROM_ADDRESS']
+EMAIL_TO_ADDRESS = os.environ['MAIL_TO_ADDRESS']
+SERVER_EMAIL = os.environ['MAIL_FROM_ADDRESS']
+EMAIL_SUBJECT_PREFIX = os.getenv('EMAIL_SUBJECT_PREFIX',
+                                 'Galaxy Labs Engine: ')
+
+RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '')
+
+GITHUB_API_TOKEN = os.getenv('GITHUB_API_TOKEN')
+
+# Cache forever unless requested
+# (automated by GH workflow in galaxyproject/galaxy_codex)
+CACHE_TIMEOUT = None
+
+# Labs that haven't been requested in more than this many days will be deleted
+# from the cache during a cache update.
+CACHE_UPDATE_RETAIN_DAYS = 30
+
+# Bioblend API response cache timeout (24 hours in development)
+BIOBLEND_CACHE_TTL = 60 * 60 * 24
+
+# Internationalization
+# https://docs.djangoproject.com/en/3.2/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Random bits
+LOGOUT_REDIRECT_URL = '/'

@@ -15,7 +15,7 @@ services:
         source: .
         target: /srv/labs-engine
     environment:
-      - DJANGO_SETTINGS_MODULE=app.settings.dev
+      - DJANGO_SETTINGS_MODULE=labs_engine.app.settings.dev
     command: python manage.py runserver 0.0.0.0:8000
     restart: always
     working_dir: /srv/labs-engine/app
@@ -36,7 +36,7 @@ services:
         source: .
         target: /srv/labs-engine
     environment:
-      - DJANGO_SETTINGS_MODULE=app.settings.dev
+      - DJANGO_SETTINGS_MODULE=labs_engine.app.settings.dev
     command: >
       python -m debugpy
         --listen 0.0.0.0:5678
@@ -58,7 +58,7 @@ services:
     volumes:
       - /srv:/srv
     environment:
-      - DJANGO_SETTINGS_MODULE=app.settings.prod
+      - DJANGO_SETTINGS_MODULE=labs_engine.app.settings.prod
     command: >
       gunicorn
         --bind 0.0.0.0:8000
@@ -83,8 +83,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./app/app/static:/var/www/static:ro
-      - ./app/app/media:/var/www/media:ro
+      - ./app/labs_engine/app/static:/var/www/static:ro
+      - ./app/labs_engine/app/media:/var/www/media:ro
       - ./server/nginx/ssl:/etc/nginx/ssl:ro
       - /srv/config/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
       - /var/log/nginx:/var/log/nginx:rw
