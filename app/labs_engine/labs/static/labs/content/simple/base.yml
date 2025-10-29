@@ -1,0 +1,28 @@
+# Default spec for an exported lab landing page
+
+# You can test with: /?content_root=https://raw.githubusercontent.com/usegalaxy-au/galaxy-labs-engine/dev/app/labs_engine/labs/content/simple/base.yml
+
+site_name: Archaeology
+lab_name: Archaeology Lab
+nationality: Egyptian
+galaxy_base_url: https://galaxy-archaeology.org
+subdomain: archaeology
+root_domain: galaxy-archaeology.org
+toc: true
+toc_bar: false
+
+# These files need to be accessible on the internet, relative to the content_root URL!
+# -----------------------------------------------------------------------------
+# Custom content relative to this file URL
+header_logo: static/logo.svg
+custom_css: static/custom.css
+intro_md: templates/intro.md
+footer_md: templates/footer.md
+conclusion_md: templates/conclusion.md
+video_url: https://www.youtube.com/watch?v=VNE0pF6Nqgw
+video_tooltip: Introduction to data analysis on Galaxy Australia
+
+# Data to be rendered into sections/tabs/accordion elements:
+sections:
+  - section_1.yml
+  - section_2.yml
