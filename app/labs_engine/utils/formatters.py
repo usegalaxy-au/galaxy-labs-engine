@@ -4,7 +4,10 @@ from urllib.parse import urlparse, parse_qs
 
 
 class EmbeddedYouTubeUrl:
-    """Class to format youtube video URLs."""
+    """Class to format youtube video URLs.
+
+    https://youtu.be/O0FQa1SViZA?si=Ejk2AqUTIPk2FSMC
+    """
 
     def __init__(self, raw_url):
         """Initialize video URL formatter."""
@@ -13,7 +16,7 @@ class EmbeddedYouTubeUrl:
 
     def __str__(self):
         """Return formatted URL as string."""
-        return self.format() or ''
+        return self.formatted_url or ''
 
     def _format(self):
         """Reformat YouTube video URLs to embed format."""

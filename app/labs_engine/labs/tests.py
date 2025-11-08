@@ -436,19 +436,23 @@ class FormatterTestCase(TestCase):
     def test_youtube_url_formatter(self):
         """Test YouTube URL formatter."""
 
+        WEB_URL = 'https://www.youtube.com/watch/'
+        WEB_URL_SHORT = 'https://youtu.be/'
+        EMBED_URL = 'https://www.youtube.com/embed/'
+
         test_cases = {
-            'https://www.youtube.com/watch?v=dQw4w9WgXcQ':
-                'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&showinfo=0',
-            'https://youtu.be/dQw4w9WgXcQ':
-                'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&showinfo=0',
-            'https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAmp':
-                'https://www.youtube.com/embed/dQw4w9WgXcQ&rel=0&showinfo=0',
-            'https://youtu.be/dQw4w9WgXcQ?t=42':
-                'https://www.youtube.com/embed/dQw4w9WgXcQ&rel=0&showinfo=0',
+            f'{WEB_URL}?v=dQw4w9WgXcQ':
+                f'{EMBED_URL}dQw4w9WgXcQ?rel=0&showinfo=0',
+            f'{WEB_URL_SHORT}dQw4w9WgXcQ':
+                f'{EMBED_URL}dQw4w9WgXcQ?rel=0&showinfo=0',
+            f'{WEB_URL}?v=dQw4w9WgXcQ&ab_channel=RickAmp':
+                f'{EMBED_URL}dQw4w9WgXcQ?rel=0&showinfo=0',
+            f'{WEB_URL_SHORT}dQw4w9WgXcQ?t=42':
+                f'{EMBED_URL}dQw4w9WgXcQ?t=42&rel=0&showinfo=0',
             'https://example.com/video':
                 'https://example.com/video',
             '': '',
-            None: None,
+            None: '',
         }
 
         for raw_url, expected_formatted_url in test_cases.items():
