@@ -2,6 +2,7 @@ import requests_mock
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+from labs_engine.utils.formatters import EmbeddedYouTubeUrl
 from .lab_export import ExportLabContext
 from .audit import (
     extract_tool_links,
@@ -198,7 +199,11 @@ class AuditTestCase(TestCase):
 
     @patch('labs_engine.labs.audit.WebCache')
     @patch('labs_engine.labs.audit.GalaxyInstance')
-    def test_check_tool_exists_with_valid_tool(self, mock_galaxy_instance, mock_cache):
+    def test_check_tool_exists_with_valid_tool(
+        self,
+        mock_galaxy_instance,
+        mock_cache,
+    ):
         """Test check_tool_exists with a valid tool."""
         # Mock cache miss
         mock_cache.get.return_value = None
@@ -400,15 +405,16 @@ class AuditTestCase(TestCase):
 
     def test_add_audit_template_tags(self):
         """Test add_audit_template_tags function."""
-        template_str = '<section>Header content</section><div>Body content</div>'
-        
+        template_str = (
+            '<section>Header content</section><div>Body content</div>')
+
         result = add_audit_template_tags(template_str)
-        
+
         # Check that audit tags are inserted after the first </section>
         self.assertIn('{% if audit %}', result)
         self.assertIn('{% include \'labs/snippets/audit.html\' %}', result)
         self.assertIn('</section>', result)
-        
+
         # Verify the tags are after the first </section>
         section_end = result.find('</section>') + len('</section>')
         audit_start = result.find('{% if audit %}')
@@ -417,8 +423,38 @@ class AuditTestCase(TestCase):
     def test_add_audit_template_tags_no_section(self):
         """Test add_audit_template_tags when no section tag exists."""
         template_str = '<div>Content without section</div>'
-        
+
         result = add_audit_template_tags(template_str)
-        
+
         # Should return unchanged template when no </section> found
         self.assertEqual(result, template_str)
+
+
+class FormatterTestCase(TestCase):
+    """Test data formatters."""
+
+    def test_youtube_url_formatter(self):
+        """Test YouTube URL formatter."""
+
+        test_cases = {
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ':
+                'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&showinfo=0',
+            'https://youtu.be/dQw4w9WgXcQ':
+                'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&showinfo=0',
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAmp':
+                'https://www.youtube.com/embed/dQw4w9WgXcQ&rel=0&showinfo=0',
+            'https://youtu.be/dQw4w9WgXcQ?t=42':
+                'https://www.youtube.com/embed/dQw4w9WgXcQ&rel=0&showinfo=0',
+            'https://example.com/video':
+                'https://example.com/video',
+            '': '',
+            None: None,
+        }
+
+        for raw_url, expected_formatted_url in test_cases.items():
+            formatter = EmbeddedYouTubeUrl(raw_url)
+            self.assertEqual(
+                str(formatter),
+                expected_formatted_url,
+                f"Failed to format URL: {raw_url}"
+            )
