@@ -18,10 +18,10 @@ from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
 from django.conf import settings
 from markdown2 import Markdown
 from pydantic import BaseModel, ValidationError
-from urllib.parse import urlparse, parse_qs
 
 from types import SimpleNamespace
 from labs_engine.utils.exceptions import LabBuildError
+from labs_engine.utils.formatters import EmbeddedYouTubeUrl
 from labs_engine.utils.terminal import ANSI_GREEN, ANSI_RESET, ANSI_YELLOW
 from .lab_schema import LabSchema, LabSectionSchema
 from .cache import WebCache
@@ -77,8 +77,8 @@ class ExportLabContext(dict):
         self._fetch_yaml_context()
         self._fetch_sections()
         self._fetch_contributors()
-        self._format_video_url()
         self['title'] = self['lab_name']
+        self['video_url'] = EmbeddedYouTubeUrl(self['video_url'])
 
     def _clean(self):
         """Format params for rendering."""
@@ -371,31 +371,6 @@ class ExportLabContext(dict):
                 BeautifulSoup(body, 'html.parser')
         except Exception as exc:
             raise LabBuildError(exc, source='HTML')
-
-    def _format_video_url(self):
-        """Reformat YouTube video URLs to embed format."""
-        if (
-            self.get('video_url')
-            and (
-                'youtube.com' in self['video_url']
-                or 'youtu.be' in self['video_url']
-            )
-        ):
-            url = self['video_url']
-            parsed_url = urlparse(url)
-            params = parse_qs(parsed_url.query)
-            if 'v' in params:
-                video_id = params['v'][0]
-                self['video_url'] = (
-                    'https://www.youtube.com/embed/'
-                    f'{video_id}?rel=0&showinfo=0'
-                )
-            elif 'youtu.be/' in url:
-                video_id = url.split('/')[-1]
-                self['video_url'] = (
-                    'https://www.youtube.com/embed/'
-                    f'{video_id}?rel=0&showinfo=0'
-                )
 
     def render_relative_uris(self, template_str):
         """Render relative URIs in HTML content."""
