@@ -18,6 +18,10 @@ class EmbeddedYouTubeUrl:
         """Return formatted URL as string."""
         return self.formatted_url or ''
 
+    def __bool__(self):
+        """Return True if formatted URL exists."""
+        return bool(self.formatted_url)
+
     def _format(self):
         """Reformat YouTube video URLs to embed format."""
         url = self.raw_url
