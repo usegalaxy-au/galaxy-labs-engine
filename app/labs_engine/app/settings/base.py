@@ -34,9 +34,9 @@ if not HOSTNAME:
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 INTERNAL_URL = '/internal/'
-STATIC_ROOT = BASE_DIR / 'app/static'
-MEDIA_ROOT = BASE_DIR / 'app/media'
-LOG_ROOT = ensure_dir(BASE_DIR / 'app/logs')
+STATIC_ROOT = BASE_DIR / 'static'
+MEDIA_ROOT = BASE_DIR / 'media'
+LOG_ROOT = ensure_dir(BASE_DIR / 'logs')
 TEMP_DIR = ensure_dir(os.getenv('TMP_DIR', '/tmp/labs_engine/'))
 INTERNAL_ROOT = TEMP_DIR / 'internal'
 DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
