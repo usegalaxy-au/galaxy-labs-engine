@@ -164,7 +164,7 @@ class LabExportTestCase(TestCase):
         response = self.client.get(TEST_LAB_URL)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'References')
-        self.assertContains(response, 'DOI')
+        self.assertContains(response, 'doi.org')
 
 
 class AuditTestCase(TestCase):
