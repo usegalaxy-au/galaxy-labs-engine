@@ -146,7 +146,7 @@ class LabExportTestCase(TestCase):
         first = context['citations'][0]
         self.assertIn('formatted', first)
         # Check basic formatting pieces
-        self.assertIn('DOI', first['formatted'])
+        self.assertIn('10.1234/example.doi', first['formatted'])
         self.assertTrue(
             any(
                 'Example Galaxy Lab' in c['formatted']
