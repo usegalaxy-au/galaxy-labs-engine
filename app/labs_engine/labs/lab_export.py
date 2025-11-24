@@ -541,7 +541,7 @@ def format_citation(fields):
             doi_link = 'https://doi.org/' + doi
         parts.append(f' <a href="{doi_link}" target="_blank">{doi}</a>.')
     if url and not doi:
-        url_escaped = escape(url_raw)
+        url_escaped = escape(url)
         parts.append(f' <a href="{url_escaped}" target="_blank">Link</a>.')
     formatted = ''.join(parts).strip()
     return formatted or title or authors_str or ''
