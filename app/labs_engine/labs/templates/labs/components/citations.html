@@ -1,0 +1,8 @@
+<section class="my-5">
+  <h4 class="mb-3">Cite this Lab</h4>
+  <ol class="lab-references">
+    {% for citation in citations %}
+    <li>{{ citation.formatted|safe }}</li>
+    {% endfor %}
+  </ol>
+</section>
