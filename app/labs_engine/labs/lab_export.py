@@ -16,6 +16,7 @@ import warnings
 import yaml
 from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
 from django.conf import settings
+from html import escape
 from markdown2 import Markdown
 from pydantic import BaseModel, ValidationError
 
@@ -531,11 +532,16 @@ def format_citation(fields):
         parts.append(f' {journal}.')
     if doi:
         # Prefer DOI link
-        doi_link = doi
+        doi_link = escape(
+            doi
+            if doi.startswith('http')
+            else 'https://doi.org/' + doi
+        )
         if not doi.startswith('http'):  # Assume raw DOI identifier
             doi_link = 'https://doi.org/' + doi
         parts.append(f' <a href="{doi_link}" target="_blank">{doi}</a>.')
     if url and not doi:
-        parts.append(f' <a href="{url}" target="_blank">Link</a>.')
+        url_escaped = escape(url_raw)
+        parts.append(f' <a href="{url_escaped}" target="_blank">Link</a>.')
     formatted = ''.join(parts).strip()
     return formatted or title or authors_str or ''
