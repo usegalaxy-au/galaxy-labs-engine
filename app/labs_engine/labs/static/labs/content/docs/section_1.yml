@@ -302,6 +302,9 @@ tabs:
 
           If you want something more like a conventional TOC, you can also set `toc_bar: true` to include a fixed navigation bar above the sections.
 
+      - title_md: Can I add a citation for my Lab page?
+        description_md: |
+          Yes, just include a `references.bib` file (in bibtex format) in your content directory. The Labs Engine will use this to render a "Cite this Lab" section at the bottom of your Lab page.
 
   - id: another_tab
     title: Another tab
