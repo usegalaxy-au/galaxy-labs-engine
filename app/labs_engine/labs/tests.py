@@ -163,7 +163,7 @@ class LabExportTestCase(TestCase):
                              status_code=r.get('status_code', 200))
         response = self.client.get(TEST_LAB_URL)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'References')
+        self.assertContains(response, 'Cite this Lab')
         self.assertContains(response, 'doi.org')
 
 
