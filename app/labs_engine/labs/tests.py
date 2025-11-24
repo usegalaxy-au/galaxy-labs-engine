@@ -133,6 +133,39 @@ class LabExportTestCase(TestCase):
             ],
         )
 
+    @requests_mock.Mocker()
+    def test_exported_lab_citations(self, mock_request):
+        """Ensure citations are parsed from references.bib and available."""
+        for r in MOCK_REQUESTS:
+            mock_request.get(r['url_pattern'],
+                             text=r['response'],
+                             status_code=r.get('status_code', 200))
+        context = ExportLabContext(TEST_LAB_CONTENT_URL)
+        self.assertIn('citations', context)
+        self.assertGreaterEqual(len(context['citations']), 2)
+        first = context['citations'][0]
+        self.assertIn('formatted', first)
+        # Check basic formatting pieces
+        self.assertIn('10.1234/example.doi', first['formatted'])
+        self.assertTrue(
+            any(
+                'Example Galaxy Lab' in c['formatted']
+                for c in context['citations']
+            )
+        )
+
+    @requests_mock.Mocker()
+    def test_exported_lab_citations_page(self, mock_request):
+        """Request exported page and verify References section rendered."""
+        for r in MOCK_REQUESTS:
+            mock_request.get(r['url_pattern'],
+                             text=r['response'],
+                             status_code=r.get('status_code', 200))
+        response = self.client.get(TEST_LAB_URL)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Cite this Lab')
+        self.assertContains(response, 'doi.org')
+
 
 class AuditTestCase(TestCase):
     """Test audit functionality for tool link checking."""
