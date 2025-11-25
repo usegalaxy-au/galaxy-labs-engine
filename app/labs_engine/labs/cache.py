@@ -23,6 +23,10 @@ CACHE_KEY_IGNORE_GET_PARAMS = (
 )
 NOCACHE = settings.NOCACHE
 NO_WEB_CACHE = os.getenv('NO_WEB_CACHE', False)  # Development only
+IGNORE_ERRORS = (
+    'UNIQUE constraint failed',
+    'NOT NULL constraint failed',
+)
 
 logger = logging.getLogger('django.cache')
 
@@ -99,9 +103,11 @@ class LabCache:
             try:
                 lab.save()
             except IntegrityError as exc:
-                if 'NOT NULL constraint failed' in str(exc):
-                    logger.warning('IntegrityError: ' + str(exc))
-                    return None
+                for phrase in IGNORE_ERRORS:
+                    if phrase in str(exc):
+                        logger.warning(
+                            f'Ignoring error updating CachedLab: {exc}')
+                        return None
                 raise exc
         else:
             logger.debug(f"No CachedLab found for key {cache_key} - {url}")
@@ -114,9 +120,11 @@ class LabCache:
                 )
                 lab.save()
             except IntegrityError as exc:
-                if 'UNIQUE constraint failed' in str(exc):
-                    logger.warning('IntegrityError: ' + str(exc))
-                    return None
+                for phrase in IGNORE_ERRORS:
+                    if phrase in str(exc):
+                        logger.warning(
+                            f'Ignoring error updating CachedLab: {exc}')
+                        return None
                 raise exc
             logger.debug(f"Created new CachedLab for key {cache_key} - {url}")
 
