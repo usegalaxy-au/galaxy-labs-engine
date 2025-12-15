@@ -73,20 +73,30 @@ class Command(BaseCommand):
                     if '?' in lab.url
                     else lab.url + '?cache=false'
                 )
-                request = factory.get(url)
-                view_func, args, kwargs = resolve(request.path_info)
-                response = view_func(request, *args, **kwargs)
-                if response.status_code == 200:
-                    length = len(response.content)
+                try:
+                    request = factory.get(url)
+                    view_func, args, kwargs = resolve(request.path_info)
+                    response = view_func(request, *args, **kwargs)
+                    if response.status_code == 200:
+                        length = len(response.content)
+                        self.stdout.write(
+                            self.style.SUCCESS(
+                                f'Lab updated for URL [{length} bytes]: '),
+                            ending='')
+                    else:
+                        self.stdout.write(
+                            self.style.ERROR('HTTP error code updating Lab: '),
+                            ending='')
+                    self.stdout.write(lab.url)
+                except Exception as e:
                     self.stdout.write(
-                        self.style.SUCCESS(
-                            f'Lab updated for URL [{length} bytes]: '),
-                        ending='')
-                else:
+                        self.style.WARNING(
+                            f'Error updating cached lab: {lab.url}'
+                        )
+                    )
                     self.stdout.write(
-                        self.style.ERROR('HTTP error code updating Lab: '),
-                        ending='')
-                self.stdout.write(lab.url)
+                        self.style.WARNING(f'  Error details: {str(e)}')
+                    )
             else:
                 self.stdout.write(
                     self.style.WARNING('Deleting old cached lab '),
