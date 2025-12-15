@@ -16,12 +16,13 @@ import warnings
 import yaml
 from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
 from django.conf import settings
+from html import escape
 from markdown2 import Markdown
 from pydantic import BaseModel, ValidationError
-from urllib.parse import urlparse, parse_qs
 
 from types import SimpleNamespace
 from labs_engine.utils.exceptions import LabBuildError
+from labs_engine.utils.formatters import EmbeddedYouTubeUrl
 from labs_engine.utils.terminal import ANSI_GREEN, ANSI_RESET, ANSI_YELLOW
 from .lab_schema import LabSchema, LabSectionSchema
 from .cache import WebCache
@@ -29,6 +30,7 @@ from .cache import WebCache
 logger = logging.getLogger('django')
 
 ACCEPTED_IMG_EXTENSIONS = ('png', 'jpg', 'jpeg', 'svg', 'webp')
+CITATIONS_FILE = 'references.bib'
 CONTRIBUTORS_FILE = 'CONTRIBUTORS'
 GITHUB_USERNAME_URL = "https://api.github.com/users/{username}"
 CONTENT_TYPES = SimpleNamespace(
@@ -77,8 +79,9 @@ class ExportLabContext(dict):
         self._fetch_yaml_context()
         self._fetch_sections()
         self._fetch_contributors()
-        self._format_video_url()
+        self._fetch_citations()
         self['title'] = self['lab_name']
+        self['video_url'] = EmbeddedYouTubeUrl(self['video_url'])
 
     def _clean(self):
         """Format params for rendering."""
@@ -317,6 +320,26 @@ class ExportLabContext(dict):
         else:
             self['contributors'] = []
 
+    def _fetch_citations(self):
+        """Fetch and parse BibTeX citations into context."""
+        url = self.parent_url + CITATIONS_FILE
+        res = self._get(url, ignore_404=True, expected_type=CONTENT_TYPES.TEXT)
+        if not res:
+            self['citations'] = []
+            return
+        bib_content = res.content.decode('utf-8')
+        entries = parse_bibtex_entries(bib_content)
+        self['citations'] = [
+            {
+                'key': e['key'],
+                'entry_type': e['entry_type'],
+                'fields': e['fields'],
+                'raw': e['raw'],
+                'formatted': format_citation(e['fields'])
+            }
+            for e in entries
+        ]
+
     def _fetch_snippets(self):
         """Fetch HTML snippets and add to context.snippets."""
         for name in self.FETCH_SNIPPETS:
@@ -371,31 +394,6 @@ class ExportLabContext(dict):
                 BeautifulSoup(body, 'html.parser')
         except Exception as exc:
             raise LabBuildError(exc, source='HTML')
-
-    def _format_video_url(self):
-        """Reformat YouTube video URLs to embed format."""
-        if (
-            self.get('video_url')
-            and (
-                'youtube.com' in self['video_url']
-                or 'youtu.be' in self['video_url']
-            )
-        ):
-            url = self['video_url']
-            parsed_url = urlparse(url)
-            params = parse_qs(parsed_url.query)
-            if 'v' in params:
-                video_id = params['v'][0]
-                self['video_url'] = (
-                    'https://www.youtube.com/embed/'
-                    f'{video_id}?rel=0&showinfo=0'
-                )
-            elif 'youtu.be/' in url:
-                video_id = url.split('/')[-1]
-                self['video_url'] = (
-                    'https://www.youtube.com/embed/'
-                    f'{video_id}?rel=0&showinfo=0'
-                )
 
     def render_relative_uris(self, template_str):
         """Render relative URIs in HTML content."""
@@ -459,3 +457,91 @@ def fetch_names(usernames):
                else 9999)
 
     return users
+
+
+def parse_bibtex_entries(text):
+    """Very small BibTeX parser for simple entries."""
+    entries = []
+    # Split on '@' but keep it for reconstruction
+    chunks = [c for c in text.split('@') if c.strip()]
+    for chunk in chunks:
+        raw_entry = '@' + chunk.strip()
+        header_match = re.match(r'(\w+)\s*\{\s*([^,]+)\s*,', chunk, re.DOTALL)
+        if not header_match:
+            continue
+        entry_type, key = header_match.groups()
+        body = chunk[header_match.end():]
+        # Remove enclosing final brace if present
+        body = body.rsplit('}', 1)[0]
+        fields = {}
+        # Regex to capture field lines like: field = {value} or field = "value"
+        field_pattern = re.compile(
+            r'(\w+)\s*=\s*(\{[^}]*\}|"[^"]*"|[^,]+)',
+            re.MULTILINE)
+        for m in field_pattern.finditer(body):
+            fkey = m.group(1).strip().lower()
+            fval = m.group(2).strip().strip(',').strip()
+            if (
+                fval.startswith('{')
+                and fval.endswith('}')
+            ) or (
+                fval.startswith('"')
+                and fval.endswith('"')
+            ):
+                fval = fval[1:-1].strip()
+            fields[fkey] = fval
+        entries.append({
+            'entry_type': entry_type.lower(),
+            'key': key.strip(),
+            'fields': fields,
+            'raw': raw_entry,
+        })
+    return entries
+
+
+def format_citation(fields):
+    """Build a simple HTML string for a citation from parsed fields."""
+    authors_raw = fields.get('author', '')
+    authors = []
+    if authors_raw:
+        for part in authors_raw.split(' and '):
+            part = part.strip()
+            if ',' in part:
+                # Already Last, First
+                authors.append(part)
+            else:
+                bits = part.split()
+                if len(bits) > 1:
+                    authors.append(bits[-1] + ', ' + ' '.join(bits[:-1]))
+                else:
+                    authors.append(part)
+    authors_str = '; '.join(authors)
+    year = fields.get('year', '')
+    title = fields.get('title', '')
+    journal = fields.get('journal') or fields.get('booktitle') or ''
+    doi = fields.get('doi', '')
+    url = fields.get('url', '')
+    parts = []
+    if authors_str:
+        parts.append(authors_str)
+    if year:
+        parts.append(f' ({year}).')
+    if title:
+        parts.append(f' <i>{title}</i>.')
+    if journal:
+        parts.append(f' {journal}.')
+    if doi:
+        # Prefer DOI link
+        doi_link = escape(
+            doi
+            if doi.startswith('http')
+            else 'https://doi.org/' + doi
+        )
+        if not doi.startswith('http'):  # Assume raw DOI identifier
+            doi_link = 'https://doi.org/' + doi
+        parts.append(f' <a href="{doi_link}" target="_blank">{doi}</a>.')
+    if url and not doi:
+        url_escaped = escape(url)
+        parts.append(f' <a href="{url_escaped}" target="_blank">Link</a>.')
+    formatted = ''.join(parts).strip()
+    return formatted or title or authors_str or ''
