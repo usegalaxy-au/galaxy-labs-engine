@@ -1,5 +1,6 @@
 """Render a new lab from form data."""
 
+import logging
 import random
 import shutil
 import string
@@ -9,6 +10,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.text import slugify
 from pathlib import Path
+
+logger = logging.getLogger('django')
 
 HOURS_1 = 60 * 60
 ALPHANUMERIC = string.ascii_letters + string.digits
@@ -46,6 +49,7 @@ def lab(form_data):
     with zipfile.ZipFile(zipfile_path, 'w') as zf:
         for path in output_dir.rglob('*'):
             zf.write(path, root_dir / path.relative_to(output_dir))
+    logger.debug('Created lab zipfile: %s' % zipfile_path)
     return Path(str(zipfile_path).replace(str(settings.INTERNAL_ROOT), ''))
 
 

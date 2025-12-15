@@ -38,7 +38,7 @@ STATIC_ROOT = BASE_DIR / 'static'
 MEDIA_ROOT = BASE_DIR / 'media'
 LOG_ROOT = ensure_dir(BASE_DIR / 'logs')
 TEMP_DIR = ensure_dir(os.getenv('TMP_DIR', '/tmp/labs_engine/'))
-INTERNAL_ROOT = TEMP_DIR / 'internal'
+INTERNAL_ROOT = ensure_dir(TEMP_DIR / 'internal')
 DEFAULT_EXPORTED_LAB_CONTENT_ROOT = (
     f'http://{HOSTNAME}/static/labs/content/docs/base.yml')
 
