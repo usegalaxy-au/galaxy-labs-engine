@@ -100,7 +100,10 @@ def create_logo(data, output_dir):
     """Copy the uploaded logo to the output directory."""
     logo_file = data.get(
         'logo'
-    ) or settings.BASE_DIR / 'labs/example_labs/docs/static/flask.svg'
+    ) or (
+        settings.BASE_DIR
+        / 'labs_engine/labs/example_labs/docs/static/flask.svg'
+    )
     logo_dest_path = output_dir / 'static' / logo_file.name
     logo_dest_path.parent.mkdir(parents=True, exist_ok=True)
     with logo_file.open('rb') as src, logo_dest_path.open('wb') as dest:
