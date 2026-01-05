@@ -4,7 +4,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 
 from .auth import authenticated
-from .nginx_logs import import_nginx_log
+from .nginx_logs import LOG_TYPE, import_nginx_log
 
 
 @csrf_exempt
@@ -21,9 +21,15 @@ def upload_logs(request):
         )
 
     uploaded_file = request.FILES['file']
+    log_type = LOG_TYPE.from_string(request.POST.get('log_type'))
+    if log_type is None:
+        return JsonResponse(
+            {'error': 'Invalid or missing log_type parameter'},
+            status=400,
+        )
 
     try:
-        result = import_nginx_log(uploaded_file)
+        result = import_nginx_log(uploaded_file, log_type)
         return JsonResponse(result)
     except Exception as e:
         return JsonResponse(
