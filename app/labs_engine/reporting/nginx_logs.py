@@ -3,6 +3,11 @@
 from .models import LabVisit, ToolUsage
 
 WELCOME_LOG_STRING = '/static/welcome'
+IGNORE_LOG_LINES = (
+    'www.usegalaxy',
+    'galaxy.usegalaxy',
+    'AhrefsBot',
+)
 
 
 class LOG_TYPE:
@@ -28,19 +33,20 @@ class LOG_TYPE:
         return None
 
 
-def parse_nginx_log(log_file, log_type):
+def import_nginx_log(log_file, log_type):
     if log_type == LOG_TYPE.WELCOME:
         return parse_welcome_log(log_file)
     elif log_type == LOG_TYPE.TOOL:
         return parse_tool_log(log_file)
 
 
-def parse_welcome_log(log_file):
+def parse_welcome_log(log_file, batch_size=1000):
     """
     Import and process an Nginx log file.
 
     Args:
         log_file: Django UploadedFile instance containing the log data
+        batch_size: Number of records to create in each bulk insert
 
     Returns:
         dict: Processing results containing statistics and status
@@ -48,35 +54,37 @@ def parse_welcome_log(log_file):
     lines_processed = 0
     visits_created = 0
     errors = []
+    visits_batch = []
 
     for line in log_file:
-        # Decode bytes to string if necessary
         if isinstance(line, bytes):
             line = line.decode('utf-8')
 
         lines_processed += 1
 
-        # Skip empty lines
-        if not line.strip():
-            continue
-
-        if WELCOME_LOG_STRING not in line:
+        if WELCOME_LOG_STRING not in line or _ignore_line(line):
             continue
 
         try:
-            # Parse the log line and create a LabVisit instance
             visit = LabVisit.from_nginx_log(line)
 
-            # Save if parsing was successful
             if visit:
-                visit.save()
-                visits_created += 1
+                visits_batch.append(visit)
+
+                if len(visits_batch) >= batch_size:
+                    LabVisit.objects.bulk_create(visits_batch)
+                    visits_created += len(visits_batch)
+                    visits_batch = []
 
         except Exception as e:
             errors.append({
                 'line': lines_processed,
                 'error': str(e),
             })
+
+    if visits_batch:
+        LabVisit.objects.bulk_create(visits_batch)
+        visits_created += len(visits_batch)
 
     return {
         'status': 'success' if not errors else 'partial',
@@ -91,12 +99,13 @@ def parse_welcome_log(log_file):
     }
 
 
-def parse_tool_log(log_file):
+def parse_tool_log(log_file, batch_size=1000):
     """
     Import and process an Nginx tool usage log file.
 
     Args:
         log_file: Django UploadedFile instance containing the log data
+        batch_size: Number of records to create in each bulk insert
 
     Returns:
         dict: Processing results containing statistics and status
@@ -104,36 +113,37 @@ def parse_tool_log(log_file):
     lines_processed = 0
     tool_usages_created = 0
     errors = []
+    tool_usages_batch = []
 
     for line in log_file:
-        # Decode bytes to string if necessary
         if isinstance(line, bytes):
             line = line.decode('utf-8')
 
         lines_processed += 1
 
-        # Skip empty lines
-        if not line.strip():
-            continue
-
-        # Skip lines that don't contain tool_id in the referer
-        if 'tool_id=' not in line:
+        if _ignore_line(line) or 'tool_id=' not in line:
             continue
 
         try:
-            # Parse the log line and create a ToolUsage instance
             tool_usage = ToolUsage.from_nginx_log(line)
 
-            # Save if parsing was successful
             if tool_usage:
-                tool_usage.save()
-                tool_usages_created += 1
+                tool_usages_batch.append(tool_usage)
+
+                if len(tool_usages_batch) >= batch_size:
+                    ToolUsage.objects.bulk_create(tool_usages_batch)
+                    tool_usages_created += len(tool_usages_batch)
+                    tool_usages_batch = []
 
         except Exception as e:
             errors.append({
                 'line': lines_processed,
                 'error': str(e),
             })
+
+    if tool_usages_batch:
+        ToolUsage.objects.bulk_create(tool_usages_batch)
+        tool_usages_created += len(tool_usages_batch)
 
     return {
         'status': 'success' if not errors else 'partial',
@@ -148,15 +158,11 @@ def parse_tool_log(log_file):
     }
 
 
-def import_nginx_log(log_file, log_type):
-    """
-    Import and process an Nginx log file based on type.
-
-    Args:
-        log_file: Django UploadedFile instance containing the log data
-        log_type: Type of log file (from LOG_TYPE constants)
-
-    Returns:
-        dict: Processing results containing statistics and status
-    """
-    return parse_nginx_log(log_file, log_type)
+def _ignore_line(line):
+    """Determine if a log line should be ignored."""
+    if not line.strip():
+        return True
+    for ignore_str in IGNORE_LOG_LINES:
+        if ignore_str in line:
+            return True
+    return False
