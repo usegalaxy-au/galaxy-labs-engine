@@ -19,8 +19,7 @@ class APITokenAdmin(admin.ModelAdmin):
         ('Token Information', {
             'fields': ('token', 'created', 'last_used'),
             'description': (
-                'The token will be automatically generated when you save. '
-                'Make sure to copy it - it cannot be retrieved later.'
+                'The token will be automatically generated when you save.'
             ),
         }),
     )
