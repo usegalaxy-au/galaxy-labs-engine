@@ -94,6 +94,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'labs_engine.labs',
+    'labs_engine.reporting',
     'crispy_forms',
     "crispy_bootstrap5",
 ]
