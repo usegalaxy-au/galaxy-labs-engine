@@ -1,334 +1,407 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaxy Labs - Usage Dashboard</title>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'labs/header.html' %}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-        }
+{% block head %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+  .lab-chart {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 20px;
+  }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 30px;
-        }
+  .lab-chart-title {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 0.5rem;
+  }
 
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
+  .date-range-buttons .btn {
+    padding: 8px 12px;
+  }
 
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
+  .custom-date-range {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
 
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            align-items: flex-end;
-        }
+  .custom-date-range input {
+    width: 150px;
+  }
+</style>
+{% endblock %}
 
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
+{% block content %}
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+      <h1 class="mb-2">Galaxy Labs Usage Dashboard</h1>
+      <div class="text-muted mb-4" style="font-size: 14px; line-height: 1.6;">
+        View lab visits and tool usage metrics over time
+        {% if visit_range.min_date and visit_range.max_date %}
+        <br>
+        <strong>Lab Visits:</strong>
+        Data from {{ visit_range.min_date|date:"d/m/Y" }}
+        - {{ visit_range.max_date|date:"d/m/Y" }}
+        {% endif %}
+        {% if tool_range.min_date and tool_range.max_date %}
+        <br>
+        <strong>Tool Usage:</strong>
+        Data from {{ tool_range.min_date|date:"d/m/Y" }}
+        - {{ tool_range.max_date|date:"d/m/Y" }}
+        {% endif %}
+      </div>
 
-        label {
-            font-weight: 500;
-            color: #555;
-            font-size: 13px;
-        }
-
-        select, button, input[type="date"] {
-            padding: 8px 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        select, input[type="date"] {
-            background: white;
-        }
-
-        select:hover, input[type="date"]:hover {
-            border-color: #999;
-        }
-
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-        }
-
-        button:hover {
-            background: #0056b3;
-        }
-
-        button.active {
-            background: #0056b3;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .date-range-buttons {
-            display: flex;
-            gap: 5px;
-        }
-
-        .date-range-buttons button {
-            padding: 8px 12px;
-        }
-
-        .custom-date-range {
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-
-        .custom-date-range input {
-            width: 150px;
-        }
-
-        #lab-filter {
-            min-width: 200px;
-        }
-
-        #chart {
-            width: 100%;
-            height: 600px;
-            margin-top: 20px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-size: 16px;
-        }
-
-        .error {
-            background: #fee;
-            border: 1px solid #fcc;
-            color: #c33;
-            padding: 15px;
-            border-radius: 4px;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Galaxy Labs Usage Dashboard</h1>
-        <div class="subtitle" id="subtitle">
-            View lab visits and tool usage metrics over time
-            {% if visit_range.min_date and visit_range.max_date %}
-            <br><strong>Lab Visits:</strong> Data from {{ visit_range.min_date|date:"d/m/Y" }} to {{ visit_range.max_date|date:"d/m/Y" }}
-            {% endif %}
-            {% if tool_range.min_date and tool_range.max_date %}
-            <br><strong>Tool Usage:</strong> Data from {{ tool_range.min_date|date:"d/m/Y" }} to {{ tool_range.max_date|date:"d/m/Y" }}
-            {% endif %}
+      <div class="d-flex gap-3 mb-4 flex-wrap align-items-end">
+        <div>
+          <label for="metric-select" class="form-label">Metric:</label>
+          <select id="metric-select" class="form-select">
+            <option value="visits">Lab Visits</option>
+            <option value="tools">Tool Usage</option>
+          </select>
         </div>
 
-        <div class="controls">
-            <div class="control-group">
-                <label for="metric-select">Metric:</label>
-                <select id="metric-select">
-                    <option value="visits">Lab Visits</option>
-                    <option value="tools">Tool Usage</option>
-                </select>
-            </div>
-
-            <div class="control-group" id="lab-filter-group" style="display: none;">
-                <label for="lab-filter">Lab:</label>
-                <select id="lab-filter">
-                    <option value="all">All Labs</option>
-                    {% for lab in labs %}
-                    <option value="{{ lab }}">{{ lab }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label>Preset Range:</label>
-                <div class="date-range-buttons">
-                    <button data-days="90" class="date-btn active">3 Mo</button>
-                    <button data-days="180" class="date-btn">6 Mo</button>
-                    <button data-days="365" class="date-btn">12 Mo</button>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label>Custom Range:</label>
-                <div class="custom-date-range">
-                    <input type="date" id="start-date" />
-                    <input type="date" id="end-date" />
-                    <button id="apply-custom-range">Apply</button>
-                </div>
-            </div>
+        <div id="lab-filter-group" style="display: none">
+          <label for="lab-filter" class="form-label">Lab:</label>
+          <select id="lab-filter" class="form-select" style="min-width: 200px">
+            <option value="all">All Labs</option>
+            {% for lab in labs %}
+            <option value="{{ lab }}">{{ lab }}</option>
+            {% endfor %}
+          </select>
         </div>
 
-        <div id="chart"></div>
-        <div id="loading" class="loading" style="display: none;">
-            Loading data...
+        <div id="tool-filter-group" style="display: none">
+          <label for="tool-filter" class="form-label">Tool:</label>
+          <select id="tool-filter" class="form-select" style="min-width: 200px">
+            <option value="all">All</option>
+          </select>
         </div>
-        <div id="error" class="error" style="display: none;"></div>
+      </div>
+
+      <p class="mb-2">Date range:</p>
+      <div class="d-flex gap-3 mb-4 flex-wrap align-items-end">
+        <div class="date-range-buttons btn-group" role="group">
+          <button type="button" data-days="90" class="btn btn-primary date-btn active">3 Mo</button>
+          <button type="button" data-days="180" class="btn btn-outline-primary date-btn">6 Mo</button>
+          <button type="button" data-days="365" class="btn btn-outline-primary date-btn">12 Mo</button>
+        </div>
+
+        <div class="custom-date-range">
+          <input type="date" id="start-date" class="form-control" />
+          <input type="date" id="end-date" class="form-control" />
+          <button id="apply-custom-range" class="btn btn-primary">Apply</button>
+        </div>
+      </div>
+
+      <div id="chart" class="mt-4"></div>
+
+      <div id="loading" class="text-center py-5 text-muted" style="display: none">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3">Loading data...</p>
+      </div>
+
+      <div id="nodata" class="lead my-5" style="display: none">
+        <p class="mb-3">
+          No records to display. Please upload some data to see usage metrics:
+        </p>
+        <p>
+          <small>
+            To create an API key, please visit
+            <a href="{{ request.scheme }}://{{ request.get_host }}/admin">the admin panel</a>
+          </small>
+        </p>
+        <pre class="bg-light p-3 rounded"><code>curl -X POST \
+    -F file=@/path/to/your/nginx/logfile.log \
+    -F "log_type=[nginx_welcome / nginx_tool]" \
+    -H "x-api-key: YOUR_API_KEY" \
+    {{ request.scheme }}://{{ request.get_host }}/api/labs/upload-logs</code></pre>
+      </div>
+
+      <div id="error" class="alert alert-danger" style="display: none"></div>
     </div>
+  </div>
+</div>
+{% endblock %}
 
-    <script>
-        let currentDays = 90;
-        let currentMetric = 'visits';
-        let currentLab = 'all';
-        let customDateRange = null;
+{% block script %}
+<script>
+  let noData = true;
+  let currentDays = 90;
+  let currentMetric = "visits";
+  let currentLab = "all";
+  let currentTool = "all";
+  let customDateRange = null;
 
-        async function loadData() {
-            const loadingEl = document.getElementById('loading');
-            const errorEl = document.getElementById('error');
-            const chartEl = document.getElementById('chart');
+  async function loadData() {
+    const loadingEl = document.getElementById("loading");
+    const noDataEl = document.getElementById("nodata");
+    const errorEl = document.getElementById("error");
+    const chartEl = document.getElementById("chart");
 
-            loadingEl.style.display = 'block';
-            errorEl.style.display = 'none';
-            chartEl.innerHTML = '';
+    loadingEl.style.display = "block";
+    errorEl.style.display = "none";
+    chartEl.innerHTML = "";
 
-            try {
-                let url = `/reporting/api/usage?metric=${currentMetric}`;
+    try {
+      let url = `/reporting/api/usage?metric=${currentMetric}`;
 
-                if (customDateRange) {
-                    url += `&start_date=${customDateRange.start}&end_date=${customDateRange.end}`;
-                } else {
-                    url += `&days=${currentDays}`;
-                }
+      if (customDateRange) {
+        url += `&start_date=${customDateRange.start}&end_date=${customDateRange.end}`;
+      } else {
+        url += `&days=${currentDays}`;
+      }
 
-                if (currentMetric === 'tools') {
-                    url += `&lab=${currentLab}`;
-                }
+      if (currentMetric === "tools") {
+        url += `&lab=${currentLab}`;
+        url += `&tool=${currentTool}`;
+      }
 
-                const response = await fetch(url);
+      const response = await fetch(url);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-                const data = await response.json();
+      const data = await response.json();
 
-                const layout = {
-                    title: {
-                        text: currentMetric === 'visits' ?
-                            'Lab Visits Over Time' :
-                            `Tool Usage Over Time${currentLab !== 'all' ? ' - ' + currentLab : ''}`,
-                        font: { size: 20 }
-                    },
-                    xaxis: {
-                        title: 'Date',
-                        type: 'date'
-                    },
-                    yaxis: {
-                        title: currentMetric === 'visits' ? 'Number of Visits' : 'Number of Tool Uses',
-                        rangemode: 'tozero'
-                    },
-                    hovermode: 'closest',
-                    showlegend: true,
-                    legend: {
-                        orientation: 'v',
-                        yanchor: 'top',
-                        y: 1,
-                        xanchor: 'left',
-                        x: 1.02
-                    },
-                    margin: {
-                        l: 60,
-                        r: 200,
-                        t: 80,
-                        b: 80
-                    }
-                };
+      if (currentMetric === "visits") {
+        // Create separate chart for each lab
+        noDataEl.style.display = data.traces.length > 0 ? "none" : "block";
 
-                const config = {
-                    responsive: true,
-                    displayModeBar: true,
-                    modeBarButtonsToRemove: ['lasso2d', 'select2d'],
-                    displaylogo: false
-                };
+        // Calculate the maximum y value across all traces
+        let maxY = 0;
+        data.traces.forEach((trace) => {
+          const traceMax = Math.max(...trace.y);
+          if (traceMax > maxY) {
+            maxY = traceMax;
+          }
+        });
 
-                Plotly.newPlot('chart', data.traces, layout, config);
-                loadingEl.style.display = 'none';
+        data.traces.forEach((trace, index) => {
+          const chartDiv = document.createElement("div");
+          chartDiv.className = "lab-chart";
+          chartDiv.id = `lab-chart-${index}`;
 
-            } catch (error) {
-                console.error('Error loading data:', error);
-                errorEl.textContent = `Failed to load data: ${error.message}`;
-                errorEl.style.display = 'block';
-                loadingEl.style.display = 'none';
-            }
+          const titleDiv = document.createElement("div");
+          const titleText =
+            trace.name.charAt(0).toUpperCase() + trace.name.substring(1);
+          titleDiv.className = "lab-chart-title fw-bold text-secondary";
+          titleDiv.textContent = titleText;
+
+          chartEl.appendChild(titleDiv);
+          chartEl.appendChild(chartDiv);
+
+          const layout = {
+            xaxis: {
+              type: "date",
+              showticklabels: false,
+            },
+            yaxis: {
+              range: [0, maxY],
+              fixedrange: true,
+            },
+            hovermode: "closest",
+            showlegend: false,
+            margin: {
+              l: 50,
+              r: 20,
+              t: 10,
+              b: 20,
+            },
+          };
+
+          const config = {
+            responsive: true,
+            displayModeBar: false,
+            displaylogo: false,
+          };
+
+          // Change to area chart
+          const areaTrace = {
+            ...trace,
+            fill: "tozeroy",
+            mode: "lines",
+            line: {
+              width: 1,
+            },
+          };
+
+          Plotly.newPlot(chartDiv.id, [areaTrace], layout, config);
+        });
+
+        // Show x-axis labels on the last chart
+        if (data.traces.length > 0) {
+          const lastChartId = `lab-chart-${data.traces.length - 1}`;
+          Plotly.relayout(lastChartId, {
+            "xaxis.showticklabels": true,
+            "margin.b": 40,
+          });
         }
+      } else {
+        // Tool usage - single chart
+        if (data.traces[0].x.length > 0) {
+          noDataEl.style.display = "none";
+          chartEl.style.display = "block";
+        } else {
+          noDataEl.style.display = "block";
+          loadingEl.style.display = "none";
+          chartEl.style.display = "none";
+          return;
+        }
+        const layout = {
+          title: {
+            text: `Tool runs over time${
+              currentLab !== "all" ? " - " + currentLab : ""
+            }`,
+            font: { size: 20 },
+          },
+          xaxis: {
+            title: "",
+            type: "date",
+          },
+          yaxis: {
+            title: "Number of jobs",
+            rangemode: "tozero",
+          },
+          hovermode: "closest",
+          showlegend: false,
+          margin: {
+            l: 60,
+            r: 80,
+            t: 80,
+            b: 80,
+          },
+        };
 
-        // Event listeners
-        document.getElementById('metric-select').addEventListener('change', (e) => {
-            currentMetric = e.target.value;
-            const labFilterGroup = document.getElementById('lab-filter-group');
-            if (currentMetric === 'tools') {
-                labFilterGroup.style.display = 'flex';
-            } else {
-                labFilterGroup.style.display = 'none';
-            }
-            loadData();
+        const config = {
+          responsive: true,
+          displayModeBar: true,
+          modeBarButtonsToRemove: ["lasso2d", "select2d"],
+          displaylogo: false,
+        };
+
+        // Create a single chart div for tools
+        const chartDiv = document.createElement("div");
+        chartDiv.id = "tool-chart";
+        chartDiv.style.height = "600px";
+        chartEl.appendChild(chartDiv);
+
+        Plotly.newPlot("tool-chart", data.traces, layout, config);
+      }
+
+      loadingEl.style.display = "none";
+    } catch (error) {
+      console.error("Error loading data:", error);
+      errorEl.textContent = `Failed to load data: ${error.message}`;
+      errorEl.style.display = "block";
+      loadingEl.style.display = "none";
+    }
+  }
+
+  async function loadToolsList() {
+    try {
+      let url = `/reporting/api/tools?lab=${currentLab}`;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const toolSelect = document.getElementById("tool-filter");
+
+      // Clear existing options except "All"
+      toolSelect.innerHTML = '<option value="all">All</option>';
+
+      // Add tools ordered by frequency
+      data.tools.forEach((tool) => {
+        const option = document.createElement("option");
+        option.value = tool.tool_id;
+        option.textContent = `${tool.display_name} (${tool.count})`;
+        toolSelect.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Error loading tools list:", error);
+    }
+  }
+
+  // Event listeners
+  document
+    .getElementById("metric-select")
+    .addEventListener("change", (e) => {
+      currentMetric = e.target.value;
+      const labFilterGroup = document.getElementById("lab-filter-group");
+      const toolFilterGroup = document.getElementById("tool-filter-group");
+
+      if (currentMetric === "tools") {
+        labFilterGroup.style.display = "block";
+        toolFilterGroup.style.display = "block";
+        loadToolsList();
+      } else {
+        labFilterGroup.style.display = "none";
+        toolFilterGroup.style.display = "none";
+      }
+      loadData();
+    });
+
+  document.getElementById("lab-filter").addEventListener("change", (e) => {
+    currentLab = e.target.value;
+    if (currentMetric === "tools") {
+      loadToolsList();
+    }
+    loadData();
+  });
+
+  document.getElementById("tool-filter").addEventListener("change", (e) => {
+    currentTool = e.target.value;
+    loadData();
+  });
+
+  document.querySelectorAll(".date-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      document
+        .querySelectorAll(".date-btn")
+        .forEach((b) => {
+          b.classList.remove("active", "btn-primary");
+          b.classList.add("btn-outline-primary");
         });
+      e.target.classList.remove("btn-outline-primary");
+      e.target.classList.add("active", "btn-primary");
+      currentDays = parseInt(e.target.dataset.days);
+      customDateRange = null;
+      document.getElementById("start-date").value = "";
+      document.getElementById("end-date").value = "";
+      loadData();
+    });
+  });
 
-        document.getElementById('lab-filter').addEventListener('change', (e) => {
-            currentLab = e.target.value;
-            loadData();
-        });
+  document
+    .getElementById("apply-custom-range")
+    .addEventListener("click", () => {
+      const startDate = document.getElementById("start-date").value;
+      const endDate = document.getElementById("end-date").value;
 
-        document.querySelectorAll('.date-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                currentDays = parseInt(e.target.dataset.days);
-                customDateRange = null;
-                document.getElementById('start-date').value = '';
-                document.getElementById('end-date').value = '';
-                loadData();
-            });
-        });
-
-        document.getElementById('apply-custom-range').addEventListener('click', () => {
-            const startDate = document.getElementById('start-date').value;
-            const endDate = document.getElementById('end-date').value;
-
-            if (startDate && endDate) {
-                customDateRange = {
-                    start: startDate,
-                    end: endDate
-                };
-                document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
-                loadData();
-            } else {
-                alert('Please select both start and end dates');
-            }
-        });
-
-        // Initial load
+      if (startDate && endDate) {
+        customDateRange = {
+          start: startDate,
+          end: endDate,
+        };
+        document
+          .querySelectorAll(".date-btn")
+          .forEach((b) => {
+            b.classList.remove("active", "btn-primary");
+            b.classList.add("btn-outline-primary");
+          });
         loadData();
-    </script>
-</body>
-</html>
+      } else {
+        alert("Please select both start and end dates");
+      }
+    });
+
+  // Initial load
+  loadData();
+</script>
+{% endblock %}

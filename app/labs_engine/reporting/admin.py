@@ -48,10 +48,10 @@ class LabVisitAdmin(admin.ModelAdmin):
 class ToolUsageAdmin(admin.ModelAdmin):
     """Admin interface for tool usage records."""
 
-    list_display = ['tool_id', 'lab_name', 'datetime']
+    list_display = ['tool_name', 'lab_name', 'datetime']
     list_filter = ['lab_name', 'datetime']
-    search_fields = ['tool_id', 'lab_name']
-    readonly_fields = ['tool_id', 'lab_name', 'datetime']
+    search_fields = ['tool_id', 'tool_name', 'lab_name']
+    readonly_fields = ['tool_id', 'tool_name', 'lab_name', 'datetime']
     date_hierarchy = 'datetime'
 
     def has_add_permission(self, request):

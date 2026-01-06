@@ -138,6 +138,12 @@ class ToolUsage(models.Model):
         max_length=512,
         help_text="Full tool ID from Galaxy",
     )
+    tool_name = models.CharField(
+        max_length=512,
+        help_text="Parsed tool name for display",
+        default='',
+        blank=True,
+    )
     datetime = models.DateTimeField(
         help_text="Timestamp of the tool usage",
     )
@@ -151,6 +157,27 @@ class ToolUsage(models.Model):
         verbose_name = "Tool Usage"
         verbose_name_plural = "Tool Usages"
         ordering = ['-datetime']
+
+    @staticmethod
+    def parse_tool_name(tool_id):
+        """
+        Extract display name from tool ID.
+
+        For toolshed tools:
+            toolshed.../repos/owner/name/tool_id -> owner/name/tool_id
+        For regular tools: just return the tool_id
+
+        Args:
+            tool_id: Full tool ID string
+
+        Returns:
+            Parsed tool name string
+        """
+        if 'toolshed' in tool_id:
+            parts = tool_id.split('/')
+            if len(parts) >= 5:
+                return '/'.join(parts[2:5])
+        return tool_id
 
     @classmethod
     def from_nginx_log(cls, log_entry):
@@ -221,5 +248,6 @@ class ToolUsage(models.Model):
         return cls(
             lab_name=lab_name,
             tool_id=tool_id,
+            tool_name=cls.parse_tool_name(tool_id),
             datetime=dt_aware,
         )
