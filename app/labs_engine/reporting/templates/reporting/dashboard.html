@@ -116,14 +116,14 @@
         <p>
           <small>
             To create an API key, please visit
-            <a href="{{ request.scheme }}://{{ request.get_host }}/admin">the admin panel</a>
+            <a href="https://{{ request.get_host }}/admin">the admin panel</a>
           </small>
         </p>
         <pre class="bg-light p-3 rounded"><code>curl -X POST \
     -F file=@/path/to/your/nginx/logfile.log \
     -F "log_type=[nginx_welcome / nginx_tool]" \
-    -H "x-api-key: YOUR_API_KEY" \
-    {{ request.scheme }}://{{ request.get_host }}/api/labs/upload-logs</code></pre>
+    -H "X-API-KEY: YOUR_API_KEY" \
+    https://{{ request.get_host }}/api/labs/upload-logs</code></pre>
       </div>
 
       <div id="error" class="alert alert-danger" style="display: none"></div>
