@@ -11,11 +11,11 @@ def authenticated(view_func):
     """
     Decorator to require API token authentication.
 
-    Expects the token in the X-API-TOKEN header.
+    Expects the token in the X-API-KEY header.
     """
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
-        token_value = request.headers.get('X-API-TOKEN')
+        token_value = request.headers.get('X-API-KEY')
 
         if not token_value:
             return JsonResponse(
