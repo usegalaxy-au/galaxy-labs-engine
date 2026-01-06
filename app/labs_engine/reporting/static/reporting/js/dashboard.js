@@ -19,6 +19,7 @@ const elements = {
   noData: () => document.getElementById("nodata"),
   error: () => document.getElementById("error"),
   chart: () => document.getElementById("chart"),
+  chartHeading: () => document.getElementById("chartHeading"),
   metricSelect: () => document.getElementById("metric-select"),
   labFilter: () => document.getElementById("lab-filter"),
   toolFilter: () => document.getElementById("tool-filter"),
@@ -118,6 +119,11 @@ function calculateMaxY(traces) {
   return maxY;
 }
 
+function setChartHeading(text) {
+  const chartHeading = elements.chartHeading();
+  chartHeading.textContent = text;
+}
+
 function createChartElement(id, className = "lab-chart") {
   const chartDiv = document.createElement("div");
   chartDiv.className = className;
@@ -148,6 +154,7 @@ function renderVisitsChart(data) {
     const chartDiv = createChartElement(chartId);
     const titleText = trace.name.charAt(0).toUpperCase() + trace.name.substring(1);
     const titleDiv = createChartTitle(titleText);
+    setChartHeading('A visit is counted each time a user accesses the Galaxy homepage (A.K.A "Welcome page") through a Galaxy Lab subdomain.');
 
     chartEl.appendChild(titleDiv);
     chartEl.appendChild(chartDiv);
@@ -206,6 +213,7 @@ function renderToolsChart(data) {
   const chartDiv = createChartElement(chartId);
   chartDiv.style.height = "600px";
   chartEl.appendChild(chartDiv);
+  setChartHeading("A tool run is counted each time a tool is executed within a Galaxy Lab by any user. Running a collection as an input to a tool may result in multiple tool runs being counted.");
 
   const layout = {
     title: {
