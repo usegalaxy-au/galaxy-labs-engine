@@ -159,6 +159,28 @@ class ToolUsage(models.Model):
         ordering = ['-datetime']
 
     @staticmethod
+    def strip_tool_version(tool_id):
+        """
+        Strip version from tool ID.
+
+        Example:
+            toolshed.../dorado_trimming/0.8.2+6b413c9+galaxy0
+            -> toolshed.../dorado_trimming
+
+        Args:
+            tool_id: Full tool ID string
+
+        Returns:
+            Tool ID without version
+        """
+        if 'toolshed' in tool_id:
+            parts = tool_id.split('/')
+            # Keep only up to the tool name (remove version if present)
+            if len(parts) >= 5:
+                return '/'.join(parts[:5])
+        return tool_id
+
+    @staticmethod
     def parse_tool_name(tool_id):
         """
         Extract display name from tool ID.
@@ -232,7 +254,10 @@ class ToolUsage(models.Model):
         tool_id_list = query_params.get('tool_id', [])
         if not tool_id_list:
             return None
-        tool_id = tool_id_list[0]
+        tool_id_raw = tool_id_list[0]
+
+        # Strip version from tool_id
+        tool_id = cls.strip_tool_version(tool_id_raw)
 
         # Parse the timestamp
         # Format: 04/Jan/2026:07:05:12 +0000

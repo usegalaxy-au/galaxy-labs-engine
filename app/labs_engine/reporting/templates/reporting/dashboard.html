@@ -92,6 +92,12 @@
           <input type="date" id="end-date" class="form-control" />
           <button id="apply-custom-range" class="btn btn-primary">Apply</button>
         </div>
+
+        <div class="ms-auto">
+          <button id="download-csv" class="btn btn-success">
+            <i class="fas fa-download me-1"></i>Download CSV
+          </button>
+        </div>
       </div>
 
       <div id="chart" class="mt-4"></div>
@@ -400,6 +406,25 @@
         alert("Please select both start and end dates");
       }
     });
+
+  document.getElementById("download-csv").addEventListener("click", () => {
+    // Build the download URL with current parameters
+    let url = `/reporting/api/download-csv?metric=${currentMetric}`;
+
+    if (customDateRange) {
+      url += `&start_date=${customDateRange.start}&end_date=${customDateRange.end}`;
+    } else {
+      url += `&days=${currentDays}`;
+    }
+
+    if (currentMetric === "tools") {
+      url += `&lab=${currentLab}`;
+      url += `&tool=${currentTool}`;
+    }
+
+    // Trigger download
+    window.location.href = url;
+  });
 
   // Initial load
   loadData();

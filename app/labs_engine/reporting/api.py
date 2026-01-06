@@ -1,6 +1,7 @@
 """API endpoints."""
 
-from django.http import JsonResponse, HttpResponseBadRequest
+import csv
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
 from django.db.models.functions import TruncDate
@@ -279,3 +280,110 @@ def get_tools_list(request):
     ]
 
     return JsonResponse({'tools': tools_list})
+
+
+def download_csv(request):
+    """
+    Download CSV of usage data.
+
+    Query parameters:
+        - metric: 'visits' or 'tools' (required)
+        - days: number of days to look back (optional)
+        - start_date: custom start date (optional, YYYY-MM-DD)
+        - end_date: custom end date (optional, YYYY-MM-DD)
+        - lab: filter by lab name (optional, 'all' for all labs)
+        - tool: filter by tool_id (optional, 'all' for all tools)
+    """
+    metric = request.GET.get('metric', 'visits')
+    lab_filter = request.GET.get('lab', 'all')
+    tool_filter = request.GET.get('tool', 'all')
+
+    # Handle custom date range
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    if start_date_str and end_date_str:
+        start_date = timezone.make_aware(
+            datetime.strptime(start_date_str, '%Y-%m-%d')
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(end_date_str, '%Y-%m-%d')
+        )
+        end_date = end_date.replace(hour=23, minute=59, second=59)
+    else:
+        days = int(request.GET.get('days', 90))
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=days)
+
+    # Create the HttpResponse object with CSV header
+    response = HttpResponse(content_type='text/csv')
+    filename = (
+        f'galaxy_labs_{metric}_'
+        f'{start_date.date()}_to_{end_date.date()}.csv'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    # QUOTE_MINIMAL automatically quotes fields with special chars (commas)
+    writer = csv.writer(response, quoting=csv.QUOTE_MINIMAL)
+
+    if metric == 'visits':
+        # Write header
+        writer.writerow(['date', 'lab', 'visits'])
+
+        # Query LabVisit data
+        queryset = LabVisit.objects.filter(
+            datetime__gte=start_date,
+            datetime__lte=end_date
+        )
+        if lab_filter and lab_filter != 'all':
+            queryset = queryset.filter(lab_name=lab_filter)
+
+        data = (
+            queryset
+            .annotate(date=TruncDate('datetime'))
+            .values('lab_name', 'date')
+            .annotate(count=Count('id'))
+            .order_by('date', 'lab_name')
+        )
+
+        # Write data rows
+        for item in data:
+            writer.writerow([
+                item['date'].isoformat(),
+                item['lab_name'],
+                item['count'],
+            ])
+
+    elif metric == 'tools':
+        # Write header
+        writer.writerow(['date', 'lab', 'tool_id', 'jobs'])
+
+        # Query ToolUsage data
+        queryset = ToolUsage.objects.filter(
+            datetime__gte=start_date,
+            datetime__lte=end_date
+        )
+        if lab_filter and lab_filter != 'all':
+            queryset = queryset.filter(lab_name=lab_filter)
+        if tool_filter and tool_filter != 'all':
+            queryset = queryset.filter(tool_id=tool_filter)
+
+        data = (
+            queryset
+            .annotate(date=TruncDate('datetime'))
+            .values('lab_name', 'tool_id', 'date')
+            .annotate(count=Count('id'))
+            .order_by('date', 'lab_name', 'tool_id')
+        )
+
+        # Write data rows
+        # Note: csv.writer automatically quotes fields containing commas
+        for item in data:
+            writer.writerow([
+                item['date'].isoformat(),
+                item['lab_name'],
+                item['tool_id'],
+                item['count'],
+            ])
+
+    return response
