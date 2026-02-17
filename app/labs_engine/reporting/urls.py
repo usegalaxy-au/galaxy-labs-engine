@@ -1,4 +1,7 @@
-"""URLS for reporting API."""
+"""URLS for reporting API.
+
+Included for reporting/* URL patterns.
+"""
 
 from django.urls import path
 

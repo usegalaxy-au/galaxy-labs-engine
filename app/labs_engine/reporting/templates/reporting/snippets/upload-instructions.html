@@ -1,0 +1,12 @@
+<p>
+  <small>
+    To create an API key, please visit
+    <a href="https://{{ request.get_host }}/admin">the admin panel</a>
+  </small>
+</p>
+
+<pre class="bg-light p-3 rounded"><code>curl -X POST \
+    -F file=@/path/to/your/nginx/logfile.log \
+    -F "log_type=[nginx_welcome / nginx_tool]" \
+    -H "X-API-KEY: YOUR_API_KEY" \
+    https://{{ request.get_host }}/api/labs/upload-logs</code></pre>

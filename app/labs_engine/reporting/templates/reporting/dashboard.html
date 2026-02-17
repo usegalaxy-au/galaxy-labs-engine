@@ -74,9 +74,12 @@
           <button id="apply-custom-range" class="btn btn-primary">Apply</button>
         </div>
 
-        <div class="ms-auto">
+        <div class="ms-auto d-flex gap-2">
           <button id="download-csv" class="btn btn-success">
             <i class="fas fa-download me-1"></i>Download CSV
+          </button>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+            <i class="fas fa-upload me-1"></i>Upload data
           </button>
         </div>
       </div>
@@ -96,22 +99,30 @@
         <p class="mb-3">
           No records to display. Please upload some data to see usage metrics:
         </p>
-
-        <p>
-          <small>
-            To create an API key, please visit
-            <a href="https://{{ request.get_host }}/admin">the admin panel</a>
-          </small>
-        </p>
-
-        <pre class="bg-light p-3 rounded"><code>curl -X POST \
-    -F file=@/path/to/your/nginx/logfile.log \
-    -F "log_type=[nginx_welcome / nginx_tool]" \
-    -H "X-API-KEY: YOUR_API_KEY" \
-    https://{{ request.get_host }}/api/labs/upload-logs</code></pre>
+        {% include "reporting/snippets/upload-instructions.html" %}
       </div>
 
       <div id="error" class="alert alert-danger" style="display: none"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="uploadModalLabel">Upload data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3">
+          Upload your nginx log files to see usage metrics:
+        </p>
+        {% include "reporting/snippets/upload-instructions.html" %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
 </div>
