@@ -97,19 +97,20 @@ class ExportLabContext(dict):
         """Validate sections against Pydantic schema."""
         validated_sections = []
         for section in self['sections']:
+            if not isinstance(section, dict):
+                raise LabBuildError(
+                    'Section YAML content must be a dictionary.'
+                    f' Received type {type(section).__name__} instead.',
+                    source='YAML',
+                )
             try:
-                if not isinstance(section, dict):
-                    raise ValidationError(
-                        'Section YAML content must be a dictionary.'
-                        f' Received type {type(section).__name__} instead.',
-                    )
                 validated_sections.append(
                     LabSectionSchema(**section).model_dump()
                 )
             except ValidationError as e:
                 raise LabBuildError(
                     e,
-                    section_id=section["id"],
+                    section_id=section.get("id"),
                     source='YAML',
                 )
         self['sections'] = validated_sections
