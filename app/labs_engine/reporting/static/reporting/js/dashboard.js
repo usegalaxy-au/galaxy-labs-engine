@@ -279,7 +279,7 @@ async function loadToolsList() {
     data.tools.forEach((tool) => {
       const option = document.createElement("option");
       option.value = tool.tool_id;
-      option.textContent = `${tool.display_name} (${tool.count})`;
+      option.textContent = `${tool.display_name} (${tool.count} total jobs)`;
       toolSelect.appendChild(option);
     });
   } catch (error) {
