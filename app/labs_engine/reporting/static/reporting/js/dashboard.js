@@ -382,6 +382,7 @@ function initializeEventListeners() {
   // Lab filter
   elements.labFilter().addEventListener("change", (e) => {
     state.currentLab = e.target.value;
+    state.currentTool = "all";
     if (state.currentMetric === "tools") {
       loadToolsList();
     }
