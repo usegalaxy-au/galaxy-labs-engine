@@ -15,6 +15,8 @@ Example Nginx log line:
 POST /api/workflows/<WORKFLOW_ID>/invocations HTTP/1.1" 200 215 \
 "https://genome.usegalaxy.org.au/workflows/run?id=e4d20320d61c4f83"
 
+
+
 Usage:
     tail -f nginx_access.log \
     | python extract_workflow_invocations.py -o invocations.csv
@@ -53,13 +55,14 @@ CSV_COLUMNS = [
     'user_id',
 ]
 
-# Regex patterns for parsing Nginx combined log format
+# Regex patterns for Nginx combined log format
 INVOCATION_PATTERN = re.compile(
     r'POST /api/workflows/([a-f0-9]+)/invocations'
 )
 DATETIME_PATTERN = re.compile(
     r'\[(\d{2}/\w{3}/\d{4}:\d{2}:\d{2}:\d{2})'
 )
+DATETIME_FORMAT = '%d/%b/%Y:%H:%M:%S'
 DOMAIN_PATTERN = re.compile(
     r'https?://([^/"\s]+)'
 )
@@ -97,11 +100,10 @@ def parse_log_line(line: str) -> dict | None:
     if not dt_match:
         logger.warning("No datetime found in line: %s", line.strip())
         return None
+    dt = datetime.strptime(dt_match.group(1), DATETIME_FORMAT)
 
     domain_match = DOMAIN_PATTERN.search(line)
     domain = domain_match.group(1) if domain_match else 'unknown'
-
-    dt = datetime.strptime(dt_match.group(1), '%d/%b/%Y:%H:%M:%S')
 
     return {
         'encoded_id': inv_match.group(1),
