@@ -1,0 +1,5 @@
+flake8
+pycryptodome
+psycopg2-binary
+python-dotenv
+sqlalchemy
