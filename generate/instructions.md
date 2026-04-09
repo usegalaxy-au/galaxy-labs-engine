@@ -21,6 +21,7 @@ https://github.com/usegalaxy-au/galaxy-labs-engine/tree/dev/app/labs_engine/labs
     - usegalaxy.org.yml
     - usegalaxy.eu.yml
     - usegalaxy.org.au.yml
+- Ensure that all YAML is valid e.g. quote strings containing non-alphanumeric chars
 - Links to galaxy (e.g. tool URLs, workflow import URLs) should be templated with `{{ galaxy_base_url }}` to ensure they are compatible across different servers.
 - Do not add any tools, sections or tabs that are not prescribed in the reference.
 - Do not alter intro, conclusion or footer reference text except to introduce required Markdown/HTML formatting and style (e.g. inserting a picture, if required).
@@ -29,3 +30,17 @@ https://github.com/usegalaxy-au/galaxy-labs-engine/tree/dev/app/labs_engine/labs
 - When writing a tab item for a tool:
     - Write a short description in the heading, not just the tool name
     - You can fetch the expected inputs from `{galaxy_base_url}/api/tools/{tool_id}?io_details=true` and use that information to write an `inputs` dict into the tab item YAMl, to describe required input data. Don't describe non-data input params or optional input data. Try usegalaxy.org first, and if that returns a 404 try usegalaxy.eu before giving up.
+    - To fetch tool metadata in bulk, use the helper script `generate/fetch_tool_inputs.py`. It queries the Galaxy API for a list of tool IDs, recurses through `repeat`/`section`/`conditional` inputs, filters out optional and non-data params, and prints a YAML snippet (per tool: `description` and `inputs`) ready to paste into a section file. Run it from the project root with the project venv, e.g.:
+
+        ```
+        # One tool ID per line, '#' comments and '- ' list syntax allowed:
+        ./venv/bin/python generate/fetch_tool_inputs.py path/to/tool_ids.txt
+
+        # Or pass tool IDs directly as arguments:
+        ./venv/bin/python generate/fetch_tool_inputs.py upload1 toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp
+
+        # Override the servers to query (repeatable; defaults to usegalaxy.org then usegalaxy.eu):
+        ./venv/bin/python generate/fetch_tool_inputs.py --server https://usegalaxy.org.au tool_ids.txt
+        ```
+
+        The script queries each configured server in order and falls back to the next on failure. Any tool that cannot be resolved is reported as `NOT FOUND` so you can follow up manually. Prefer this script over ad-hoc `curl` calls when processing more than one or two tools.
