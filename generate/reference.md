@@ -1,8 +1,8 @@
-# Galaxy Australia Microbiology Lab
+# Galaxy Australia Claude Lab
 
 ## Intro
 
-Welcome to the Galaxy Australia Microbiology Lab by the microGalaxy community!
+Welcome to the Galaxy Australia Claude Lab by the Galaxy Australia dev team!
 
 Whether you're working with microbiome samples or bacterial isolates, long or short
 reads, shotgun or 16S sequencing, genomics, transcriptomics, proteomics,
