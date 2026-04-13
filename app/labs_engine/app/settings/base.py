@@ -191,6 +191,9 @@ RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '')
 
 GITHUB_API_TOKEN = os.getenv('GITHUB_API_TOKEN')
 
+# OpenAI API key used by the AI-powered "Bootstrap a Lab" feature.
+OPENAI_API_KEY = os.getenv('GALAXY_OPENAI_API_KEY')
+
 # Cache forever unless requested
 # (automated by GH workflow in galaxyproject/galaxy_codex)
 CACHE_TIMEOUT = None

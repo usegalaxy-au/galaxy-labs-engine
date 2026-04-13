@@ -16,11 +16,14 @@ from django.views import View
 from pathlib import Path
 
 from labs_engine.utils.exceptions import LabBuildError
+from .ai_generate.generator import PACKAGE_DIR as AI_GENERATE_DIR
 from .cache import LabCache
 from .forms import LabBootstrapForm
 from .lab_export import ExportLabContext
 from .lab_schema import DEPRECATED_PROPS
 from .audit import perform_template_audit
+
+REFERENCE_TEMPLATE_PATH = AI_GENERATE_DIR / 'reference_template.md'
 
 logger = logging.getLogger('django')
 
@@ -149,6 +152,16 @@ class BootstrapLab(View):
         response['Content-Disposition'] = "attachment; filename=lab.zip"
         response['X-Accel-Redirect'] = url
         return response
+
+
+def reference_template_download(request):
+    """Serve the Markdown reference template as a downloadable file."""
+    content = REFERENCE_TEMPLATE_PATH.read_text()
+    response = HttpResponse(content, content_type='text/markdown')
+    response['Content-Disposition'] = (
+        'attachment; filename="reference_template.md"'
+    )
+    return response
 
 
 def report_exception_response(request, exc, title=None):

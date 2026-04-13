@@ -9,6 +9,11 @@ urlpatterns = [
     path('', views.export_lab, name='lab_export'),
     path('bootstrap', views.BootstrapLab.as_view(), name='lab_bootstrap'),
     path(
+        'bootstrap/reference-template',
+        views.reference_template_download,
+        name='reference_template_download',
+    ),
+    path(
         'schema',
         TemplateView.as_view(template_name='docs/schema.html'),
         name='lab_schema',

@@ -147,6 +147,25 @@ class LabBootstrapForm(SpamFilterFormMixin, forms.Form):
             'accept': ','.join(f"image/{ext}" for ext in IMAGE_EXTENSIONS),
         }),
     )
+    reference_md = forms.FileField(
+        label="Lab description Markdown (optional)",
+        help_text=(
+            'Upload a Markdown file describing your desired'
+            ' Lab content. If provided, Generative AI will be used to'
+            ' fetch tool metadata and write the required templates,'
+            ' (Markdown/YAML) files based on your description.'
+            ' <a href="/bootstrap/reference-template" target="_blank">'
+            'Download a template</a> to get started.'
+        ),
+        required=False,
+        allow_empty_file=False,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['md', 'markdown']),
+        ],
+        widget=forms.FileInput(attrs={
+            'accept': '.md,.markdown,text/markdown',
+        }),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -156,6 +175,7 @@ class LabBootstrapForm(SpamFilterFormMixin, forms.Form):
             'subdomain',
             'github_username',
             'logo',
+            'reference_md',
             HTML(self.antispam_html),
             Submit('submit', 'Build'),
         )
@@ -180,6 +200,12 @@ class LabBootstrapForm(SpamFilterFormMixin, forms.Form):
 
     def bootstrap_lab(self):
         data = self.cleaned_data
+        reference_file = data.get('reference_md')
+        if reference_file:
+            reference_file.seek(0)
+            data['reference_md'] = reference_file.read().decode('utf-8')
+        else:
+            data['reference_md'] = None
         data.update({
             'intro_md': INTRO_MD,  # TODO: Render from user-input
             'conclusion_md': CONCLUSION_MD,

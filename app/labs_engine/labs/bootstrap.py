@@ -11,6 +11,9 @@ from django.template.loader import render_to_string
 from django.utils.text import slugify
 from pathlib import Path
 
+from .ai_generate import generate_lab_content
+from .ai_generate.generator import AIGenerationError
+
 logger = logging.getLogger('django')
 
 HOURS_1 = 60 * 60
@@ -44,6 +47,17 @@ def lab(form_data):
     form_data['logo_filename'] = create_logo(form_data, output_dir)
     render_templates(form_data, output_dir)
     render_server_yml(form_data, output_dir)
+    reference_md = form_data.get('reference_md')
+    if reference_md:
+        try:
+            ai_content = generate_lab_content(
+                lab_name=form_data['lab_name'],
+                reference_md=reference_md,
+            )
+        except AIGenerationError as exc:
+            logger.error("AI lab generation failed: %s", exc)
+        else:
+            inject_ai_content(ai_content, output_dir)
     zipfile_path = output_dir.with_suffix('.zip')
     root_dir = Path(slugify(form_data['lab_name']))
     with zipfile.ZipFile(zipfile_path, 'w') as zf:
@@ -51,6 +65,46 @@ def lab(form_data):
             zf.write(path, root_dir / path.relative_to(output_dir))
     logger.debug('Created lab zipfile: %s' % zipfile_path)
     return Path(str(zipfile_path).replace(str(settings.INTERNAL_ROOT), ''))
+
+
+def inject_ai_content(ai_content, output_dir):
+    """Overwrite template files with AI-generated Lab content.
+
+    The AI returns a dict matching ``ai_generate.generator.RESPONSE_SCHEMA``:
+    intro_md, conclusion_md, footer_md, base_yml, servers (list of
+    {hostname, content}) and sections (list of {filename, content}).
+    """
+    templates_dir = output_dir / 'templates'
+    sections_dir = output_dir / 'sections'
+    templates_dir.mkdir(parents=True, exist_ok=True)
+    sections_dir.mkdir(parents=True, exist_ok=True)
+
+    (templates_dir / 'intro.md').write_text(ai_content['intro_md'])
+    (templates_dir / 'conclusion.md').write_text(
+        ai_content['conclusion_md']
+    )
+    (templates_dir / 'footer.md').write_text(ai_content['footer_md'])
+    (output_dir / 'base.yml').write_text(ai_content['base_yml'])
+
+    # Remove the placeholder section file shipped by render_templates so
+    # it doesn't conflict with the AI-generated sections.
+    placeholder = sections_dir / 'section-1.yml'
+    if placeholder.exists():
+        placeholder.unlink()
+    for section in ai_content.get('sections', []):
+        filename = Path(section['filename']).name
+        (sections_dir / filename).write_text(section['content'])
+
+    # Replace the default per-server YAML files with AI-generated ones.
+    for server in ai_content.get('servers', []):
+        hostname = server['hostname'].strip()
+        if not hostname:
+            continue
+        if not hostname.endswith('.yml'):
+            filename = f'{hostname}.yml'
+        else:
+            filename = hostname
+        (output_dir / filename).write_text(server['content'])
 
 
 def render_templates(data, output_dir):

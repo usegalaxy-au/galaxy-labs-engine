@@ -49,6 +49,17 @@
       </a>
       to visualise changes to your page instantly, before pushing to GitHub.
     </li>
+    <li>
+      <strong>AI-generated content (optional):</strong> Upload a
+      <em>Lab description</em> Markdown file and the Labs Engine will use
+      OpenAI to produce intro, conclusion, footer, base.yml, per-server YAML
+      and section YAML files. The generated files are included in the ZIP
+      archive alongside the standard scaffold.
+      <a href="{% url 'reference_template_download' %}">
+        Download a template
+      </a>
+      to get started.
+    </li>
   </ol>
 
   {% crispy form %}

@@ -7,6 +7,7 @@ django-crispy-forms==2.*
 django_light
 gunicorn==22.*
 markdown2==2.*
+openai==1.*
 pydantic==2.*
 python-dotenv==0.*
 pyyaml==6.*
