@@ -16,6 +16,7 @@ import re
 from pathlib import Path
 
 from django.conf import settings
+# L268: from openai import OpenAI
 
 from . import fetch_tool_inputs
 
@@ -23,8 +24,31 @@ logger = logging.getLogger('django')
 
 PACKAGE_DIR = Path(__file__).parent
 INSTRUCTIONS_PATH = PACKAGE_DIR / 'instructions.md'
+DOCS_SUMMARY_PATH = PACKAGE_DIR / 'docs_summary.md'
+SCHEMA_SUMMARY_PATH = PACKAGE_DIR / 'schema_summary.md'
 
-OPENAI_MODEL = 'gpt-4o-2024-08-06'
+EXAMPLE_LAB_DIR = (
+    Path(__file__).resolve().parent.parent
+    / 'static' / 'labs' / 'content' / 'simple'
+)
+EXAMPLE_FILES = {
+    'base.yml': EXAMPLE_LAB_DIR / 'base.yml',
+    'templates/intro.md': EXAMPLE_LAB_DIR / 'templates' / 'intro.md',
+    'templates/conclusion.md': (
+        EXAMPLE_LAB_DIR / 'templates' / 'conclusion.md'
+    ),
+    'templates/footer.md': EXAMPLE_LAB_DIR / 'templates' / 'footer.md',
+    'section_1.yml': EXAMPLE_LAB_DIR / 'section_1.yml',
+}
+EXAMPLE_SERVER_YML = (
+    "# Server-specific overrides (inherits everything from base.yml)\n"
+    "\n"
+    'site_name: "Australia"\n'
+    "galaxy_base_url: https://genome.usegalaxy.org.au\n"
+    "root_domain: usegalaxy.org.au\n"
+)
+
+OPENAI_MODEL = 'gpt-5'
 OPENAI_TIMEOUT = 180
 
 # Regex matches tool IDs like:
@@ -184,6 +208,37 @@ def extract_tool_ids(markdown: str) -> list[str]:
     return found
 
 
+def _read_context_files() -> str:
+    """Read documentation, schema and example files into a prompt section."""
+    parts = []
+
+    # Documentation summary
+    parts.append("# Documentation summary")
+    parts.append(DOCS_SUMMARY_PATH.read_text())
+
+    # Schema summary
+    parts.append("# Sections YAML schema")
+    parts.append(SCHEMA_SUMMARY_PATH.read_text())
+
+    # Example files from the "simple" lab
+    parts.append("# Example Lab content files")
+    parts.append(
+        "Below are real files from a working Galaxy Lab. Use these as"
+        " structural templates. Reproduce the formatting, indentation and"
+        " YAML conventions exactly."
+    )
+    for label, path in EXAMPLE_FILES.items():
+        if path.exists():
+            parts.append(f"\n## Example: {label}")
+            parts.append(f"```\n{path.read_text().rstrip()}\n```")
+
+    # Example server override file
+    parts.append("\n## Example: usegalaxy.org.au.yml")
+    parts.append(f"```yaml\n{EXAMPLE_SERVER_YML.rstrip()}\n```")
+
+    return "\n".join(parts)
+
+
 def build_user_prompt(
     lab_name: str,
     reference_md: str,
@@ -191,6 +246,7 @@ def build_user_prompt(
     instructions: str,
 ) -> str:
     """Compose the user prompt for the OpenAI request."""
+    context = _read_context_files()
     parts = [
         "# Task",
         (
@@ -202,6 +258,8 @@ def build_user_prompt(
         "",
         "# Instructions",
         instructions,
+        "",
+        context,
         "",
         "# Reference (user-supplied Markdown)",
         reference_md,
@@ -220,11 +278,10 @@ def build_user_prompt(
             "Return JSON matching the provided schema. Fill every field."
             " Use valid YAML in all *_yml / content fields. Quote strings"
             " containing colons, braces or other non-alphanumeric chars."
-            " Template any Galaxy links with"
-            " '{{ galaxy_base_url }}' (wrapped in"
-            " '{% verbatim %}...{% endverbatim %}' when written in a"
-            " Django template, but in your YAML output just use"
-            " '{{ galaxy_base_url }}' literally)."
+            " Template any Galaxy links with '{{ galaxy_base_url }}'."
+            " Do NOT wrap template variables in"
+            " '{% verbatim %}...{% endverbatim %}' tags - just use the"
+            " double-brace syntax literally (e.g. {{ galaxy_base_url }})."
         ),
     ]
     return "\n".join(parts)
@@ -234,7 +291,7 @@ def call_openai(
     system_prompt: str,
     user_prompt: str,
 ) -> dict:
-    """Call the OpenAI chat completions API and return parsed JSON."""
+    """Call the OpenAI Responses API and return parsed JSON."""
     api_key = getattr(settings, 'OPENAI_API_KEY', None)
     if not api_key:
         raise AIGenerationError(
@@ -249,17 +306,15 @@ def call_openai(
         ) from exc
 
     client = OpenAI(api_key=api_key, timeout=OPENAI_TIMEOUT)
-    logger.info("Calling OpenAI to generate Lab content")
+    logger.info("Calling OpenAI Responses API to generate Lab content")
     try:
-        response = client.chat.completions.create(
+        response = client.responses.create(
             model=OPENAI_MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
+            instructions=system_prompt,
+            input=user_prompt,
+            text={
+                "format": {
+                    "type": "json_schema",
                     "name": "galaxy_lab_content",
                     "strict": True,
                     "schema": RESPONSE_SCHEMA,
@@ -271,7 +326,7 @@ def call_openai(
             f"OpenAI request failed: {exc}"
         ) from exc
 
-    content = response.choices[0].message.content
+    content = response.output_text
     if not content:
         raise AIGenerationError(
             "OpenAI returned an empty response."
