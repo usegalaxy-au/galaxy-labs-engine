@@ -40,10 +40,23 @@ def random_string(length):
     return ''.join(random.choices(ALPHANUMERIC, k=length))
 
 
-def lab(form_data):
-    """Render a new lab from form data."""
+def lab(form_data, output_dir=None, job_id=''):
+    """Render a new lab from form data.
+
+    If *output_dir* is supplied (as a str or Path) it is used directly;
+    otherwise a random subdirectory of ``INTERNAL_ROOT`` is created.
+    Passing it explicitly allows the caller (e.g. an RQ worker) to
+    control exactly where files are written.
+
+    *job_id* is forwarded to AI generation so progress updates can be
+    published to Redis.
+    """
     clean_dir(settings.INTERNAL_ROOT)
-    output_dir = settings.INTERNAL_ROOT / random_string(6)
+    if output_dir is not None:
+        output_dir = Path(output_dir)
+    else:
+        output_dir = settings.INTERNAL_ROOT / random_string(6)
+    output_dir.mkdir(parents=True, exist_ok=True)
     form_data['logo_filename'] = create_logo(form_data, output_dir)
     render_templates(form_data, output_dir)
     render_server_yml(form_data, output_dir)
@@ -53,6 +66,7 @@ def lab(form_data):
             ai_content = generate_lab_content(
                 lab_name=form_data['lab_name'],
                 reference_md=reference_md,
+                job_id=job_id,
             )
         except AIGenerationError as exc:
             logger.error("AI lab generation failed: %s", exc)
@@ -155,12 +169,16 @@ def render_server_yml(data, output_dir):
 
 
 def create_logo(data, output_dir):
-    """Copy the uploaded logo to the output directory."""
-    logo_file = data.get(
-        'logo'
-    )
+    """Copy the uploaded logo to the output directory.
+
+    ``data['logo']`` may be a Django UploadedFile, a Path, a string
+    path (when coming from an RQ worker) or None/falsy for the default.
+    """
+    logo_file = data.get('logo')
     if logo_file:
-        logo_dest_path = output_dir / 'static' / logo_file.name
+        if isinstance(logo_file, str):
+            logo_file = Path(logo_file)
+        logo_dest_path = output_dir / 'static' / Path(logo_file.name).name
     else:
         logo_file = (
             settings.BASE_DIR

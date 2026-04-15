@@ -18,9 +18,14 @@ from pathlib import Path
 from django.conf import settings
 # L268: from openai import OpenAI
 
+import django_rq
+
 from . import fetch_tool_inputs
 
 logger = logging.getLogger('django')
+
+PROGRESS_KEY_PREFIX = 'bootstrap:progress:'
+PROGRESS_TTL = 600  # 10 minutes
 
 PACKAGE_DIR = Path(__file__).parent
 INSTRUCTIONS_PATH = PACKAGE_DIR / 'instructions.md'
@@ -85,19 +90,25 @@ RESPONSE_SCHEMA = {
         "intro_md": {
             "type": "string",
             "description": (
-                "Full Markdown content for templates/intro.md."
+                "Full Markdown content for templates/intro.md. This should be"
+                " styled with Markdown syntax appropriate for the text"
+                " content."
             ),
         },
         "conclusion_md": {
             "type": "string",
             "description": (
-                "Full Markdown content for templates/conclusion.md."
+                "Full Markdown content for templates/conclusion.md. This"
+                " should be styled with Markdown syntax appropriate for the"
+                " text content."
             ),
         },
         "footer_md": {
             "type": "string",
             "description": (
-                "Full Markdown content for templates/footer.md."
+                "Full Markdown content for templates/footer.md. This should be"
+                " styled with Markdown syntax appropriate for the text"
+                " content."
             ),
         },
         "base_yml": {
@@ -168,6 +179,24 @@ RESPONSE_SCHEMA = {
         "sections",
     ],
 }
+
+
+def publish_progress(job_id: str, message: str):
+    """Write a progress message to Redis for the given job."""
+    if not job_id:
+        return
+    conn = django_rq.get_connection('default')
+    key = PROGRESS_KEY_PREFIX + job_id
+    conn.set(key, message, ex=PROGRESS_TTL)
+
+
+def get_progress(job_id: str) -> str:
+    """Read the current progress message for a job, if any."""
+    conn = django_rq.get_connection('default')
+    value = conn.get(PROGRESS_KEY_PREFIX + job_id)
+    if value is not None:
+        return value.decode()
+    return ''
 
 
 class AIGenerationError(Exception):
@@ -342,11 +371,15 @@ def call_openai(
 def generate_lab_content(
     lab_name: str,
     reference_md: str,
+    job_id: str = '',
 ) -> dict:
     """Generate Galaxy Lab content from a reference Markdown document.
 
     Returns a dict matching :data:`RESPONSE_SCHEMA` which the caller can
     use to write files into a Lab content folder.
+
+    If *job_id* is supplied, progress updates are written to Redis so the
+    web frontend can display them in real time.
     """
     instructions = INSTRUCTIONS_PATH.read_text()
     tool_ids = extract_tool_ids(reference_md)
@@ -354,11 +387,23 @@ def generate_lab_content(
         "Extracted %d tool IDs from reference Markdown",
         len(tool_ids),
     )
+    publish_progress(
+        job_id,
+        f"Extracted {len(tool_ids)} tool IDs from reference",
+    )
+
+    publish_progress(job_id, "Fetching tool metadata from Galaxy API")
     tool_metadata_yaml = fetch_tool_inputs.fetch_tools(tool_ids)
+    publish_progress(job_id, "Building prompt for OpenAI")
+
     user_prompt = build_user_prompt(
         lab_name=lab_name,
         reference_md=reference_md,
         tool_metadata_yaml=tool_metadata_yaml,
         instructions=instructions,
     )
-    return call_openai(SYSTEM_PROMPT, user_prompt)
+
+    publish_progress(job_id, "Sending request to OpenAI (this may take a while)")
+    result = call_openai(SYSTEM_PROMPT, user_prompt)
+    publish_progress(job_id, "AI content generated — building ZIP archive")
+    return result

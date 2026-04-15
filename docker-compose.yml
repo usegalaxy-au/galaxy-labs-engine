@@ -114,6 +114,54 @@ services:
       - /var/www/certbot:/var/www/certbot:rw
       - /etc/letsencrypt:/etc/letsencrypt:rw
 
+  redis:
+    image: redis:7-alpine
+    container_name: labs-engine-redis
+    networks:
+      - labs-engine-network
+    ports:
+      - "6379:6379"
+    restart: always
+
+  rq-worker-dev:
+    profiles:
+      - dev
+      - debug
+    image: neoformit/galaxy-labs-engine:latest
+    build: .
+    container_name: labs-engine-rq-worker-dev
+    networks:
+      - labs-engine-network
+    depends_on:
+      - redis
+    volumes:
+      - type: bind
+        source: .
+        target: /srv/labs-engine
+    environment:
+      - DJANGO_SETTINGS_MODULE=labs_engine.app.settings.dev
+    command: python manage.py rqworker default
+    restart: always
+    working_dir: /srv/labs-engine/app
+
+  rq-worker:
+    profiles:
+      - prod
+    image: neoformit/galaxy-labs-engine:latest
+    user: "33:33"
+    container_name: labs-engine-rq-worker
+    networks:
+      - labs-engine-network
+    depends_on:
+      - redis
+    volumes:
+      - /srv:/srv
+    environment:
+      - DJANGO_SETTINGS_MODULE=labs_engine.app.settings.prod
+    command: python manage.py rqworker default
+    restart: always
+    working_dir: /srv/labs-engine/app
+
 networks:
   labs-engine-network:
     driver: bridge

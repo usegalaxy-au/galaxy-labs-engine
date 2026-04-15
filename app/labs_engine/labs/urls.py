@@ -14,6 +14,16 @@ urlpatterns = [
         name='reference_template_download',
     ),
     path(
+        'bootstrap/job-status/<str:job_id>',
+        views.bootstrap_job_status,
+        name='bootstrap_job_status',
+    ),
+    path(
+        'bootstrap/job-download/<str:job_id>',
+        views.bootstrap_job_download,
+        name='bootstrap_job_download',
+    ),
+    path(
         'schema',
         TemplateView.as_view(template_name='docs/schema.html'),
         name='lab_schema',

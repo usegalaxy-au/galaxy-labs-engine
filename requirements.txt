@@ -4,6 +4,7 @@ bioblend==1.*
 crispy-bootstrap5==2024.*
 django==5.*
 django-crispy-forms==2.*
+django-rq==2.*
 django_light
 gunicorn==22.*
 markdown2==2.*

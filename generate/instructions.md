@@ -15,7 +15,7 @@ https://github.com/usegalaxy-au/galaxy-labs-engine/tree/dev/app/labs_engine/labs
 - The intro should be written to templates/intro.md
 - The conclusion should be written to templates/conclusion.md
 - The footer should be written to templates/footer.md
-- Each section should be written to a sections/section_N.yml file
+- Each section should be listed as a "sections/section_{N}.yml" file in base.yml under the `sections` key.
 - Default variable definitions should be written to base.yml
 - Per-server variable overrides should be written for each server to ${hostname}.yml. If servers have not been specified, please write the following server files:
     - usegalaxy.org.yml
