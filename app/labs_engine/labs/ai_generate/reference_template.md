@@ -36,22 +36,26 @@ Describe the purpose of this section in one or two sentences.
 
 #### Tab 1: Data import (again, change tab names to anything you want)
 
-Common tools for getting data into Galaxy (these should be full tool IDs - you can copy these from the menu bar at the top-right of any tool page on Galaxy: `Options > Copy tool ID`)
+Common tools for getting data into Galaxy (these should be full tool IDs - you can copy these from the menu bar at the top-right of any tool page on Galaxy: `Options > Copy tool ID`).
+Each list item will become an expandable item, and tool metadata will be fetched if a tool ID is provided.
 
 - upload1
 - toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump
 
 #### Tab 2: Example data
 
-Describe any example datasets or histories you want to link to. Include
+List any example datasets or histories you want to link to. Include
 URLs where appropriate.
 
+- https://mydata.com/dataset.txt
 
 ### Section 2: Analysis tools
 
-What analyses does this Lab support? Briefly describe.
+What analyses does this Lab support? Provide a brief description here.
 
 #### Tab 1: Quality control
+
+A list of tools to help you with quality control.
 
 - toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp
 
