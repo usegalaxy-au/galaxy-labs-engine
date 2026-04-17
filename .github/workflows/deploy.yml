@@ -93,7 +93,11 @@ jobs:
       - name: Install Ansible
         run: |
           python -m pip install --upgrade pip
-          pip install ansible
+          python -m pip install \
+            --retries 10 \
+            --timeout 120 \
+            --prefer-binary \
+            "ansible==10.*"
 
       - name: Install ssh keys
         # For reference: https://stackoverflow.com/a/70447517
