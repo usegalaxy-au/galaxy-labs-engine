@@ -85,11 +85,7 @@ Connected tutorials to train you to perform microbial data analysis.
 
 ## Conclusion
 
-The conclusion section contains:
-
-- A **feedback form** (triggered by a "Give feedback" button) for users to share
-  their thoughts on the Microbiology Lab.
-- A **Cite Us** section asking users to cite the microGalaxy community
+- **Cite Us** section asking users to cite the microGalaxy community
   [preprint](https://www.biorxiv.org/content/10.1101/2024.12.23.629682v1).
 - An embedded **footer** loaded from the Galaxy Australia site.
 

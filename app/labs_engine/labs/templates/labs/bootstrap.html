@@ -113,6 +113,17 @@
 
 </main>
 
+<!-- Success page shown after download -->
+<div id="bootstrap-success" class="container" style="display: none;">
+  <div class="alert alert-success mb-4 text-center" role="alert">
+    Your Lab has been downloaded successfully.
+  </div>
+  <div class="bootstrap-readme px-3">
+    {{ readme_html|safe }}
+  </div>
+  <a class="ga-btn text-center mt-4 d-inline-block" href="/bootstrap">Create another Lab</a>
+</div>
+
 <!-- Loading overlay for AI generation -->
 <div id="ai-loading-overlay">
   <div id="ai-loading-card">
@@ -154,6 +165,12 @@
     document.getElementById('ai-loading-overlay').classList.remove('active');
   }
 
+  function showSuccess() {
+    document.querySelector('main.container').style.display = 'none';
+    document.getElementById('bootstrap-success').style.display = 'block';
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
   function showError(msg) {
     var el = document.getElementById('ai-error-alert');
     document.getElementById('ai-error-message').textContent = msg;
@@ -193,8 +210,11 @@
           // Trigger the download.
           window.location.href = '/bootstrap/job-download/' + jobId;
           // Allow the browser a moment to start the download before
-          // hiding the overlay.
-          setTimeout(hideOverlay, 1500);
+          // showing the success page.
+          setTimeout(function () {
+            hideOverlay();
+            showSuccess();
+          }, 1500);
           return;
         } else if (data.status === 'failed') {
           clearInterval(pollTimer);

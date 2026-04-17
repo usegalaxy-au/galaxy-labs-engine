@@ -1,4 +1,4 @@
-# Galaxy Lab Content Documentation Summary
+# Galaxy Lab Content Documentation
 
 This document summarises how Galaxy Lab content folders work. Use this as
 authoritative guidance when generating Lab content.
@@ -36,7 +36,7 @@ properties:
 - `subdomain`, `root_domain` – used to build URLs.
 - `header_logo`, `custom_css`, `intro_md`, `footer_md`, `conclusion_md` –
   relative paths to content files.
-- `sections` – ordered list of section YAML filenames (relative paths).
+- `sections` – ordered list of section YAML filenames (relative paths, each item should be in the format `sections/section_*.yml`).
 - `toc: true` – adds a floating table-of-contents button.
 - `support_url` - the user support URL for the current server (defaults to https://help.usegalaxy.org in base.yml)
 
@@ -51,8 +51,6 @@ site_name: "Australia"
 galaxy_base_url: https://genome.usegalaxy.org.au
 root_domain: usegalaxy.org.au
 ```
-
-If a feedback form has been requested, including a `feedback_url` variable will create it automatically. Do not hard-code this into a template.
 
 ## Templates (intro.md, conclusion.md, footer.md)
 

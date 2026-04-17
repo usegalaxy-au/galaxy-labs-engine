@@ -27,8 +27,13 @@ from .lab_export import ExportLabContext
 from .lab_schema import DEPRECATED_PROPS
 from .audit import perform_template_audit
 from .tasks import run_bootstrap_lab
+from .templatetags.markdown import render_markdown
 
 REFERENCE_TEMPLATE_PATH = AI_GENERATE_DIR / 'reference_template.md'
+BOOTSTRAP_README_PATH = (
+    Path(__file__).resolve().parent
+    / 'templates' / 'labs' / 'bootstrap' / 'README.md'
+)
 
 logger = logging.getLogger('django')
 
@@ -111,6 +116,12 @@ def schema(request):
     return render(request, 'labs/schema.html')
 
 
+def _readme_html():
+    """Render the bootstrap README.md as HTML for the success page."""
+    md = BOOTSTRAP_README_PATH.read_text()
+    return render_markdown(md)
+
+
 class BootstrapLab(View):
     """Generate new lab content from submitted form data."""
 
@@ -120,6 +131,7 @@ class BootstrapLab(View):
         form = self.form()
         return render(request, 'labs/bootstrap.html', {
             'form': form,
+            'readme_html': _readme_html(),
         })
 
     def post(self, request):
@@ -127,6 +139,7 @@ class BootstrapLab(View):
         if not form.is_valid():
             return render(request, 'labs/bootstrap.html', {
                 'form': form,
+                'readme_html': _readme_html(),
             }, status=400)
 
         has_ai = bool(form.cleaned_data.get('reference_md'))
