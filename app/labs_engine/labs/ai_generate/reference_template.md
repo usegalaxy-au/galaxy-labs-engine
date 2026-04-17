@@ -23,7 +23,7 @@ You can mention things you want embedded, e.g.:
 ## Sections
 
 Briefly list the sections that should appear on the page (one per numbered
-item). The AI will translate each into a `sections/section_N.yml` file.
+item). The AI will translate each into a `sections/section_N.yml` file. There can be any number of sections and you choose what they're titled!
 
 1. Getting started
 2. Analysis tools
@@ -34,9 +34,9 @@ item). The AI will translate each into a `sections/section_N.yml` file.
 
 Describe the purpose of this section in one or two sentences.
 
-#### Tab 1: Data import
+#### Tab 1: Data import (again, change tab names to anything you want)
 
-Common tools for getting data into Galaxy.
+Common tools for getting data into Galaxy (these should be full tool IDs - you can copy these from the menu bar at the top-right of any tool page on Galaxy: `Options > Copy tool ID`)
 
 - upload1
 - toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump
@@ -69,14 +69,16 @@ List any tutorials / learning pathways users should follow.
 
 ## Conclusion
 
-One or two paragraphs wrapping up the page. You can mention:
+Anything else yto mention at the page e.g. connecting with community, feedback, contributions You can mention:
 
-- A feedback form (the Lab Engine provides one out of the box).
 - A "Cite us" section with a DOI or preprint link.
-- An embedded site footer.
 
 
 ## Help links
 
 - [Galaxy support](https://galaxyproject.org/support/)
 - [Galaxy help forum](https://help.galaxyproject.org)
+
+
+## Footer
+Any specific text you want shown in the page footer.
