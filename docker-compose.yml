@@ -115,6 +115,8 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:rw
 
   redis:
+    profiles:
+      - prod
     image: redis:7-alpine
     container_name: labs-engine-redis
     networks:
@@ -122,27 +124,6 @@ services:
     ports:
       - "6379:6379"
     restart: always
-
-  rq-worker-dev:
-    profiles:
-      - dev
-      - debug
-    image: neoformit/galaxy-labs-engine:latest
-    build: .
-    container_name: labs-engine-rq-worker-dev
-    networks:
-      - labs-engine-network
-    depends_on:
-      - redis
-    volumes:
-      - type: bind
-        source: .
-        target: /srv/labs-engine
-    environment:
-      - DJANGO_SETTINGS_MODULE=labs_engine.app.settings.dev
-    command: python manage.py rqworker default
-    restart: always
-    working_dir: /srv/labs-engine/app
 
   rq-worker:
     profiles:
