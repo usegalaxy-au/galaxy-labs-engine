@@ -170,13 +170,19 @@ class LabBootstrapForm(SpamFilterFormMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if not getattr(settings, 'OPENAI_API_KEY', None):
+            logger.warning(
+                "GALAXY_OPENAI_API_KEY is not set:"
+                " 'reference_md' field disabled on LabBootstrapForm."
+            )
+            del self.fields['reference_md']
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'lab_name',
             'subdomain',
             'github_username',
             'logo',
-            'reference_md',
+            *(('reference_md',) if 'reference_md' in self.fields else ()),
             HTML(self.antispam_html),
             Submit('submit', 'Build'),
         )
