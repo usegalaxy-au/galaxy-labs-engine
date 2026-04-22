@@ -149,14 +149,14 @@ class LabBootstrapForm(SpamFilterFormMixin, forms.Form):
         }),
     )
     reference_md = forms.FileField(
-        label="Lab description Markdown (optional)",
+        label="Lab description Markdown (experimental, optional)",
         help_text=(
             'Upload a Markdown file describing your desired'
             ' Lab content. If provided, Generative AI will be used to'
-            ' fetch tool metadata and write the required templates,'
-            ' (Markdown/YAML) files based on your description.'
+            ' fetch tool metadata and write the required '
+            ' Markdown/YAML files based on your description.'
             ' <a href="/bootstrap/reference-template" target="_blank">'
-            'Download a template</a> to get started.'
+            'Download template Markdown</a> to get started.'
         ),
         required=False,
         allow_empty_file=False,
