@@ -3,6 +3,7 @@
 app/labs_engine/app/static/
 app/labs_engine/app/media/
 temp/
+logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

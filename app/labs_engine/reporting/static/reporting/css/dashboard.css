@@ -1,0 +1,25 @@
+.lab-chart {
+  width: 100%;
+  height: 200px;
+  margin-bottom: 20px;
+}
+
+.lab-chart-title {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 0.5rem;
+}
+
+.date-range-buttons .btn {
+  padding: 8px 12px;
+}
+
+.custom-date-range {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.custom-date-range input {
+  width: 150px;
+}

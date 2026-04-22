@@ -94,8 +94,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'labs_engine.labs',
+    'labs_engine.reporting',
     'crispy_forms',
     "crispy_bootstrap5",
+    'django_rq',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -189,6 +191,18 @@ RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '')
 RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '')
 
 GITHUB_API_TOKEN = os.getenv('GITHUB_API_TOKEN')
+
+# OpenAI API key used by the AI-powered "Bootstrap a Lab" feature.
+OPENAI_API_KEY = os.getenv('GALAXY_OPENAI_API_KEY')
+
+# Redis-backed task queue (django-rq) for background Lab generation.
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+RQ_QUEUES = {
+    'default': {
+        'URL': REDIS_URL,
+        'DEFAULT_TIMEOUT': 300,
+    },
+}
 
 # Cache forever unless requested
 # (automated by GH workflow in galaxyproject/galaxy_codex)
