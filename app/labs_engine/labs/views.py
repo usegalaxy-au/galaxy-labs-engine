@@ -189,16 +189,28 @@ class BootstrapLab(View):
 
 def bootstrap_job_status(request, job_id):
     """Return the current status of a background bootstrap job."""
-    queue = django_rq.get_queue('default')
-    job = queue.fetch_job(job_id)
+    try:
+        queue = django_rq.get_queue('default')
+        job = queue.fetch_job(job_id)
+    except Exception as exc:
+        logger.error("bootstrap_job_status: Redis error: %s", exc)
+        return JsonResponse(
+            {'error': f'Could not connect to job queue: {exc}'},
+            status=503,
+        )
+
     if job is None:
         return JsonResponse({'error': 'Job not found'}, status=404)
 
     status = job.get_status()
     payload = {'status': status}
-    progress = get_progress(job_id)
-    if progress:
-        payload['progress'] = progress
+    try:
+        progress = get_progress(job_id)
+        if progress:
+            payload['progress'] = progress
+    except Exception as exc:
+        logger.warning("bootstrap_job_status: could not read progress: %s", exc)
+
     if status == 'finished':
         payload['result'] = job.result
     elif status == 'failed':

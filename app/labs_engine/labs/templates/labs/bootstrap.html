@@ -195,7 +195,16 @@
 
   function pollJob(jobId) {
     fetch('/bootstrap/job-status/' + jobId)
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        if (!r.ok) {
+          return r.json().catch(function () {
+            throw new Error('Server error (HTTP ' + r.status + ')');
+          }).then(function (data) {
+            throw new Error(data.error || 'Server error (HTTP ' + r.status + ')');
+          });
+        }
+        return r.json();
+      })
       .then(function (data) {
         if (data.progress) {
           setProgressDetail(data.progress);
@@ -226,7 +235,7 @@
       .catch(function (err) {
         clearInterval(pollTimer);
         hideOverlay();
-        showError('Lost connection to the server.');
+        showError(err.message || 'Lost connection to the server.');
       });
   }
 
