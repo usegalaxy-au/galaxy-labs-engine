@@ -5,6 +5,48 @@
 
 
 {% block head %}
+<style>
+  #ai-loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.55);
+    justify-content: center;
+    align-items: center;
+  }
+  #ai-loading-overlay.active {
+    display: flex;
+  }
+  #ai-loading-card {
+    background: #fff;
+    border-radius: 0.5rem;
+    padding: 2.5rem 3rem;
+    text-align: center;
+    max-width: 420px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.25);
+  }
+  #ai-loading-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  #ai-loading-status .spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+  }
+  #ai-loading-status span {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0d6efd;
+  }
+  #ai-error-alert {
+    display: none;
+  }
+</style>
 {% endblock %}
 
 
@@ -49,16 +91,203 @@
       </a>
       to visualise changes to your page instantly, before pushing to GitHub.
     </li>
+    <li>
+      <strong>AI-generated content (optional):</strong> Upload a
+      <em>Lab description</em> Markdown file and the Labs Engine will use
+      OpenAI to produce intro, conclusion, footer, base.yml, per-server YAML
+      and section YAML files. The generated files are included in the ZIP
+      archive alongside the standard scaffold.
+      <a href="{% url 'reference_template_download' %}">
+        Download a template
+      </a>
+      to get started.
+    </li>
   </ol>
+
+  <div id="ai-error-alert" class="alert alert-danger mb-4" role="alert">
+    <strong>Generation failed:</strong>
+    <span id="ai-error-message"></span>
+  </div>
 
   {% crispy form %}
 
 </main>
 
+<!-- Success page shown after download -->
+<div id="bootstrap-success" class="container" style="display: none;">
+  <div class="alert alert-success mb-4 text-center" role="alert">
+    Your Lab has been downloaded successfully.
+  </div>
+  <div class="bootstrap-readme px-3">
+    {{ readme_html|safe }}
+  </div>
+  <a class="ga-btn text-center mt-4 d-inline-block" href="/bootstrap">Create another Lab</a>
+</div>
+
+<!-- Loading overlay for AI generation -->
+<div id="ai-loading-overlay">
+  <div id="ai-loading-card">
+    <div id="ai-loading-status">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <span id="ai-step-label">Queued &mdash; waiting for worker</span>
+    </div>
+    <p id="ai-progress-detail" class="text-muted mb-0" style="font-size: 0.85rem;"></p>
+  </div>
+</div>
+
 {% endblock %}
 
 
 {% block script %}
+<script>
+(function () {
+  "use strict";
+
+  var POLL_INTERVAL_MS = 2000;
+  var pollTimer = null;
+
+  function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+  }
+
+  function hasAiFile() {
+    var input = document.getElementById('id_reference_md');
+    return input && input.files && input.files.length > 0;
+  }
+
+  function showOverlay() {
+    document.getElementById('ai-loading-overlay').classList.add('active');
+  }
+
+  function hideOverlay() {
+    document.getElementById('ai-loading-overlay').classList.remove('active');
+  }
+
+  function showSuccess() {
+    document.querySelector('main.container').style.display = 'none';
+    document.getElementById('bootstrap-success').style.display = 'block';
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  function showError(msg) {
+    var el = document.getElementById('ai-error-alert');
+    document.getElementById('ai-error-message').textContent = msg;
+    el.style.display = 'block';
+    el.scrollIntoView({behavior: 'smooth'});
+  }
+
+  var STEP_LABELS = {
+    'queued':   'Queued \u2014 waiting for worker',
+    'started':  'Generating Lab content',
+    'finished': 'Building ZIP archive'
+  };
+
+  function setStep(stepId) {
+    var label = STEP_LABELS[stepId] || stepId;
+    document.getElementById('ai-step-label').textContent = label;
+  }
+
+  function setProgressDetail(msg) {
+    document.getElementById('ai-progress-detail').textContent = msg || '';
+  }
+
+  function pollJob(jobId) {
+    fetch('/bootstrap/job-status/' + jobId)
+      .then(function (r) {
+        if (!r.ok) {
+          return r.json().catch(function () {
+            throw new Error('Server error (HTTP ' + r.status + ')');
+          }).then(function (data) {
+            throw new Error(data.error || 'Server error (HTTP ' + r.status + ')');
+          });
+        }
+        return r.json();
+      })
+      .then(function (data) {
+        if (data.progress) {
+          setProgressDetail(data.progress);
+        }
+        if (data.status === 'queued') {
+          setStep('queued');
+        } else if (data.status === 'started') {
+          setStep('started');
+        } else if (data.status === 'finished') {
+          clearInterval(pollTimer);
+          setStep('finished');
+          // Trigger the download.
+          window.location.href = '/bootstrap/job-download/' + jobId;
+          // Allow the browser a moment to start the download before
+          // showing the success page.
+          setTimeout(function () {
+            hideOverlay();
+            showSuccess();
+          }, 1500);
+          return;
+        } else if (data.status === 'failed') {
+          clearInterval(pollTimer);
+          hideOverlay();
+          showError(data.error || 'An unexpected error occurred.');
+          return;
+        }
+      })
+      .catch(function (err) {
+        clearInterval(pollTimer);
+        hideOverlay();
+        showError(err.message || 'Lost connection to the server.');
+      });
+  }
+
+  function handleAiSubmit(e) {
+    if (!hasAiFile()) {
+      // No AI file selected — let the form submit normally (synchronous).
+      return;
+    }
+    e.preventDefault();
+
+    var form = e.target;
+    var formData = new FormData(form);
+
+    // Hide any previous error.
+    document.getElementById('ai-error-alert').style.display = 'none';
+
+    showOverlay();
+    setStep('queued');
+
+    fetch(form.action || '/bootstrap', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': getCsrfToken()
+      }
+    })
+    .then(function (r) {
+      if (!r.ok) throw new Error('Form submission failed (status ' + r.status + ')');
+      return r.json();
+    })
+    .then(function (data) {
+      if (!data.job_id) {
+        throw new Error('Server did not return a job ID.');
+      }
+      pollTimer = setInterval(function () {
+        pollJob(data.job_id);
+      }, POLL_INTERVAL_MS);
+    })
+    .catch(function (err) {
+      hideOverlay();
+      showError(err.message || 'Failed to submit the form.');
+    });
+  }
+
+  $(document).ready(function () {
+    var form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', handleAiSubmit);
+    }
+  });
+})();
+</script>
 {% endblock %}
 
 

@@ -16,7 +16,8 @@
             "DJANGO_SETTINGS_MODULE": "labs_engine.app.settings.base",
           },
           "django": true,
-          "justMyCode": true
+          "justMyCode": true,
+          "preLaunchTask": "RQ Worker"
         },
         {
           "name": "Django shell",

@@ -1,6 +1,7 @@
 """User facing forms for making support requests (help/tools/data)."""
 
 import logging
+import shutil
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML, Submit
 from django import forms
@@ -147,15 +148,41 @@ class LabBootstrapForm(SpamFilterFormMixin, forms.Form):
             'accept': ','.join(f"image/{ext}" for ext in IMAGE_EXTENSIONS),
         }),
     )
+    reference_md = forms.FileField(
+        label="Lab description Markdown (experimental, optional)",
+        help_text=(
+            'Upload a Markdown file describing your desired'
+            ' Lab content. If provided, Generative AI will be used to'
+            ' fetch tool metadata and write the required '
+            ' Markdown/YAML files based on your description.'
+            ' <a href="/bootstrap/reference-template" target="_blank">'
+            'Download template Markdown</a> to get started.'
+        ),
+        required=False,
+        allow_empty_file=False,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['md', 'markdown']),
+        ],
+        widget=forms.FileInput(attrs={
+            'accept': '.md,.markdown,text/markdown',
+        }),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if not getattr(settings, 'OPENAI_API_KEY', None):
+            logger.warning(
+                "GALAXY_OPENAI_API_KEY is not set:"
+                " 'reference_md' field disabled on LabBootstrapForm."
+            )
+            del self.fields['reference_md']
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'lab_name',
             'subdomain',
             'github_username',
             'logo',
+            *(('reference_md',) if 'reference_md' in self.fields else ()),
             HTML(self.antispam_html),
             Submit('submit', 'Build'),
         )
@@ -178,17 +205,59 @@ class LabBootstrapForm(SpamFilterFormMixin, forms.Form):
         username = self.cleaned_data.get('github_username')
         return username.strip() if username else None
 
-    def bootstrap_lab(self):
-        data = self.cleaned_data
+    def _build_lab_data(self):
+        """Build the data dict used by ``bootstrap.lab()``.
+
+        Converts file objects to serializable equivalents so the dict
+        can be passed to an RQ worker if needed.
+        """
+        data = dict(self.cleaned_data)
+
+        # Logo: save UploadedFile to a temp path on disk.
+        logo_file = data.get('logo')
+        if logo_file:
+            upload_dir = settings.INTERNAL_ROOT / 'uploads'
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            dest = upload_dir / logo_file.name
+            with dest.open('wb') as f:
+                shutil.copyfileobj(logo_file, f)
+            data['logo'] = str(dest)
+        else:
+            data['logo'] = None
+
+        # Reference markdown: read bytes to string.
+        reference_file = data.get('reference_md')
+        if reference_file:
+            reference_file.seek(0)
+            data['reference_md'] = reference_file.read().decode('utf-8')
+        else:
+            data['reference_md'] = None
+
         data.update({
-            'intro_md': INTRO_MD,  # TODO: Render from user-input
+            'intro_md': INTRO_MD,
             'conclusion_md': CONCLUSION_MD,
             'footer_md': FOOTER_MD,
             'root_domain': 'usegalaxy.org',
             'galaxy_base_url': (
                 f"https://{data['subdomain']}.usegalaxy.org"),
             'section_paths': [
-                'sections/section-1.yml',  # TODO: Auto-render from user input
+                'sections/section-1.yml',
             ],
         })
+        return data
+
+    def bootstrap_lab(self):
+        data = self._build_lab_data()
         return bootstrap.lab(data)
+
+    def prepare_job_data(self):
+        """Return ``(form_data, output_dir)`` for enqueuing with RQ.
+
+        Pre-computes the output directory path so the worker knows
+        exactly where to write, keeping the job self-contained.
+        """
+        data = self._build_lab_data()
+        output_dir = str(
+            settings.INTERNAL_ROOT / bootstrap.random_string(6)
+        )
+        return data, output_dir

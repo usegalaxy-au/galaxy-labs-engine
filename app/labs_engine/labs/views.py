@@ -2,8 +2,9 @@
 
 import logging
 import traceback
+import django_rq
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.static import serve
 from django.template import (
@@ -16,11 +17,23 @@ from django.views import View
 from pathlib import Path
 
 from labs_engine.utils.exceptions import LabBuildError
+from .ai_generate.generator import (
+    PACKAGE_DIR as AI_GENERATE_DIR,
+    get_progress,
+)
 from .cache import LabCache
 from .forms import LabBootstrapForm
 from .lab_export import ExportLabContext
 from .lab_schema import DEPRECATED_PROPS
 from .audit import perform_template_audit
+from .tasks import run_bootstrap_lab
+from .templatetags.markdown import render_markdown
+
+REFERENCE_TEMPLATE_PATH = AI_GENERATE_DIR / 'reference_template.md'
+BOOTSTRAP_README_PATH = (
+    Path(__file__).resolve().parent
+    / 'templates' / 'labs' / 'bootstrap' / 'README.md'
+)
 
 logger = logging.getLogger('django')
 
@@ -103,6 +116,12 @@ def schema(request):
     return render(request, 'labs/schema.html')
 
 
+def _readme_html():
+    """Render the bootstrap README.md as HTML for the success page."""
+    md = BOOTSTRAP_README_PATH.read_text()
+    return render_markdown(md)
+
+
 class BootstrapLab(View):
     """Generate new lab content from submitted form data."""
 
@@ -112,20 +131,37 @@ class BootstrapLab(View):
         form = self.form()
         return render(request, 'labs/bootstrap.html', {
             'form': form,
+            'readme_html': _readme_html(),
         })
 
     def post(self, request):
         form = self.form(request.POST, request.FILES)
-        if form.is_valid():
-            zipfile_relpath = form.bootstrap_lab()
-            return self.force_download(
-                request,
-                zipfile_relpath,
-                filename=slugify(form.cleaned_data['lab_name']) + '.zip',
+        if not form.is_valid():
+            return render(request, 'labs/bootstrap.html', {
+                'form': form,
+                'readme_html': _readme_html(),
+            }, status=400)
+
+        has_ai = bool(form.cleaned_data.get('reference_md'))
+        if has_ai:
+            # Enqueue the slow AI-powered generation as a background job.
+            job_data, output_dir = form.prepare_job_data()
+            queue = django_rq.get_queue('default')
+            job = queue.enqueue(
+                run_bootstrap_lab,
+                job_data,
+                output_dir,
+                job_timeout=300,
             )
-        return render(request, 'labs/bootstrap.html', {
-            'form': form,
-        }, status=400)
+            return JsonResponse({'job_id': job.id})
+
+        # Fast scaffold-only path: synchronous download.
+        zipfile_relpath = form.bootstrap_lab()
+        return self.force_download(
+            request,
+            zipfile_relpath,
+            filename=slugify(form.cleaned_data['lab_name']) + '.zip',
+        )
 
     def force_download(self, request, relpath: Path, filename=None):
         if settings.DEBUG:
@@ -149,6 +185,80 @@ class BootstrapLab(View):
         response['Content-Disposition'] = "attachment; filename=lab.zip"
         response['X-Accel-Redirect'] = url
         return response
+
+
+def bootstrap_job_status(request, job_id):
+    """Return the current status of a background bootstrap job."""
+    try:
+        queue = django_rq.get_queue('default')
+        job = queue.fetch_job(job_id)
+    except Exception as exc:
+        logger.error("bootstrap_job_status: Redis error: %s", exc)
+        return JsonResponse(
+            {'error': f'Could not connect to job queue: {exc}'},
+            status=503,
+        )
+
+    if job is None:
+        return JsonResponse({'error': 'Job not found'}, status=404)
+
+    status = job.get_status()
+    payload = {'status': status}
+    try:
+        progress = get_progress(job_id)
+        if progress:
+            payload['progress'] = progress
+    except Exception as exc:
+        logger.warning(
+            f"bootstrap_job_status: could not read progress: {exc}")
+
+    if status == 'finished':
+        payload['result'] = job.result
+    elif status == 'failed':
+        payload['error'] = str(job.exc_info or 'Unknown error')
+    return JsonResponse(payload)
+
+
+def bootstrap_job_download(request, job_id):
+    """Serve the ZIP file produced by a finished bootstrap job."""
+    queue = django_rq.get_queue('default')
+    job = queue.fetch_job(job_id)
+    if job is None:
+        return JsonResponse({'error': 'Job not found'}, status=404)
+    if job.get_status() != 'finished':
+        return JsonResponse(
+            {'error': 'Job not finished yet'},
+            status=400,
+        )
+
+    result = job.result
+    relpath = Path(result['relpath'])
+    lab_name = result.get('lab_name', 'lab')
+    filename = slugify(lab_name) + '.zip'
+
+    if settings.DEBUG:
+        response = serve(request, relpath, settings.INTERNAL_ROOT)
+        response['Content-Disposition'] = (
+            f'attachment; filename={filename}'
+        )
+        return response
+
+    url = settings.INTERNAL_URL + str(relpath).strip('/')
+    response = HttpResponse()
+    response['Content-Type'] = ''
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    response['X-Accel-Redirect'] = url
+    return response
+
+
+def reference_template_download(request):
+    """Serve the Markdown reference template as a downloadable file."""
+    content = REFERENCE_TEMPLATE_PATH.read_text()
+    response = HttpResponse(content, content_type='text/markdown')
+    response['Content-Disposition'] = (
+        'attachment; filename="reference_template.md"'
+    )
+    return response
 
 
 def report_exception_response(request, exc, title=None):

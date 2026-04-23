@@ -11,6 +11,9 @@ from django.template.loader import render_to_string
 from django.utils.text import slugify
 from pathlib import Path
 
+from .ai_generate import generate_lab_content
+from .ai_generate.generator import AIGenerationError
+
 logger = logging.getLogger('django')
 
 HOURS_1 = 60 * 60
@@ -37,13 +40,38 @@ def random_string(length):
     return ''.join(random.choices(ALPHANUMERIC, k=length))
 
 
-def lab(form_data):
-    """Render a new lab from form data."""
+def lab(form_data, output_dir=None, job_id=''):
+    """Render a new lab from form data.
+
+    If *output_dir* is supplied (as a str or Path) it is used directly;
+    otherwise a random subdirectory of ``INTERNAL_ROOT`` is created.
+    Passing it explicitly allows the caller (e.g. an RQ worker) to
+    control exactly where files are written.
+
+    *job_id* is forwarded to AI generation so progress updates can be
+    published to Redis.
+    """
     clean_dir(settings.INTERNAL_ROOT)
-    output_dir = settings.INTERNAL_ROOT / random_string(6)
+    if output_dir is not None:
+        output_dir = Path(output_dir)
+    else:
+        output_dir = settings.INTERNAL_ROOT / random_string(6)
+    output_dir.mkdir(parents=True, exist_ok=True)
     form_data['logo_filename'] = create_logo(form_data, output_dir)
     render_templates(form_data, output_dir)
     render_server_yml(form_data, output_dir)
+    reference_md = form_data.get('reference_md')
+    if reference_md:
+        try:
+            ai_content = generate_lab_content(
+                lab_name=form_data['lab_name'],
+                reference_md=reference_md,
+                job_id=job_id,
+            )
+        except AIGenerationError as exc:
+            logger.error("AI lab generation failed: %s", exc)
+        else:
+            inject_ai_content(ai_content, output_dir)
     zipfile_path = output_dir.with_suffix('.zip')
     root_dir = Path(slugify(form_data['lab_name']))
     with zipfile.ZipFile(zipfile_path, 'w') as zf:
@@ -51,6 +79,46 @@ def lab(form_data):
             zf.write(path, root_dir / path.relative_to(output_dir))
     logger.debug('Created lab zipfile: %s' % zipfile_path)
     return Path(str(zipfile_path).replace(str(settings.INTERNAL_ROOT), ''))
+
+
+def inject_ai_content(ai_content, output_dir):
+    """Overwrite template files with AI-generated Lab content.
+
+    The AI returns a dict matching ``ai_generate.generator.RESPONSE_SCHEMA``:
+    intro_md, conclusion_md, footer_md, base_yml, servers (list of
+    {hostname, content}) and sections (list of {filename, content}).
+    """
+    templates_dir = output_dir / 'templates'
+    sections_dir = output_dir / 'sections'
+    templates_dir.mkdir(parents=True, exist_ok=True)
+    sections_dir.mkdir(parents=True, exist_ok=True)
+
+    (templates_dir / 'intro.md').write_text(ai_content['intro_md'])
+    (templates_dir / 'conclusion.md').write_text(
+        ai_content['conclusion_md']
+    )
+    (templates_dir / 'footer.md').write_text(ai_content['footer_md'])
+    (output_dir / 'base.yml').write_text(ai_content['base_yml'])
+
+    # Remove the placeholder section file shipped by render_templates so
+    # it doesn't conflict with the AI-generated sections.
+    placeholder = sections_dir / 'section-1.yml'
+    if placeholder.exists():
+        placeholder.unlink()
+    for section in ai_content.get('sections', []):
+        filename = Path(section['filename']).name
+        (sections_dir / filename).write_text(section['content'])
+
+    # Replace the default per-server YAML files with AI-generated ones.
+    for server in ai_content.get('servers', []):
+        hostname = server['hostname'].strip()
+        if not hostname:
+            continue
+        if not hostname.endswith('.yml'):
+            filename = f'{hostname}.yml'
+        else:
+            filename = hostname
+        (output_dir / filename).write_text(server['content'])
 
 
 def render_templates(data, output_dir):
@@ -101,14 +169,22 @@ def render_server_yml(data, output_dir):
 
 
 def create_logo(data, output_dir):
-    """Copy the uploaded logo to the output directory."""
-    logo_file = data.get(
-        'logo'
-    ) or (
-        settings.BASE_DIR
-        / 'labs_engine/labs/example_labs/docs/static/flask.svg'
-    )
-    logo_dest_path = output_dir / 'static' / logo_file.name
+    """Copy the uploaded logo to the output directory.
+
+    ``data['logo']`` may be a Django UploadedFile, a Path, a string
+    path (when coming from an RQ worker) or None/falsy for the default.
+    """
+    logo_file = data.get('logo')
+    if logo_file:
+        if isinstance(logo_file, str):
+            logo_file = Path(logo_file)
+        logo_dest_path = output_dir / 'static' / Path(logo_file.name).name
+    else:
+        logo_file = (
+            settings.BASE_DIR
+            / 'labs_engine/labs/example_labs/docs/static/flask.svg'
+        )
+        logo_dest_path = output_dir / 'static/logo.svg'
     logo_dest_path.parent.mkdir(parents=True, exist_ok=True)
     with logo_file.open('rb') as src, logo_dest_path.open('wb') as dest:
         shutil.copyfileobj(src, dest)

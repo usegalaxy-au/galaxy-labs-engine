@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "RQ Worker",
+            "type": "process",
+            "command": "${workspaceFolder}/venv/bin/python",
+            "args": [
+                "manage.py",
+                "rqworker",
+                "default"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/app",
+                "env": {
+                    "DJANGO_SETTINGS_MODULE": "labs_engine.app.settings.base"
+                }
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        }
+    ]
+}
