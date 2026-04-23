@@ -403,7 +403,10 @@ def generate_lab_content(
         instructions=instructions,
     )
 
-    publish_progress(job_id, "Sending request to OpenAI (this may take a while)")
+    publish_progress(
+        job_id,
+        "Sending request to OpenAI (this could take 5 minutes - please keep"
+        " this tab open)")
     result = call_openai(SYSTEM_PROMPT, user_prompt)
     publish_progress(job_id, "AI content generated — building ZIP archive")
     return result
