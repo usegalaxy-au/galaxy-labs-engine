@@ -209,7 +209,8 @@ def bootstrap_job_status(request, job_id):
         if progress:
             payload['progress'] = progress
     except Exception as exc:
-        logger.warning("bootstrap_job_status: could not read progress: %s", exc)
+        logger.warning(
+            f"bootstrap_job_status: could not read progress: {exc}")
 
     if status == 'finished':
         payload['result'] = job.result

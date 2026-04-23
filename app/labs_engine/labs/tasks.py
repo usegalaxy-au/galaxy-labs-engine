@@ -30,11 +30,16 @@ def run_bootstrap_lab(form_data: dict, output_dir: str) -> dict:
         lab_name,
         output_dir,
     )
-    relpath = bootstrap.lab(
-        form_data,
-        output_dir=output_dir,
-        job_id=job_id,
-    )
+    try:
+        relpath = bootstrap.lab(
+            form_data,
+            output_dir=output_dir,
+            job_id=job_id,
+        )
+    except Exception:
+        logger.exception(
+            "RQ worker: Lab generation failed for '%s'", lab_name)
+        raise
     return {
         'relpath': str(relpath),
         'lab_name': lab_name,
