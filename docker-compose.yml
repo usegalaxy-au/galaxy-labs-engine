@@ -59,7 +59,6 @@ services:
       - /srv:/srv
     environment:
       - DJANGO_SETTINGS_MODULE=labs_engine.app.settings.prod
-      - REDIS_URL=redis://redis:6379/0
     command: >
       gunicorn
         --bind 0.0.0.0:8000
@@ -140,7 +139,6 @@ services:
       - /srv:/srv
     environment:
       - DJANGO_SETTINGS_MODULE=labs_engine.app.settings.prod
-      - REDIS_URL=redis://redis:6379/0
     command: python manage.py rqworker default
     restart: always
     working_dir: /srv/labs-engine/app
