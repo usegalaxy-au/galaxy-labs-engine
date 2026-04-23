@@ -8,6 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.static import serve
 from django.template import (
+    Context,
     RequestContext,
     Template,
 )
@@ -119,6 +120,7 @@ def schema(request):
 def _readme_html():
     """Render the bootstrap README.md as HTML for the success page."""
     md = BOOTSTRAP_README_PATH.read_text()
+    md = Template(md).render(Context({'HOSTNAME': settings.HOSTNAME}))
     return render_markdown(md)
 
 
