@@ -1,5 +1,6 @@
 {% extends 'labs/header.html' %}
 {% load markdown %}
+{% load special_uppercase %}
 
 {% comment %}
   This template renders a generic Galaxy Lab landing page based on externally
@@ -31,7 +32,7 @@
     <img id="header-logo" src="{{ snippets.header_logo }}" alt="{{ site_name }} Logo">
     {% endif %}
     <span id="labName">
-      {{ lab_name|upper }}
+      {{ lab_name | considerate_upper_case }}
       {% if audit %}
       <span class="text-danger"> - AUDIT</span>
       {% endif %}
