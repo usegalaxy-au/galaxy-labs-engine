@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from django.utils.http import urlencode
 from hashlib import md5
 
+from labs_engine.labs.cloudflare import purge_cache_for_request
 from labs_engine.labs.models import CachedLab
 
 _1_DAY = 60 * 60 * 24
@@ -42,10 +43,9 @@ if settings.CACHE_TABLE_NAME not in connection.introspection.table_names():
 class LabCache:
     @classmethod
     def get(cls, request):
-        if (
-            request.GET.get('cache', '').lower() == 'false'
-            or NOCACHE
-        ):
+        if cls.is_cache_bypass(request) or NOCACHE:
+            # The Cloudflare cache is purged in put(), once the page has been
+            # re-rendered and re-cached
             return
 
         cache_record = cls._get_cached_lab(request)
@@ -62,23 +62,35 @@ class LabCache:
 
     @classmethod
     def put(cls, request, body):
-        if NOCACHE:
-            return HttpResponse(body)
         response = HttpResponse(body)
-        response['X-Cache-Status'] = 'MISS'
-        if body and cls.is_labs_request(request):
-            logger.debug(
-                f"Cache PUT for {request.GET.get('content_root', 'homepage')}")
-            cache_record = cls._get_cached_lab(request, create=True)
-            # If there was an IntegrityError creating the CachedLab, will
-            # return None - we won't cache anything
-            if cache_record:
-                timeout = (
-                    settings.CACHE_TIMEOUT
-                    if request.GET.get('content_root')
-                    else None)  # No timeout for default "Docs Lab" page
-                cache.set(cache_record.key, body, timeout=timeout)
+        if not NOCACHE:
+            response['X-Cache-Status'] = 'MISS'
+            if body and cls.is_labs_request(request):
+                logger.debug(
+                    f"Cache PUT for"
+                    f" {request.GET.get('content_root', 'homepage')}")
+                cache_record = cls._get_cached_lab(request, create=True)
+                # If there was an IntegrityError creating the CachedLab, will
+                # return None - we won't cache anything
+                if cache_record:
+                    timeout = (
+                        settings.CACHE_TIMEOUT
+                        if request.GET.get('content_root')
+                        else None)  # No timeout for default "Docs Lab" page
+                    cache.set(cache_record.key, body, timeout=timeout)
+
+        # Purge Cloudflare last, so that the fresh page has been cached before
+        # the edge can request it again
+        if cls.is_cache_bypass(request) and cls.is_labs_request(request):
+            _, url = cls._generate_cache_key(request)
+            purge_cache_for_request(request, url)
+
         return response
+
+    @classmethod
+    def is_cache_bypass(cls, request):
+        """Check if the request explicitly asked to bypass the cache."""
+        return request.GET.get('cache', '').lower().startswith('f')
 
     @classmethod
     def is_labs_request(cls, request):

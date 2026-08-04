@@ -192,6 +192,17 @@ RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '')
 
 GITHUB_API_TOKEN = os.getenv('GITHUB_API_TOKEN')
 
+# Cloudflare edge cache purging, triggered by ?cache=false requests.
+# Both values must be set to enable purging - the API token requires the
+# "Zone > Cache Purge > Purge" permission on the given zone.
+CLOUDFLARE_API_TOKEN = os.getenv('CLOUDFLARE_API_TOKEN')
+CLOUDFLARE_ZONE_ID = os.getenv('CLOUDFLARE_ZONE_ID')
+CLOUDFLARE_API_TIMEOUT = 5
+# Minimum interval between purges of the same content_root
+CLOUDFLARE_PURGE_DEBOUNCE_SECONDS = 60
+# Max URLs per purge request allowed by Cloudflare Free/Pro plans
+CLOUDFLARE_PURGE_BATCH_SIZE = 30
+
 # OpenAI API key used by the AI-powered "Bootstrap a Lab" feature.
 OPENAI_API_KEY = os.getenv('GALAXY_OPENAI_API_KEY')
 

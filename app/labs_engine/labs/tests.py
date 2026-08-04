@@ -1,9 +1,16 @@
+import requests
 import requests_mock
+from django.core.cache import cache
+from django.test import override_settings
+from django.utils.http import urlencode
 from pathlib import Path
 from unittest.mock import Mock, patch
 
 from labs_engine.utils.formatters import EmbeddedYouTubeUrl
+from .cache import LabCache
+from .cloudflare import CLOUDFLARE_PURGE_URL
 from .lab_export import ExportLabContext
+from .models import CachedLab
 from .audit import (
     extract_tool_links,
     check_tool_exists,
@@ -43,6 +50,20 @@ TEST_INVALID_TOOL_URL = (
     f'{TEST_GALAXY_SERVER_URL}/?tool_id='
     'toolshed.g2.bx.psu.edu%2Frepos%2Fgalaxyp%2Fblahblah%2Fblahblah'
 )
+
+# Test constants for Cloudflare cache purging
+TEST_CLOUDFLARE_ZONE_ID = 'testzoneid'
+TEST_CLOUDFLARE_API_TOKEN = 'testapitoken'
+TEST_CLOUDFLARE_PURGE_URL = CLOUDFLARE_PURGE_URL.format(
+    zone_id=TEST_CLOUDFLARE_ZONE_ID)
+TEST_CLOUDFLARE_RESPONSE = {'success': True, 'errors': [], 'messages': []}
+TEST_SITE_URL = 'http://testserver'
+TEST_CONTENT_ROOT_QUERY = urlencode({'content_root': TEST_LAB_CONTENT_URL})
+TEST_CACHED_LAB_URL = f'/?{TEST_CONTENT_ROOT_QUERY}'
+TEST_CACHED_LAB_AUDIT_URL = f'/?{TEST_CONTENT_ROOT_QUERY}&audit=true'
+TEST_CACHED_OTHER_LAB_URL = '/?' + urlencode({
+    'content_root': f'{MOCK_LAB_BASE_URL}/static/labs/content/other/base.yml',
+})
 
 
 class LabExportTestCase(TestCase):
@@ -240,7 +261,7 @@ class AuditTestCase(TestCase):
         """Test check_tool_exists with a valid tool."""
         # Mock cache miss
         mock_cache.get.return_value = None
-        
+
         mock_gi = Mock()
         mock_galaxy_instance.return_value = mock_gi
         mock_gi.tools.show_tool.return_value = {'id': TEST_VALID_TOOL_ID}
@@ -461,6 +482,152 @@ class AuditTestCase(TestCase):
 
         # Should return unchanged template when no </section> found
         self.assertEqual(result, template_str)
+
+
+@override_settings(
+    CLOUDFLARE_ZONE_ID=TEST_CLOUDFLARE_ZONE_ID,
+    CLOUDFLARE_API_TOKEN=TEST_CLOUDFLARE_API_TOKEN,
+)
+class CloudflarePurgeTestCase(TestCase):
+    """Test purging of the Cloudflare cache on ?cache=false requests."""
+
+    def setUp(self):
+        super().setUp()
+        # Reset the purge debounce between tests
+        cache.clear()
+        CachedLab.objects.create(key='a' * 32, url=TEST_CACHED_LAB_URL)
+        CachedLab.objects.create(key='b' * 32, url=TEST_CACHED_LAB_AUDIT_URL)
+        CachedLab.objects.create(key='c' * 32, url=TEST_CACHED_OTHER_LAB_URL)
+
+    def mock_lab_requests(self, mock_request):
+        """Mock the remote Lab content requests made while rendering."""
+        for r in MOCK_REQUESTS:
+            mock_request.get(r['url_pattern'],
+                             text=r['response'],
+                             status_code=r.get('status_code', 200))
+
+    def get_lab(self, mock_request, cache_param='false'):
+        """Request the test Lab page, optionally bypassing the cache."""
+        self.mock_lab_requests(mock_request)
+        url = TEST_LAB_URL
+        if cache_param is not None:
+            url += f'&cache={cache_param}'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        return response
+
+    def get_purge_requests(self, mock_request):
+        """Return requests made to the Cloudflare purge endpoint."""
+        return [
+            r for r in mock_request.request_history
+            if r.url == TEST_CLOUDFLARE_PURGE_URL
+        ]
+
+    @requests_mock.Mocker()
+    def test_it_purges_all_urls_for_content_root(self, mock_request):
+        mock_request.post(
+            TEST_CLOUDFLARE_PURGE_URL, json=TEST_CLOUDFLARE_RESPONSE)
+        self.get_lab(mock_request)
+
+        purge_requests = self.get_purge_requests(mock_request)
+        self.assertEqual(len(purge_requests), 1)
+        self.assertEqual(
+            purge_requests[0].headers['Authorization'],
+            f'Bearer {TEST_CLOUDFLARE_API_TOKEN}')
+
+        files = purge_requests[0].json()['files']
+        self.assertIn(TEST_SITE_URL + TEST_CACHED_LAB_URL, files)
+        self.assertIn(TEST_SITE_URL + TEST_CACHED_LAB_AUDIT_URL, files)
+        self.assertNotIn(TEST_SITE_URL + TEST_CACHED_OTHER_LAB_URL, files)
+        # The cache=false param must not be purged - it isn't cached
+        for url in files:
+            self.assertNotIn('cache=false', url)
+
+    @requests_mock.Mocker()
+    def test_it_does_not_purge_without_cache_param(self, mock_request):
+        mock_request.post(
+            TEST_CLOUDFLARE_PURGE_URL, json=TEST_CLOUDFLARE_RESPONSE)
+        self.get_lab(mock_request, cache_param=None)
+        self.assertEqual(len(self.get_purge_requests(mock_request)), 0)
+
+    @override_settings(CLOUDFLARE_ZONE_ID=None, CLOUDFLARE_API_TOKEN=None)
+    @requests_mock.Mocker()
+    def test_it_does_not_purge_without_credentials(self, mock_request):
+        mock_request.post(
+            TEST_CLOUDFLARE_PURGE_URL, json=TEST_CLOUDFLARE_RESPONSE)
+        self.get_lab(mock_request)
+        self.assertEqual(len(self.get_purge_requests(mock_request)), 0)
+
+    @requests_mock.Mocker()
+    def test_it_debounces_repeated_purge_requests(self, mock_request):
+        mock_request.post(
+            TEST_CLOUDFLARE_PURGE_URL, json=TEST_CLOUDFLARE_RESPONSE)
+        self.get_lab(mock_request)
+        self.get_lab(mock_request)
+        self.assertEqual(len(self.get_purge_requests(mock_request)), 1)
+
+    @requests_mock.Mocker()
+    def test_it_batches_purge_requests(self, mock_request):
+        mock_request.post(
+            TEST_CLOUDFLARE_PURGE_URL, json=TEST_CLOUDFLARE_RESPONSE)
+        batch_size = 30
+        for i in range(batch_size * 2):
+            CachedLab.objects.create(
+                key=f'{i:032d}',
+                url=f'{TEST_CACHED_LAB_URL}&nonce={i}')
+        self.get_lab(mock_request)
+
+        purge_requests = self.get_purge_requests(mock_request)
+        self.assertEqual(len(purge_requests), 3)
+        for request in purge_requests:
+            self.assertLessEqual(len(request.json()['files']), batch_size)
+
+    @patch('labs_engine.labs.cache.NOCACHE', False)
+    @patch('labs_engine.labs.cache.purge_cache_for_request')
+    @requests_mock.Mocker()
+    def test_it_purges_after_the_page_has_been_recached(
+        self,
+        mock_purge,
+        mock_request,
+    ):
+        """The fresh page must be cached before the edge can re-request it."""
+        cached_body = {}
+
+        def record_cached_body(request, url):
+            key, _ = LabCache._generate_cache_key(request)
+            cached_body['value'] = cache.get(key)
+
+        mock_purge.side_effect = record_cached_body
+        self.get_lab(mock_request)
+
+        mock_purge.assert_called_once()
+        self.assertIn(TEST_LAB_NAME, cached_body['value'])
+
+    @requests_mock.Mocker()
+    def test_it_serves_page_when_purge_fails(self, mock_request):
+        mock_request.post(TEST_CLOUDFLARE_PURGE_URL, status_code=500)
+        response = self.get_lab(mock_request)
+        self.assertContains(response, TEST_LAB_NAME)
+
+    @requests_mock.Mocker()
+    def test_it_reports_zero_purged_on_cloudflare_error(self, mock_request):
+        """Cloudflare returns HTTP 200 with success=false for bad URLs."""
+        mock_request.post(TEST_CLOUDFLARE_PURGE_URL, json={
+            'success': False,
+            'errors': [{'code': 1140, 'message': 'Unable to purge'}],
+        })
+        with self.assertLogs('django.cache', level='INFO') as logs:
+            self.get_lab(mock_request)
+        self.assertTrue(
+            any('Purged 0/' in message for message in logs.output),
+            f'Expected a zero-purge log message, got: {logs.output}')
+
+    @requests_mock.Mocker()
+    def test_it_serves_page_when_purge_times_out(self, mock_request):
+        mock_request.post(
+            TEST_CLOUDFLARE_PURGE_URL, exc=requests.Timeout)
+        response = self.get_lab(mock_request)
+        self.assertContains(response, TEST_LAB_NAME)
 
 
 class FormatterTestCase(TestCase):
