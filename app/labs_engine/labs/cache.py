@@ -13,6 +13,7 @@ from django.db import connection, IntegrityError
 from django.http import HttpResponse
 from django.utils.http import urlencode
 from hashlib import md5
+from urllib.parse import unquote
 
 from labs_engine.labs.cloudflare import purge_cache_for_request
 from labs_engine.labs.models import CachedLab
@@ -113,6 +114,10 @@ class LabCache:
         if lab:
             logger.debug(f"CachedLab found for key {cache_key} - {url}")
             try:
+                # Refresh the stored URL - records created before URLs were
+                # stored verbatim hold a re-encoded URL that Cloudflare won't
+                # match
+                lab.url = url
                 lab.save()
             except IntegrityError as exc:
                 for phrase in IGNORE_ERRORS:
@@ -144,16 +149,42 @@ class LabCache:
 
     @classmethod
     def _generate_cache_key(cls, request):
-        """Create a unique cache key from request path."""
+        """Create a unique cache key from request path.
+
+        Returns the key and the URL that was requested. The key is hashed from
+        a normalized (URL-encoded) form so that equivalent requests share a
+        cache entry, but the returned URL is the raw path/query string as sent
+        by the client - that is what Cloudflare caches under, and a
+        `content_root` may legitimately contain URL-encoded characters that a
+        decode/re-encode round trip would mangle.
+        """
         params = {
             k: v for k, v in request.GET.items()
             if k not in CACHE_KEY_IGNORE_GET_PARAMS
         }
-        url = f"{request.path}?{urlencode(params)}" if params else request.path
-        md5sum = md5(url.encode('utf-8')).hexdigest()
+        key_url = (
+            f"{request.path}?{urlencode(params)}" if params else request.path)
+        md5sum = md5(key_url.encode('utf-8')).hexdigest()
+        url = cls._get_raw_url(request)
         logger.debug(f"Cache path: {url}")
         logger.debug(f"Cache url (hashed): {md5sum}")
         return md5sum, url
+
+    @classmethod
+    def _get_raw_url(cls, request):
+        """Return the requested path and query string, verbatim.
+
+        Cache-control params are stripped, but the remaining params are left
+        exactly as the client encoded them.
+        """
+        query = '&'.join(
+            pair
+            for pair in request.META.get('QUERY_STRING', '').split('&')
+            if pair
+            and unquote(pair.split('=', 1)[0])
+            not in CACHE_KEY_IGNORE_GET_PARAMS
+        )
+        return f"{request.path}?{query}" if query else request.path
 
 
 class WebCache:
