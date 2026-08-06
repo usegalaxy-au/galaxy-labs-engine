@@ -57,7 +57,7 @@ def _purge_cache_for_request(request, url):
             f'Cloudflare purge debounced for content_root={content_root}')
         return
 
-    urls = _get_purge_urls(request, url, content_root)
+    urls = _get_purge_urls(url, content_root)
     purged = _post_purge(zone_id, token, urls)
     logger.info(
         f'Purged {purged}/{len(urls)} Cloudflare URLs for'
@@ -78,11 +78,11 @@ def _is_debounced(content_root):
     return False
 
 
-def _get_purge_urls(request, url, content_root):
+def _get_purge_urls(url, content_root):
     """Return absolute URLs to purge for the requested content_root.
 
     CachedLab.url records every path/query string that has been served, but is
-    relative to the site root, so the requested scheme and host are prepended.
+    relative to the site root, so the public site URL is prepended.
     """
     paths = [url]
     if content_root:
@@ -99,7 +99,7 @@ def _get_purge_urls(request, url, content_root):
             lab.url
             for lab in CachedLab.objects.filter(url_filter)
         ]
-    base_url = f'{request.scheme}://{request.get_host()}'
+    base_url = settings.CLOUDFLARE_PURGE_BASE_URL
     # dict.fromkeys dedupes while preserving order
     return list(dict.fromkeys(base_url + path for path in paths))
 

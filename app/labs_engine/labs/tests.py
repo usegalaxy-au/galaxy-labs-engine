@@ -57,7 +57,7 @@ TEST_CLOUDFLARE_API_TOKEN = 'testapitoken'
 TEST_CLOUDFLARE_PURGE_URL = CLOUDFLARE_PURGE_URL.format(
     zone_id=TEST_CLOUDFLARE_ZONE_ID)
 TEST_CLOUDFLARE_RESPONSE = {'success': True, 'errors': [], 'messages': []}
-TEST_SITE_URL = 'http://testserver'
+TEST_SITE_URL = 'https://testserver'
 TEST_CONTENT_ROOT_QUERY = f'content_root={TEST_LAB_CONTENT_URL}'
 TEST_CACHED_LAB_URL = f'/?{TEST_CONTENT_ROOT_QUERY}'
 TEST_CACHED_LAB_AUDIT_URL = f'/?{TEST_CONTENT_ROOT_QUERY}&audit=true'
@@ -489,6 +489,7 @@ class AuditTestCase(TestCase):
 @override_settings(
     CLOUDFLARE_ZONE_ID=TEST_CLOUDFLARE_ZONE_ID,
     CLOUDFLARE_API_TOKEN=TEST_CLOUDFLARE_API_TOKEN,
+    CLOUDFLARE_PURGE_BASE_URL=TEST_SITE_URL,
 )
 class CloudflarePurgeTestCase(TestCase):
     """Test purging of the Cloudflare cache on ?cache=false requests."""

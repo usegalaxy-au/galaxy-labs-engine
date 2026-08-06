@@ -202,6 +202,10 @@ CLOUDFLARE_API_TIMEOUT = 5
 CLOUDFLARE_PURGE_DEBOUNCE_SECONDS = 60
 # Max URLs per purge request allowed by Cloudflare Free/Pro plans
 CLOUDFLARE_PURGE_BATCH_SIZE = 30
+# The public site is always served over HTTPS. The request scheme and host
+# can't be used to build purge URLs because Django sits behind Nginx (which
+# terminates SSL), and update_cache renders against BUILD_HOSTNAME.
+CLOUDFLARE_PURGE_BASE_URL = f'https://{PUBLIC_HOSTNAME}'
 
 # OpenAI API key used by the AI-powered "Bootstrap a Lab" feature.
 OPENAI_API_KEY = os.getenv('GALAXY_OPENAI_API_KEY')
