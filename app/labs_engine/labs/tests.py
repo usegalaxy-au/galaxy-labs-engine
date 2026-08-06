@@ -58,12 +58,14 @@ TEST_CLOUDFLARE_PURGE_URL = CLOUDFLARE_PURGE_URL.format(
     zone_id=TEST_CLOUDFLARE_ZONE_ID)
 TEST_CLOUDFLARE_RESPONSE = {'success': True, 'errors': [], 'messages': []}
 TEST_SITE_URL = 'http://testserver'
-TEST_CONTENT_ROOT_QUERY = urlencode({'content_root': TEST_LAB_CONTENT_URL})
+TEST_CONTENT_ROOT_QUERY = f'content_root={TEST_LAB_CONTENT_URL}'
 TEST_CACHED_LAB_URL = f'/?{TEST_CONTENT_ROOT_QUERY}'
 TEST_CACHED_LAB_AUDIT_URL = f'/?{TEST_CONTENT_ROOT_QUERY}&audit=true'
-TEST_CACHED_OTHER_LAB_URL = '/?' + urlencode({
-    'content_root': f'{MOCK_LAB_BASE_URL}/static/labs/content/other/base.yml',
+TEST_CACHED_LAB_ENCODED_URL = '/?' + urlencode({
+    'content_root': TEST_LAB_CONTENT_URL,
 })
+TEST_CACHED_OTHER_LAB_URL = (
+    f'/?content_root={MOCK_LAB_BASE_URL}/static/labs/content/other/base.yml')
 
 
 class LabExportTestCase(TestCase):
@@ -542,6 +544,32 @@ class CloudflarePurgeTestCase(TestCase):
         # The cache=false param must not be purged - it isn't cached
         for url in files:
             self.assertNotIn('cache=false', url)
+
+    @requests_mock.Mocker()
+    def test_it_purges_urls_as_requested_by_the_client(self, mock_request):
+        """The content_root must not be re-encoded - Cloudflare caches the
+        URL exactly as the client requested it.
+        """
+        mock_request.post(
+            TEST_CLOUDFLARE_PURGE_URL, json=TEST_CLOUDFLARE_RESPONSE)
+        self.get_lab(mock_request)
+
+        files = self.get_purge_requests(mock_request)[0].json()['files']
+        self.assertIn(
+            f'{TEST_SITE_URL}/?content_root={TEST_LAB_CONTENT_URL}', files)
+        self.assertNotIn(TEST_SITE_URL + TEST_CACHED_LAB_ENCODED_URL, files)
+
+    @requests_mock.Mocker()
+    def test_it_purges_urls_cached_in_encoded_form(self, mock_request):
+        """A URL-encoded content_root is a valid request in its own right."""
+        mock_request.post(
+            TEST_CLOUDFLARE_PURGE_URL, json=TEST_CLOUDFLARE_RESPONSE)
+        CachedLab.objects.create(
+            key='d' * 32, url=TEST_CACHED_LAB_ENCODED_URL)
+        self.get_lab(mock_request)
+
+        files = self.get_purge_requests(mock_request)[0].json()['files']
+        self.assertIn(TEST_SITE_URL + TEST_CACHED_LAB_ENCODED_URL, files)
 
     @requests_mock.Mocker()
     def test_it_does_not_purge_without_cache_param(self, mock_request):

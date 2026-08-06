@@ -15,6 +15,7 @@ import logging
 import requests
 from django.conf import settings
 from django.core.cache import cache
+from django.db.models import Q
 from django.utils.http import urlencode
 from hashlib import md5
 
@@ -85,10 +86,18 @@ def _get_purge_urls(request, url, content_root):
     """
     paths = [url]
     if content_root:
-        query = urlencode({'content_root': content_root})
+        # URLs are stored as the client sent them, so match both the raw and
+        # URL-encoded forms of the content_root
+        queries = {
+            f'content_root={content_root}',
+            urlencode({'content_root': content_root}),
+        }
+        url_filter = Q()
+        for query in queries:
+            url_filter |= Q(url__contains=query)
         paths += [
             lab.url
-            for lab in CachedLab.objects.filter(url__contains=query)
+            for lab in CachedLab.objects.filter(url_filter)
         ]
     base_url = f'{request.scheme}://{request.get_host()}'
     # dict.fromkeys dedupes while preserving order
